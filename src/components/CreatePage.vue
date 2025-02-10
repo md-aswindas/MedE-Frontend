@@ -95,7 +95,7 @@ export default {
     .btn {
       margin-left: 40px;
       margin-top: 40px;
-      width: 380px;
+      width: 350px;
       height: 40px;
       border-radius: 20px;
       background-color: rgb(0, 136, 255);
