@@ -7,6 +7,7 @@ const router = createRouter({
   routes:[
     {path:'/',component:()=>import('./components/LoginPage.vue')},
     {path:'/createAccount',component:()=>import('./components/CreatePage.vue') },
+    {path:'/userhome',component:()=>import('./components/UserHome.vue')}
   ],
 });
 

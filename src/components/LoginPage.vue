@@ -4,10 +4,10 @@
     <div class="login-container">
       
         <h2 class="login-h">Login</h2>
-        <router-link to="/createAccount"><h4 class="create-acnt">or create account</h4></router-link>
+        <router-link to="/createAccount"  style="text-decoration: none; color: inherit;"><h4 class="create-acnt">or create account</h4></router-link>
         <input type="text" name="email" id="email" class="txt-field" placeholder="email">
         <input type="password" name="password" id="password" class="txt-field" placeholder="password">
-        <button type="button" class="btn">Login</button>
+        <router-link to="/userhome" ><button type="button" class="btn">Login</button></router-link>
       
     </div>
   </div>

@@ -4,7 +4,7 @@
     <div class="login-container">
       
       <h2 class="login-h">Create Account</h2>
-        <router-link to="/"><h4 class="create-acnt">or login</h4></router-link>
+        <router-link to="/"  style="text-decoration: none; color: inherit;"><h4 class="create-acnt">or login</h4></router-link>
         <input type="text" name="name" id="name" class="txt-field" placeholder="name">
         <input type="email" name="email" id="email" class="txt-field" placeholder="email">
         <input type="number" name="phone" id="phone" class="txt-field" placeholder="phone number">
