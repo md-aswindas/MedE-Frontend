@@ -7,16 +7,20 @@
         <router-link to="/createAccount"  style="text-decoration: none; color: inherit;"><h4 class="create-acnt">or create account</h4></router-link>
         <input type="text" name="email" id="email" class="txt-field" placeholder="email">
         <input type="password" name="password" id="password" class="txt-field" placeholder="password">
-        <router-link to="/userhome" ><button type="button" class="btn">Login</button></router-link>
+        <router-link to="/userhome" ><button type="button" class="btn" @click="login">Login</button></router-link>
       
     </div>
   </div>
 </div>
 </template>
-
+ 
 <script>
 export default {
-  
+  methods:{
+    async login(){
+
+    }
+  }
 }
 </script>
 
@@ -76,8 +80,8 @@ export default {
       margin-left: 40px;
       margin-top: 20px;
       width: 350px;
-      height: 35px;
-      border-radius: 20px;
+      height: 45px;
+      border-radius: 50px;
       border: .5px solid rgb(133, 133, 133);
       padding-left: 30px;
     }
@@ -91,13 +95,12 @@ export default {
       margin-left: 40px;
       margin-top: 40px;
       width: 350px;
-      height: 40px;
-      border-radius: 20px;
+      height: 45px;
+      border-radius: 50px;
       background-color: rgb(0, 136, 255);
       color: white;
       border: 1px solid rgb(133, 133, 133);
       font-weight: bold;
     }
-
     
 </style>
