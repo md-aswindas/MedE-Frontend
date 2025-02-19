@@ -7,9 +7,10 @@
       </div>
       <div class="right-nav">
 
+        <router-link to="/storeLogin" style="text-decoration: none; color: inherit; font-weight: 500;">
         <p class="nav-txt"> <v-icon large color="black" size="1.2rem" class="icon">mdi-storefront-outline</v-icon>     Merchant  </p>
-
-        <router-link to="/"  style="text-decoration: none; color: inherit; font-weight: 500;">
+        </router-link>
+        <router-link to="/userLogin"  style="text-decoration: none; color: inherit; font-weight: 500;">
           <p class="nav-img"  style="display: flex; justify-content: center; align-items: center;">
             <v-icon large color="black" size="1.2rem" class="icon">mdi-account-outline</v-icon> Sign In
           </p>
