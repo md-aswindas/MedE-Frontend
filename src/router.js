@@ -9,7 +9,8 @@ const router = createRouter({
     {path:'/createAccount',component:()=>import('./components/CreatePage.vue') },
     {path:'/',component:()=>import('./components/UserHome.vue')},
     {path:'/storeLogin',component:()=> import('./components/StoreLogin.vue')},
-    {path:'/storeRegistration', component:()=> import('./components/StoreRegistration.vue')}
+    {path:'/storeRegistration', component:()=> import('./components/StoreRegistration.vue')},
+    {path:'/UserHomeMain',component:()=> import('./components/UserstoreHome.vue')}
   ],
 });
 

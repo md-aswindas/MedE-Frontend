@@ -49,8 +49,8 @@
     </div>
     <div class="texts">
       
-      <div class="quote-container">
-        
+      <div class="quote-container" id="quote-container">
+        <h1>Welcome back!<br> Your <span style="color: #03045e; text-shadow: 4px 4px 10px rgba(255, 255, 255, 0.3);">Orders </span><br>Awaits.</h1>
       </div>
 
       <div class="frgtpswd" id="frgtpswd">
@@ -99,11 +99,15 @@ export default {
     },
     forgotPswd(){
       const frgtPsword = document.getElementById("frgtpswd");
+      const quote = document.getElementById("quote-container");
       frgtPsword.style.display= "flex";
+      quote.style.display="none";
     },
     close(){
       const close = document.getElementById("frgtpswd");
+      const quote = document.getElementById("quote-container");
       close.style.display= "none";
+      quote.style.display="flex";
     }
   },
 };
@@ -111,25 +115,32 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Teko:wght@300..700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Pacifico&family=Teko:wght@300..700&display=swap');
 
-
-/* .quote-container{
-  color: #ffffffcf;
+.quote-container{
+  /* text-shadow: 1px 2px 5px rgb(149, 149, 149);  */
+  color:  transparent;
+  -webkit-text-stroke: .1px #03045e;
   font-family: Bebas Neue;
-  font-size: 80px;
-  line-height: 80px;
+  font-size: 45px;
+  line-height: 90px;
+  letter-spacing: 5px;
+  word-spacing: 10px;
   width: 600px;
   height: 400px;
-  background: rgba(255, 255, 255, 0.081);
+  /* background: rgba(255, 255, 255, 0.081);
   backdrop-filter: blur(10px); 
-  border-radius: 25px 25px 25px 25px;
-  display: none;
-} */
+  border-radius: 25px 25px 25px 25px; */
+  display: flex;
+  align-items: center ;
+}
+
+
+
 .forgot{
   height: 18%;
   width: 100%;
-  background-color: #ffffff;
+  background-color: #ffffff40;
   border-radius: 25px 25px 0px 0px;
   padding-left: 30px;
   color: #03045e;

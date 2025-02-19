@@ -11,6 +11,7 @@
 
       <div class="fields">
         <input
+        v-model="name"
           type="text"
           name="name"
           id="name"
@@ -18,6 +19,7 @@
           placeholder="name"
         />
         <input
+        v-model="email"
           type="email"
           name="email"
           id="email"
@@ -25,6 +27,7 @@
           placeholder="email"
         />
         <input
+        v-model="phoneNumber"
           type="number"
           name="phone"
           id="phone"
@@ -32,6 +35,7 @@
           placeholder="phone number"
         />
         <input
+        v-model="password"
           type="password"
           name="password"
           id="password"
@@ -39,7 +43,7 @@
           placeholder="password"
         />
 
-        <button type="button" class="btn">Continue</button>
+        <button type="button" class="btn" @click="register()">Continue</button>
 
         <div class="heading">
           <div class="line"></div>
@@ -53,7 +57,36 @@
 </template>
  
 <script>
-export default {};
+export default {
+  data(){
+    return{
+      name:"",
+      email:"",
+      phoneNumber:"",
+      password:""
+    };
+  },
+  methods:{
+    async register(){
+      const payload ={
+        name:this.name,
+        email:this.email,
+        phoneNumber:this.phoneNumber,
+        password:this.password,
+      };
+      try{
+      const response = await this.$store.dispatch("registerUser",payload);
+      if(response){
+        alert("Registered Successfully"+response.data.name);
+      }else{
+        console.log("error")
+      }
+    }catch (error){
+      console.log(error);
+    }
+  },
+},
+};
 </script>
 
 

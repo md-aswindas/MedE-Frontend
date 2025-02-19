@@ -156,9 +156,9 @@ export default {
   padding: 10px;
   width:550px;
   height: 450px;
-  background-color: #ffffff;
+  background-color: #f4f0f0;
   border-radius: 15px;
-  box-shadow:0px 0px 0px 2px #ffffff  ;
+  box-shadow:0px 0px 0px 2px #f4f0f0  ;
 }
 
 .upload{

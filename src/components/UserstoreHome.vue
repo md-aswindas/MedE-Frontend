@@ -3,25 +3,31 @@
     <div class="navbar">
       <div class="left-nav">
         <h1 class="logo">MedE</h1>
-        <p class="nav-txt">  <v-icon large color="black" size="1.2rem" class="icon">mdi-map-marker</v-icon> Find a store  </p>
+        <p class="nav-txt" style="width: 140px;">  <v-icon large color="#03045E" size="1.2rem" class="icon">mdi-map-marker</v-icon> Find a store  </p>
       </div>
       <div class="right-nav">
 
-        <p class="nav-txt"> <v-icon large color="black" size="1.2rem" class="icon">mdi-storefront-outline</v-icon>     Merchant  </p>
+        <router-link to="/storeLogin" style="text-decoration: none; color: inherit; font-weight: 500;">
+        <p class="nav-txt" style="width: 170px;"> <v-icon large color="#03045E" size="1.2rem" class="icon">mdi-storefront-outline</v-icon>     Become A Seller  </p>
+        </router-link>
+        <router-link to="/userLogin"  style="text-decoration: none; color: inherit; font-weight: 500;">
+          <p class="nav-img"  style="display: flex; justify-content: center; align-items: center; color: #03045E; padding:7px; border-radius: 20px; width: 100px;">
+            <v-icon large color="#03045E" size="1.2rem" class="icon">mdi-account-outline</v-icon> Sign In
+          </p>
+        </router-link>
 
-        <router-link to="/"  style="text-decoration: none; color: inherit; font-weight: 500;"><p class="nav-img">  <v-icon large color="black" size="1.2rem" class="icon">mdi-account-outline</v-icon>Sign In</p></router-link>
 
+        <p class="nav-txt"><v-icon large color="#03045E" size="1.2rem" class="icon">mdi-cart-outline</v-icon>   Cart</p>
 
-        <p class="nav-txt"><v-icon large color="black" size="1.2rem" class="icon">mdi-cart-outline</v-icon>   Cart</p>
-
-        <p class="nav-txt"> <v-icon large color="black" size="1.2rem" class="icon">mdi-arrow-up-bold-box-outline</v-icon>  help</p>
-
+        
       </div>
     </div>
     <div class="searchbar">
       <input type="text" name="search" class="search" placeholder="Search Product / Store" >
       <v-icon large color="black" class="searchicon" size="35px">mdi-magnify</v-icon>
     </div>
+    
+    
   </div>
 </template>
 
@@ -33,17 +39,28 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
 .main-container{
   width: 100%;
-  height:100vh;
-  background-color: aquamarine;
+  height:fit-content;
+  padding-bottom: 50px;
+  background-color: rgb(255, 255, 255);
+  
 }
 .navbar{
   width: 100%;
   height: 70px;
-  background-color: rgb(255, 255, 255);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: #ffffff;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 15px 40px -20px rgba(40, 44, 63, .15);
+  -webkit-box-shadow:0 15px 40px -20px rgba(40, 44, 63, .15);
 }
 .left-nav{
   height: 70px;
@@ -64,41 +81,88 @@ export default {
 .logo{
   width: fit-content;
   height: fit-content;
+  color: #03045E;
 }
 .searchbar{
-  background-color: bisque;
-  height: 150px;
+  /* background-color:rgb(255, 255, 255); */
+  height: 100px;
+  margin-top: 72px;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-end;
   
 }
 .search{
   background-color: rgb(255, 255, 255);
   width: 800px;
-  height: 50px;
+  height: 55px;
   padding-left: 50px;
   padding-right: 20px;
   border-radius: 50px ;
+  border:.5px solid rgb(209, 209, 209);
  
   
 }
 .searchicon{
-  height: 50px;
-  width: 50px;
-  background-color: rgb(255, 255, 255);
-  transform: translateX(-150%);
+  height: 60px;
+  width: 60px;
+  transform: translateX(-140%);
+  margin-bottom: 10px;
+  border-radius: 100%;
   
 }
 .nav-txt{
   font-weight: 500;
+  width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px;
+  color: #03045E;
+  border-radius: 20px;
 }
 .icon{
   margin-right: 5px;
 }
+.heading{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 90px;
+  /* background-color: rgb(255, 255, 237); */
+}
+.line{
+  height: 1px;
+  background-color: rgb(209, 209, 209);
+  width: 500px;
+  margin-right: 20px;
+  margin-left: 20px;
+}
+.card-container{
+  /* background-color: rgb(255, 255, 237); */
+  height: 230px;
+  display: flex;
+}
 
+.cards{
+width: 88%;
+height: 100%;
+/* background-color: rgb(255, 255, 237); */
+display: flex;
+align-items: flex-end;
+justify-content: center;
 
+}
 
+.card{
+  background-color: rgb(255, 255, 255);
+  height: 200px;
+  width: 300px;
+  border-radius: 20px;
+  margin-right: 10px;
+  margin-left: 10px;
+  border:.5px solid rgb(209, 209, 209);
+}
 
 
     
