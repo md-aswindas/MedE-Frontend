@@ -26,7 +26,7 @@
         <input
           type="text"
           name="storeName"
-          v-model="storeName"
+          v-model="store_name"
           class="txt-field"
           placeholder="store name"
         />
@@ -40,7 +40,7 @@
         <input
           type="number"
           name="phone"
-          v-model="phone"
+          v-model="phone_number"
           class="txt-field"
           placeholder="phone number"
         />
@@ -57,7 +57,7 @@
           
         </div> -->
         <!-- <router-link to="/userhome"> -->
-          <button type="button" class="btn" @click="Storesubmit">Continue</button>
+          <button type="button" class="btn" @click="StoreRegister">Continue</button>
         <!-- </router-link> -->
         <!-- <div class="heading">
           <div class="line"></div>
@@ -77,14 +77,20 @@
       <h3 style="font-weight: 300;">Attach your file below</h3>
       <div class="close" @click="close()"></div>
     </div>
-    <div class="box">
-      <h4>Drag file(s) here</h4>
-      <h4>or <span style="color: #00b4d8;">click here </span>to upload file</h4>
-      <input type="file" name="file" id="file" hidden>
+    <div class="box"
+    @dragover.prevent="dragging = true"
+    @dragleave.prevent="dragging = false"
+    @drop.prevent="handleDrop"
+    @click="triggerFileInput">
+    
+      <h4 v-if="!imageUrl">Drag file(s) here</h4>
+      <h4 v-if="!imageUrl">or <span style="color: #00b4d8;">click here </span>to upload file</h4>
+      <input type="file" name="file" id="file" class="file" hidden ref="fileInput" @change="handleFile" accept="image/*">
+      <img v-if="imageUrl" :src="imageUrl" alt="Uploaded Image" width="200">
     </div>
     <div class="upload-btn">
-      <button class="c-btn">Cancel</button>
-      <button class="s-btn">Submit</button>
+      <button class="c-btn" @click.stop="removeImage">Cancel</button>
+      <button class="s-btn" @click="confirmImage">Submit</button>
     </div>
   </div>
   </div>
@@ -94,22 +100,34 @@
 export default {
   data() {
     return {
+      storeName:"",
       licenseNumber: "",
+      phoneNumber:"",
       password: "",
+      dragging: false,
+      imageFile: null,
+      imageUrl: null
       // videoSrc: require("@/assets/backgroung.mp4")
     };
     
   },
   methods: {
-    async Storesubmit() {
-      const payload = {
+    async StoreRegister() {
+      const formData = new FormData();
+      formData.append("licenseImage", this.selectedFile);
+      const storeRegistrationModel = new Blob([
+        JSON.stringify({
+        store_name:this.store_name,
         licenseNumber: this.licenseNumber,
+        phone_number:this.phone_number,
         password: this.password,
-      };
+      })],
+      {type:"application/json"});
+      formData.append("storeRegistrationModel", storeRegistrationModel);
       try {
-        const response = await this.$store.dispatch("loginStore", payload);
+        const response = await this.$store.dispatch("registerStore", formData);
         if (response) {
-          alert("successfully login!!!!");
+          alert("StoreRegistered Successfully"+response.data.name);
         } else {
           console.log("error");
         }
@@ -125,7 +143,47 @@ export default {
       const open = document.getElementById("fileUpload");
       console.log(open);
       open.style.display= "flex";
+    },
+    triggerFileInput() {
+      this.$refs.fileInput.click();
+    },
+    handleFile(event) {
+  const file = event.target.files[0];
+  if (file) {
+    this.selectedFile = file;
+    this.imageUrl = URL.createObjectURL(file);  // Show preview
+  }
+},
+
+handleDrop(event) {
+  event.preventDefault();
+  const file = event.dataTransfer.files[0];
+  if (file) {
+    this.selectedFile = file;
+    this.imageUrl = URL.createObjectURL(file);  // Show preview
+  }
+},
+    processFile(file) {
+      if (file && file.type.startsWith("image/")) {
+        this.imageFile = file;
+        this.imageUrl = URL.createObjectURL(file);
+      } else {
+        alert("Please upload an image file.");
+      }
+    },
+     removeImage() {
+      this.imageFile = null;
+      this.imageUrl = null;
+      this.$refs.fileInput.value = ""; // Reset file input
+    },
+    confirmImage() {
+    if (this.selectedFile) {
+      this.imageConfirmed = true;  // Mark image as confirmed
+      this.close();  // Close modal after confirmation
+    } else {
+      alert("Please upload an image before submitting.");
     }
+  }
   },  
 };
 </script>

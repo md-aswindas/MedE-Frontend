@@ -23,9 +23,23 @@
       </div>
     </div>
     <div class="searchbar">
-      <input type="text" name="search" class="search" placeholder="Search Product / Store" >
-      <v-icon large color="black" class="searchicon" size="35px">mdi-magnify</v-icon>
+      <input type="text" name="search" v-model="search" class="search" placeholder="Search Product / Store" >
+      <v-icon large color="black" class="searchicon" size="35px" @click="search()">mdi-magnify</v-icon>
     </div>
+    
+    <div class="heading">
+      <div class="line"></div>
+      <div class="heading-txt"><h4>Categories</h4></div>
+      <div class="line"></div>
+    </div>
+    <div class="card-container">
+      <div class="cards">
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+      </div>
+      </div>
     
     
   </div>
@@ -128,7 +142,8 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 90px;
+  height: 70px;
+  margin-top: 20px;
   /* background-color: rgb(255, 255, 237); */
 }
 .line{
@@ -142,6 +157,8 @@ export default {
   /* background-color: rgb(255, 255, 237); */
   height: 230px;
   display: flex;
+  justify-content: center;
+  
 }
 
 .cards{
