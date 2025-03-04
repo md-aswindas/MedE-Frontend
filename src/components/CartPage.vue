@@ -58,21 +58,27 @@
       <div class="cart-container">
         <h1 class="cart-head">Your Cart</h1>
         <div class="cart-card-div">
-        <div class="cart-card"></div>
-        <div class="cart-card"></div>
-        <div class="cart-card"></div>
-        <div class="cart-card"></div>
-        <div class="cart-card"></div>
-        <div class="cart-card"></div>
-        <div class="cart-card"></div>
-        <div class="cart-card"></div>
-        <div class="cart-card"></div>
-        <div class="cart-card"></div>
-        <div class="cart-card"></div>
+        <div class="cart-card">
+          <img src="" alt="" class="card-img">
+          <div class="card-content">
+            <h3>Product Name</h3>
+            <p>Price : </p>
+            <p>Discount : </p>
+            <p>Count : </p>
+          </div>
+          <div class="btns">
+            <button type="button" class="remove-btn">Remove</button>
+            <button type="button" class="buy-btn">Buy</button>
+          </div>
+          
+        </div>
+        
       </div>
 
       </div>
-      <div class="price-container"></div>
+      <div class="price-container">
+        <h1 class="cart-head">Checkout</h1>
+      </div>
     </div>
   </div>
 </template>
@@ -199,6 +205,9 @@ export default {};
   margin: 0px 5px 5px 5px;
   border-radius: 10px;
   /* position: -webkit-sticky; */
+  display: flex;
+  justify-content: center;
+  padding: 20px;
   
 }
 .cart-card{
@@ -208,15 +217,74 @@ export default {};
   border-radius: 10px;
   margin-bottom: 20px;
   border: 1px solid rgb(220, 220, 220);
+  padding: 10px;
+  display: flex;
+  align-items: center;
 }
 .cart-head{
   width: fit-content;
+  height: fit-content;
   margin: 10px;
   margin-bottom: 30px;
   position: -webkit-sticky;
   font-size: 22px;
   font-weight: 500;
   color: #03045e;
+}
+.card-img{
+  width: 130px;
+  height: 130px;
+  border-radius: 10px;
+  background-color: #03045e;
+}
+.card-content{
+  height: 130px;
+  width: 586px;
+  margin-left: 15px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.btns{
+  height: 130px;
+  width: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-left: 20px;
+}
+.remove-btn{
+  background-color: white;
+  border: 2px solid #03045e;
+  color: #03045e;
+  border-radius: 5px;
+  cursor: pointer;
+  /* background-image: url(grocery-store.png);
+    background-repeat: no-repeat;
+    background-position: 1em center;
+    background-size: 1rem; */
+  font-weight: 700;
+  width: 150px;
+  height: 40px;
+  margin-bottom: 20px;
+  
+}
+.buy-btn{
+  background-color: #03045e;
+  border: 2px solid #03045e;
+  color: #ffffff;
+  border-radius: 5px;
+  cursor: pointer;
+  /* background-image: url(grocery-store.png);
+    background-repeat: no-repeat;
+    background-position: 1em center;
+    background-size: 1rem; */
+  font-weight: 700;
+  width: 150px;
+  height: 40px;
+  
 }
 
 </style>

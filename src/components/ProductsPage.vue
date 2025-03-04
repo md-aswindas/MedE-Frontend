@@ -4,213 +4,118 @@
       <div class="left-nav">
         <h1 class="logo">MedE</h1>
         <p class="nav-txt" style="width: 140px">
-          <v-icon large color="#03045E" size="1.2rem" class="icon"
-            >mdi-map-marker</v-icon
-          >
+          <v-icon large color="#03045E" size="1.2rem" class="icon">mdi-map-marker</v-icon>
           Find a store
         </p>
       </div>
       <div class="right-nav">
-        <router-link
-          to="/storeLogin"
-          style="text-decoration: none; color: inherit; font-weight: 500"
-        >
+        <router-link to="/storeLogin" style="text-decoration: none; color: inherit; font-weight: 500">
           <p class="nav-txt" style="width: 170px">
-            <v-icon large color="#03045E" size="1.2rem" class="icon"
-              >mdi-storefront-outline</v-icon
-            >
+            <v-icon large color="#03045E" size="1.2rem" class="icon">mdi-storefront-outline</v-icon>
             Become A Seller
           </p>
         </router-link>
-        <router-link
-          to="/userLogin"
-          style="text-decoration: none; color: inherit; font-weight: 500"
-        >
-          <p
-            class="nav-img"
-            style="
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              color: #03045e;
-              padding: 7px;
-              border-radius: 20px;
-              width: 100px;
-            "
-          >
-            <v-icon large color="#03045E" size="1.2rem" class="icon"
-              >mdi-account-outline</v-icon
-            >
+        <router-link to="/userLogin" style="text-decoration: none; color: inherit; font-weight: 500">
+          <p class="nav-img" style="display: flex; justify-content: center; align-items: center; color: #03045e; padding: 7px; border-radius: 20px; width: 100px;">
+            <v-icon large color="#03045E" size="1.2rem" class="icon">mdi-account-outline</v-icon>
             Sign In
           </p>
         </router-link>
-
         <p class="nav-txt">
-          <v-icon large color="#03045E" size="1.2rem" class="icon"
-            >mdi-cart-outline</v-icon
-          >
+          <v-icon large color="#03045E" size="1.2rem" class="icon">mdi-cart-outline</v-icon>
           Cart
         </p>
       </div>
     </div>
 
     <div class="product-div">
-      <div class="product-leftside"></div>
+      <div class="product-leftside">
+      
+        <div class="filters">
+          <h4>Filters</h4>
+        </div>
+          
+        <div class="filter-cntnt">
+          <p style="margin-top: 20px; margin-left: 30px; margin-bottom: 20px; font-weight: 600;">PRICE</p>
+          <div class="checkbox">
+            <input type="radio" name="High - Low" id="High - Low" >
+          <label for="High - Low">Price High - Low</label>
+          </div>
+          
+          <div class="checkbox">
+            <input type="radio" name="High - Low" id="Low - High">
+          <label for="Low - High">Price Low - High</label>
+          </div>
+
+          <p style="margin-top: 20px; margin-left: 30px; margin-bottom: 20px; font-weight: 600;">OFFER</p>
+
+        </div>
+
+      </div>
       <div class="product-rightside">
         <div class="item-found">
-          <p>100 items found !</p>
+          <p>{{ products.length }} items found!</p>
         </div>
-        <div class="product-cards">
-
-          <div class="card">
+        <div class="product-cards" v-if="products.length">
+          <div class="card" v-for="product in products" :key="product.id">
             <div class="card-img">
               <img src="images/card-img.jpg" alt="Product Image" />
             </div>
             <div class="card-txt1">
-              <h4>Product Name</h4>
+              <h4>{{ product.productName }}</h4>
             </div>
             <div class="price">
-              <h4 class="final-price">₹000</h4>
-              <h4 class="org-price">₹000</h4>
-              <h4 class="disc">(0% OFF)</h4>
+              <h4 class="final-price">₹ {{ Math.ceil(product.actualPrice - (product.actualPrice * product.offerPercentage / 100)) }}</h4>
+              <h4 class="org-price">₹ {{ product.actualPrice }}</h4>
+              <h4 class="disc">({{ product.offerPercentage }}% OFF)</h4>
             </div>
             <div class="buttons">
               <div class="twbtn">
                 <button type="button" class="cartbtn">Add to cart</button>
-                <!-- <button type="button" class="bkmrk"></button> -->
               </div>
               <div class="buy-btn">
                 <button type="button" class="bbtn">Buy Now</button>
               </div>
             </div>
           </div>
-
-          <div class="card">
-            <div class="card-img">
-              <img src="images/card-img.jpg" alt="Product Image" />
-            </div>
-            <div class="card-txt1">
-              <h4>Product Name</h4>
-            </div>
-            <div class="price">
-              <h4 class="final-price">₹000</h4>
-              <h4 class="org-price">₹000</h4>
-              <h4 class="disc">(0% OFF)</h4>
-            </div>
-            <div class="buttons">
-              <div class="twbtn">
-                <button type="button" class="cartbtn">Add to cart</button>
-                <!-- <button type="button" class="bkmrk"></button> -->
-              </div>
-              <div class="buy-btn">
-                <button type="button" class="bbtn">Buy Now</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-img">
-              <img src="images/card-img.jpg" alt="Product Image" />
-            </div>
-            <div class="card-txt1">
-              <h4>Product Name</h4>
-            </div>
-            <div class="price">
-              <h4 class="final-price">₹000</h4>
-              <h4 class="org-price">₹000</h4>
-              <h4 class="disc">(0% OFF)</h4>
-            </div>
-            <div class="buttons">
-              <div class="twbtn">
-                <button type="button" class="cartbtn">Add to cart</button>
-                <!-- <button type="button" class="bkmrk"></button> -->
-              </div>
-              <div class="buy-btn">
-                <button type="button" class="bbtn">Buy Now</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-img">
-              <img src="images/card-img.jpg" alt="Product Image" />
-            </div>
-            <div class="card-txt1">
-              <h4>Product Name</h4>
-            </div>
-            <div class="price">
-              <h4 class="final-price">₹000</h4>
-              <h4 class="org-price">₹000</h4>
-              <h4 class="disc">(0% OFF)</h4>
-            </div>
-            <div class="buttons">
-              <div class="twbtn">
-                <button type="button" class="cartbtn">Add to cart</button>
-                <!-- <button type="button" class="bkmrk"></button> -->
-              </div>
-              <div class="buy-btn">
-                <button type="button" class="bbtn">Buy Now</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-img">
-              <img src="images/card-img.jpg" alt="Product Image" />
-            </div>
-            <div class="card-txt1">
-              <h4>Product Name</h4>
-            </div>
-            <div class="price">
-              <h4 class="final-price">₹000</h4>
-              <h4 class="org-price">₹000</h4>
-              <h4 class="disc">(0% OFF)</h4>
-            </div>
-            <div class="buttons">
-              <div class="twbtn">
-                <button type="button" class="cartbtn">Add to cart</button>
-                <!-- <button type="button" class="bkmrk"></button> -->
-              </div>
-              <div class="buy-btn">
-                <button type="button" class="bbtn">Buy Now</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-img">
-              <img src="images/card-img.jpg" alt="Product Image" />
-            </div>
-            <div class="card-txt1">
-              <h4>Product Name</h4>
-            </div>
-            <div class="price">
-              <h4 class="final-price">₹000</h4>
-              <h4 class="org-price">₹000</h4>
-              <h4 class="disc">(0% OFF)</h4>
-            </div>
-            <div class="buttons">
-              <div class="twbtn">
-                <button type="button" class="cartbtn">Add to cart</button>
-                <!-- <button type="button" class="bkmrk"></button> -->
-              </div>
-              <div class="buy-btn">
-                <button type="button" class="bbtn">Buy Now</button>
-              </div>
-            </div>
-          </div>
-
-
-
         </div>
+        <p v-else>No products available.</p>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-export default {};
+import { mapActions } from 'vuex';
+
+export default {
+  data() {
+    return {
+      products: [],
+    };
+  },
+  methods: {
+    ...mapActions(['fetchProducts']), // ✅ Corrected Vuex action mapping
+
+    async loadProducts() {
+      try {
+        const result = await this.fetchProducts(); // ✅ Corrected dispatch call
+        if (result.success) {
+          this.products = result.data;
+        } else {
+          alert(`Error: ${result.error}`);
+        }
+      } catch (error) {
+        console.error("Error loading products:", error);
+      }
+    },
+  },
+  mounted() {
+    this.loadProducts(); // ✅ Use correct function
+  },
+};
 </script>
+
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
@@ -301,12 +206,19 @@ export default {};
 .product-leftside {
   width: 15%;
   height: 704px;
-  background-color: aquamarine;
+  background-color: rgb(244, 244, 244);
   position: fixed;
   display: flex;
-  padding-top: 20px;
+  padding-top: 0px;
   flex-direction: column;
-  align-items: center;
+  
+}
+.checkbox{
+  margin-top: 10px;
+  margin-left: 20px;
+  width: 80%;
+  display: flex;
+  justify-content: space-around;
 }
 .product-rightside {
   width: 85%;
@@ -324,6 +236,22 @@ export default {};
   box-shadow: 0 15px 40px -20px rgba(40, 44, 63, 0.15);
   -webkit-box-shadow: 0 15px 40px -20px rgba(40, 44, 63, 0.15);
   margin: 5px;
+}
+.filters{
+  width: 97%;
+  height: 50px;
+  background-color: #ffffff;
+  padding-left: 30px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 15px 40px -20px rgba(40, 44, 63, 0.15);
+  margin: 5px;
+}
+.filter-cntnt{
+  width: 97%;
+  height: 654px;
+  background-color: #ffffff;
+  margin-left: 5px;
 }
 
 .product-cards {
