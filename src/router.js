@@ -12,7 +12,11 @@ const router = createRouter({
     {path:'/storeRegistration', component:()=> import('./components/StoreRegistration.vue')},
     {path:'/UserHomeMain',component:()=> import('./components/UserstoreHome.vue')},
     {path:'/products',component:()=> import('./components/ProductsPage.vue')},
-    {path:'/cart',component:()=> import('./components/CartPage.vue')}
+    {path:'/cart',component:()=> import('./components/CartPage.vue')},
+    {path:'/search',component:()=> import('./components/SearchProduct.vue')},
+    {path:'/storeHome',component:()=> import('./components/StoreHome.vue')},
+    {path:'/admin',component:()=> import('./components/AdminLogin.vue')},
+    {path:'/adminHome',component:()=> import('./components/AdminHome.vue')},
   ],
 });
 

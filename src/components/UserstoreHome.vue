@@ -23,7 +23,7 @@
       </div>
     </div>
     <div class="searchbar">
-      <input type="text" name="search" v-model="search" class="search" placeholder="Search Product / Store" >
+      <input type="text" name="search" v-model="search" class="search" placeholder="Search Product " >
       <v-icon large color="black" class="searchicon" size="35px" @click="search()">mdi-magnify</v-icon>
     </div>
     

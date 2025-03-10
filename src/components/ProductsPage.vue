@@ -36,7 +36,10 @@
         </div>
           
         <div class="filter-cntnt">
-          <p style="margin-top: 20px; margin-left: 30px; margin-bottom: 20px; font-weight: 600;">PRICE</p>
+          <p style="margin-top: 20px; margin-left: 30px; margin-bottom: 20px; font-weight: 600;"> 
+              PRICE
+             <v-icon large color="black" size="2rem" class="filter-icon" @click="open()">mdi-menu-down </v-icon>
+          </p>
           <div class="checkbox">
             <input type="radio" name="High - Low" id="High - Low" >
           <label for="High - Low">Price High - Low</label>
@@ -47,23 +50,29 @@
           <label for="Low - High">Price Low - High</label>
           </div>
 
-          <p style="margin-top: 20px; margin-left: 30px; margin-bottom: 20px; font-weight: 600;">OFFER</p>
+          <p style="margin-top: 20px; margin-left: 30px; margin-bottom: 20px; font-weight: 600;">
+            CATEGORIES
+            <v-icon large color="black" size="2rem" class="filter-icon" @click="openCat()">mdi-menu-down </v-icon>
+          </p>
 
         </div>
 
       </div>
       <div class="product-rightside">
         <div class="item-found">
-          <p>{{ products.length }} items found!</p>
+          <p>Products found !</p>
         </div>
         <div class="product-cards" v-if="products.length">
           <div class="card" v-for="product in products" :key="product.id">
             <div class="card-img">
-              <img src="images/card-img.jpg" alt="Product Image" />
+              <img src="" alt="Product Image" />
+              
             </div>
             <div class="card-txt1">
               <h4>{{ product.productName }}</h4>
+              <h4 class="stock">Stock : {{ product.stock }}</h4>
             </div>
+          
             <div class="price">
               <h4 class="final-price">₹ {{ Math.ceil(product.actualPrice - (product.actualPrice * product.offerPercentage / 100)) }}</h4>
               <h4 class="org-price">₹ {{ product.actualPrice }}</h4>
@@ -79,7 +88,7 @@
             </div>
           </div>
         </div>
-        <p v-else>No products available.</p>
+        <!-- <p v-else>No products available.</p> -->
       </div>
     </div>
   </div>
@@ -95,11 +104,11 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['fetchProducts']), // ✅ Corrected Vuex action mapping
+    ...mapActions(['fetchProducts']), 
 
     async loadProducts() {
       try {
-        const result = await this.fetchProducts(); // ✅ Corrected dispatch call
+        const result = await this.fetchProducts(); 
         if (result.success) {
           this.products = result.data;
         } else {
@@ -109,9 +118,14 @@ export default {
         console.error("Error loading products:", error);
       }
     },
+    open(){
+      document.querySelectorAll(".checkbox").forEach((checkbox) => {
+      checkbox.style.display = checkbox.style.display === "none" ? "flex" : "none";
+    });
+    }
   },
   mounted() {
-    this.loadProducts(); // ✅ Use correct function
+    this.loadProducts();
   },
 };
 </script>
@@ -217,7 +231,7 @@ export default {
   margin-top: 10px;
   margin-left: 20px;
   width: 80%;
-  display: flex;
+  display: none;
   justify-content: space-around;
 }
 .product-rightside {
@@ -227,7 +241,7 @@ export default {
   /* background-color: rgb(0, 255, 21); */
 }
 .item-found {
-  width: 1283px;
+  width: 1285px;
   height: 50px;
   background-color: #ffffff;
   padding-left: 30px;
@@ -252,6 +266,15 @@ export default {
   height: 654px;
   background-color: #ffffff;
   margin-left: 5px;
+ 
+}
+.filter-cntnt p{
+  display: flex;
+  align-items: center;
+}
+
+.filter-icon{
+  margin-left: 10px;
 }
 
 .product-cards {
@@ -266,7 +289,7 @@ export default {
 .card {
   background-color: #ffffff;
   width: 250px;
-  height: 370px;
+  height: 360px;
   /* margin-right: 55px; */
   margin: 35px;
   border-radius: 10px;
@@ -304,6 +327,8 @@ export default {
 
 .card-txt1 h4 {
   margin-top: 0;
+  padding-left: 7px;
+  width:fit-content;
 }
 
 /* Price section styling */
@@ -324,6 +349,11 @@ export default {
 
 .final-price {
   font-size: 18px;
+}
+.stock{
+  font-size: 13px; 
+  color: green;
+  font-weight: 500;
 }
 
 .org-price {

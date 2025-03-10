@@ -38,12 +38,45 @@ export default{
 
       const response = await axios.get(`${rootGetters.getUrl}/api/MedE/Admin/adminViewAllProduct`);
 
-      if(response.status >= 200 && response.status <=300 ){
+      if(response.status >= 200 && response.status <300 ){
         return{ success : true, data : response.data};
       }
     } catch(error){
       return{ success : false, error : error.response?.data?.message || "failed to fetch"};
       
     }
-  }
+  },
+
+  async fetchSearchResult({ rootGetters }){
+    try{
+      console.log("fetching search Result");
+      const response = await axios.get(`${rootGetters.getUrl}/api/MedE/User/searchProduct`);
+
+      if(response.status >= 200 && response.status < 300){
+        return{ success : true, data : response.data};
+      }
+    } catch(error){
+      return{ success : false, error : error.response?.data?.message || "failed to search"};
+    }
+  },
+
+  async updateStoreLocation({ rootGetters }, { storeId, latitude, longitude }) {
+    try {
+      console.log("Updating store location...");
+      const response = await axios.put(
+        `${rootGetters.getUrl}/api/stores/${storeId}/update-location?latitude=${latitude}&longitude=${longitude}`
+      );
+
+      if (response.status >= 200 && response.status < 300) {
+        return { success: true, message: "Store location updated successfully!" };
+      }
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error.response?.data?.message || "Failed to update store location." 
+      };
+    }
+  
+},
+
 }
