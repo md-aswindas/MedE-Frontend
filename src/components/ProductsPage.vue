@@ -65,7 +65,8 @@
         <div class="product-cards" v-if="products.length">
           <div class="card" v-for="product in products" :key="product.id">
             <div class="card-img">
-              <img src="" alt="Product Image" />
+
+              
               
             </div>
             <div class="card-txt1">
@@ -95,12 +96,14 @@
 </template>
 
 <script>
+
 import { mapActions } from 'vuex';
 
 export default {
   data() {
     return {
       products: [],
+      
     };
   },
   methods: {
@@ -124,9 +127,7 @@ export default {
     });
     }
   },
-  mounted() {
-    this.loadProducts();
-  },
+    
 };
 </script>
 

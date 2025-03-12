@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="left-side" >
+    <div class="left-side">
       <!-- Nav Bar -->
       <h2>Med E</h2>
       <div class="nav-content">
@@ -13,7 +13,7 @@
         <div class="list">
           <p>Manage Users</p>
         </div>
-        <div class="list">
+        <div class="list" @click="analytics" tabindex="0">
           <p>Analytics</p>
         </div>
       </div>
@@ -167,18 +167,26 @@
     <div class="store" v-if="isVisibleStore" ref="store">
       <div class="parent">
         <div class="div1">
-          <h3> Stores &nbsp;<span
+          <h3>
+            Stores &nbsp;<span
               style="
                 background-color: greenyellow;
                 border-radius: 50px;
                 padding: 1px 7px 1px 7px;
-                
+
                 color: black;
                 font-size: 18px;
               "
               >01</span
-            >&nbsp;</h3>
-            <input type="search" name="search" id="" class="search" placeholder="Search Store">
+            >&nbsp;
+          </h3>
+          <input
+            type="search"
+            name="search"
+            id=""
+            class="search"
+            placeholder="Search Store"
+          />
         </div>
         <div class="div2">
           <h3>
@@ -189,12 +197,12 @@
                 padding: 1px 7px 1px 7px;
                 color: black;
               "
-              >01</span
+              >03</span
             >
             &nbsp; Pending Requests
           </h3>
-          
-          <div class="request store-request" >
+
+          <div class="request store-request">
             <div class="status-card store-card">
               <p>Store Name</p>
               <p>License Number</p>
@@ -225,16 +233,44 @@
               <button type="button" class="btn acpt">Accept</button>
               <button type="button" class="btn rjct">Reject</button>
             </div>
-            
           </div>
         </div>
-        <div class="div3">3</div>
+        <div class="div3">
+          <h3>Total Stores</h3>
+          <div class="num">
+            <h1>
+              <v-icon class="num-icon" size="2.2rem" style="margin-top: 5px"
+                >mdi-storefront
+              </v-icon>
+              1000
+            </h1>
+          </div>
+        </div>
         <div class="div4">4</div>
         <div class="div6">
-          <h3>FeedBacks</h3> 
+          <h3>FeedBacks</h3>
         </div>
         <div class="div7">
-          <h3>Top Rated Stores</h3> 
+          <h3>Top Rated Stores</h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- Analytics  -->
+
+    <div class="Analytics store" v-if="isVisibleAnalytics" ref="analytics">
+      <div class="Analytics-parent">
+        <div class="div9">9</div>
+        <div class="div10">10</div>
+        <div class="div11">11</div>
+        <div class="div12">12</div>
+        <div class="div13">13</div>
+        <div class="div15">15</div>
+        <div class="div16">
+            
+
+          <v-date-picker width="100%" height="100%"></v-date-picker>
+
         </div>
       </div>
     </div>
@@ -246,6 +282,7 @@ export default {
     return {
       isVisibleHome: true,
       isVisibleStore: false,
+      isVisibleAnalytics: false,
     };
   },
   methods: {
@@ -255,10 +292,17 @@ export default {
     home() {
       this.isVisibleHome = true;
       this.isVisibleStore = false;
+      this.isVisibleAnalytics = false;
     },
     store() {
       this.isVisibleStore = true;
       this.isVisibleHome = false;
+      this.isVisibleAnalytics = false;
+    },
+    analytics() {
+      this.isVisibleStore = false;
+      this.isVisibleHome = false;
+      this.isVisibleAnalytics = true;
     },
   },
 };
@@ -422,7 +466,7 @@ export default {
   overflow-x: auto;
   align-items: center;
 }
-.store-request{
+.store-request {
   flex-wrap: wrap;
   overflow-y: auto;
   height: 170px;
@@ -562,77 +606,162 @@ export default {
 }
 
 .parent {
-    height: 100%;
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(5, 1fr);
-    gap: 13px;
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: 13px;
+}
 
-}
-    
 .div1 {
-    grid-row: span 5 / span 5;
-    border-radius:20px ;
-    background-color: #212121;
-    padding: 20px 20px 20px 30px;
-    color: rgb(175, 175, 175);
+  grid-row: span 5 / span 5;
+  border-radius: 20px;
+  background-color: #212121;
+  padding: 20px 20px 20px 30px;
+  color: rgb(175, 175, 175);
 }
-.search{
+.search {
   margin-top: 30px;
   width: 100%;
   height: 50px;
-  padding-left: 30px ;
+  padding-left: 30px;
   border: 1px solid rgb(175, 175, 175);
   border-radius: 50px;
 }
 
 .div2 {
-    grid-column: span 3 / span 3;
-    grid-row: span 2 / span 2;
-    border-radius:20px ;
-    background-color: #212121;
-    padding: 30px;
-    color: rgb(175, 175, 175);
+  grid-column: span 3 / span 3;
+  grid-row: span 2 / span 2;
+  border-radius: 20px;
+  background-color: #212121;
+  padding: 30px;
+  color: rgb(175, 175, 175);
 }
-.store-card{
+.store-card {
   width: 99%;
   margin-bottom: 10px;
 }
 
 .div3 {
-    grid-column-start: 2;
-    grid-row-start: 3;
-    border-radius:20px ;
-    background-color: #212121;
+  grid-column-start: 2;
+  grid-row-start: 3;
+  border-radius: 20px;
+  background-color: #212121;
+  padding: 20px 20px 20px 30px;
+  color: rgb(175, 175, 175);
 }
 
 .div4 {
-    grid-column-start: 3;
-    grid-row-start: 3;
-    border-radius:20px ;
-    background-color: #212121;
+  grid-column-start: 3;
+  grid-row-start: 3;
+  border-radius: 20px;
+  background-color: #212121;
 }
 
 .div6 {
-    grid-column: span 2 / span 2;
-    grid-row: span 2 / span 2;
-    grid-column-start: 2;
-    grid-row-start: 4;
-    border-radius:20px ;
-    background-color: #212121;
-    padding: 20px 20px 20px 30px;
-    color: rgb(175, 175, 175);
+  grid-column: span 2 / span 2;
+  grid-row: span 2 / span 2;
+  grid-column-start: 2;
+  grid-row-start: 4;
+  border-radius: 20px;
+  background-color: #212121;
+  padding: 20px 20px 20px 30px;
+  color: rgb(175, 175, 175);
 }
 
 .div7 {
-    grid-row: span 3 / span 3;
-    grid-column-start: 4;
-    grid-row-start: 3;
-    border-radius:20px ;
-    background-color: #212121;
-    color: rgb(175, 175, 175);
-    padding: 20px 20px 20px 30px;
+  grid-row: span 3 / span 3;
+  grid-column-start: 4;
+  grid-row-start: 3;
+  border-radius: 20px;
+  background-color: #212121;
+  color: rgb(175, 175, 175);
+  padding: 20px 20px 20px 30px;
 }
-        
+
+.Analytics-parent {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  gap: 12px;
+  height: 100%;
+  width: 100%;
+}
+
+.div9 {
+  grid-column: span 3 / span 3;
+  grid-row: span 3 / span 3;
+  border-radius: 20px;
+  background: linear-gradient(
+    360deg,
+    hsla(84, 100%, 50%, 1) 0%,
+    hsla(84, 100%, 68%, 1) 100%
+  );
+  padding: 20px 20px 20px 30px;
+  color: rgb(175, 175, 175);
+}
+
+.div10 {
+  grid-column: span 2 / span 2;
+  grid-row: span 3 / span 3;
+  grid-column-start: 4;
+  border-radius: 20px;
+  background-color: #212121;
+  padding: 20px 20px 20px 30px;
+  color: rgb(175, 175, 175);
+}
+
+.div11 {
+  grid-column: span 3 / span 3;
+  grid-row: span 2 / span 2;
+  grid-column-start: 6;
+  border-radius: 20px;
+  background-color: #212121;
+  padding: 20px 20px 20px 30px;
+  color: rgb(175, 175, 175);
+}
+
+.div12 {
+  grid-column: span 3 / span 3;
+  grid-row: span 3 / span 3;
+  grid-column-start: 1;
+  grid-row-start: 4;
+  border-radius: 20px;
+  background-color: #212121;
+  padding: 20px 20px 20px 30px;
+  color: rgb(175, 175, 175);
+}
+
+.div13 {
+  grid-column: span 3 / span 3;
+  grid-row: span 3 / span 3;
+  grid-column-start: 4;
+  grid-row-start: 4;
+  border-radius: 20px;
+  background-color: #212121;
+  padding: 20px 20px 20px 30px;
+  color: rgb(175, 175, 175);
+}
+
+.div15 {
+  grid-column: span 3 / span 3;
+  grid-column-start: 6;
+  grid-row-start: 3;
+  border-radius: 20px;
+  background-color: #212121;
+  padding: 20px 20px 20px 30px;
+  color: rgb(175, 175, 175);
+}
+
+.div16 {
+  grid-column: span 2 / span 2;
+  grid-row: span 3 / span 3;
+  grid-column-start: 7;
+  grid-row-start: 4;
+  border-radius: 20px;
+  background-color: #212121;
+  
+  color: rgb(175, 175, 175);
+}
 </style>
