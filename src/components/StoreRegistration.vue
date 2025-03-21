@@ -1,7 +1,5 @@
 <template>
- 
   <div class="container">
-    
     <!-- <div class="texts">
       
       <div class="quote-container">
@@ -17,7 +15,9 @@
           to="/storeLogin"
           style="text-decoration: none; color: inherit"
           ><h4 class="create-acnt">
-            Already have an account ?<span style="font-weight: 600"> log in</span>
+            Already have an account ?<span style="font-weight: 600">
+              log in</span
+            >
           </h4></router-link
         >
       </div>
@@ -51,13 +51,17 @@
           class="txt-field"
           placeholder="password"
         />
-        <button type="button" class="gbtn" @click="openUpload()">Upload license image</button>
+        <button type="button" class="gbtn" @click="openUpload()">
+          Upload license image
+        </button>
         <!-- <div class="link">
           <h4 class="link-txt">Forgot Password ?</h4>
           
         </div> -->
         <!-- <router-link to="/userhome"> -->
-          <button type="button" class="btn" @click="StoreRegister">Continue</button>
+        <button type="button" class="btn" @click="StoreRegister">
+          Continue
+        </button>
         <!-- </router-link> -->
         <!-- <div class="heading">
           <div class="line"></div>
@@ -72,27 +76,39 @@
   </div>
   <div class="file-upload" id="fileUpload">
     <div class="main-box">
-    <div class="upload">
-      <h2>Upload a File</h2>
-      <h3 style="font-weight: 300;">Attach your file below</h3>
-      <div class="close" @click="close()"></div>
+      <div class="upload">
+        <h2>Upload a File</h2>
+        <h3 style="font-weight: 300">Attach your file below</h3>
+        <div class="close" @click="close()"></div>
+      </div>
+      <div
+        class="box"
+        @dragover.prevent="dragging = true"
+        @dragleave.prevent="dragging = false"
+        @drop.prevent="handleDrop"
+        @click="triggerFileInput"
+      >
+        <h4 v-if="!imageUrl">Drag file(s) here</h4>
+        <h4 v-if="!imageUrl">
+          or <span style="color: #00b4d8">click here </span>to upload file
+        </h4>
+        <input
+          type="file"
+          name="file"
+          id="file"
+          class="file"
+          hidden
+          ref="fileInput"
+          @change="handleFile"
+          accept="image/*"
+        />
+        <img v-if="imageUrl" :src="imageUrl" alt="Uploaded Image" width="200" />
+      </div>
+      <div class="upload-btn">
+        <button class="c-btn" @click.stop="removeImage">Cancel</button>
+        <button class="s-btn" @click="confirmImage">Submit</button>
+      </div>
     </div>
-    <div class="box"
-    @dragover.prevent="dragging = true"
-    @dragleave.prevent="dragging = false"
-    @drop.prevent="handleDrop"
-    @click="triggerFileInput">
-    
-      <h4 v-if="!imageUrl">Drag file(s) here</h4>
-      <h4 v-if="!imageUrl">or <span style="color: #00b4d8;">click here </span>to upload file</h4>
-      <input type="file" name="file" id="file" class="file" hidden ref="fileInput" @change="handleFile" accept="image/*">
-      <img v-if="imageUrl" :src="imageUrl" alt="Uploaded Image" width="200">
-    </div>
-    <div class="upload-btn">
-      <button class="c-btn" @click.stop="removeImage">Cancel</button>
-      <button class="s-btn" @click="confirmImage">Submit</button>
-    </div>
-  </div>
   </div>
 </template>
  
@@ -100,34 +116,36 @@
 export default {
   data() {
     return {
-      storeName:"",
+      storeName: "",
       licenseNumber: "",
-      phoneNumber:"",
+      phoneNumber: "",
       password: "",
       dragging: false,
       imageFile: null,
-      imageUrl: null
+      imageUrl: null,
       // videoSrc: require("@/assets/backgroung.mp4")
     };
-    
   },
   methods: {
     async StoreRegister() {
       const formData = new FormData();
       formData.append("licenseImage", this.selectedFile);
-      const storeRegistrationModel = new Blob([
-        JSON.stringify({
-        store_name:this.store_name,
-        licenseNumber: this.licenseNumber,
-        phone_number:this.phone_number,
-        password: this.password,
-      })],
-      {type:"application/json"});
+      const storeRegistrationModel = new Blob(
+        [
+          JSON.stringify({
+            store_name: this.store_name,
+            licenseNumber: this.licenseNumber,
+            phone_number: this.phone_number,
+            password: this.password,
+          }),
+        ],
+        { type: "application/json" }
+      );
       formData.append("storeRegistrationModel", storeRegistrationModel);
       try {
         const response = await this.$store.dispatch("registerStore", formData);
         if (response) {
-          alert("StoreRegistered Successfully"+response.data.name);
+          alert("StoreRegistered Successfully" + response.data.name);
         } else {
           console.log("error");
         }
@@ -135,34 +153,34 @@ export default {
         console.error(error);
       }
     },
-    close(){
+    close() {
       const close = document.getElementById("fileUpload");
-      close.style.display= "none";
+      close.style.display = "none";
     },
-    openUpload(){
+    openUpload() {
       const open = document.getElementById("fileUpload");
       console.log(open);
-      open.style.display= "flex";
+      open.style.display = "flex";
     },
     triggerFileInput() {
       this.$refs.fileInput.click();
     },
     handleFile(event) {
-  const file = event.target.files[0];
-  if (file) {
-    this.selectedFile = file;
-    this.imageUrl = URL.createObjectURL(file);  // Show preview
-  }
-},
+      const file = event.target.files[0];
+      if (file) {
+        this.selectedFile = file;
+        this.imageUrl = URL.createObjectURL(file); // Show preview
+      }
+    },
 
-handleDrop(event) {
-  event.preventDefault();
-  const file = event.dataTransfer.files[0];
-  if (file) {
-    this.selectedFile = file;
-    this.imageUrl = URL.createObjectURL(file);  // Show preview
-  }
-},
+    handleDrop(event) {
+      event.preventDefault();
+      const file = event.dataTransfer.files[0];
+      if (file) {
+        this.selectedFile = file;
+        this.imageUrl = URL.createObjectURL(file); // Show preview
+      }
+    },
     processFile(file) {
       if (file && file.type.startsWith("image/")) {
         this.imageFile = file;
@@ -171,20 +189,20 @@ handleDrop(event) {
         alert("Please upload an image file.");
       }
     },
-     removeImage() {
+    removeImage() {
       this.imageFile = null;
       this.imageUrl = null;
       this.$refs.fileInput.value = ""; // Reset file input
     },
     confirmImage() {
-    if (this.selectedFile) {
-      this.imageConfirmed = true;  // Mark image as confirmed
-      this.close();  // Close modal after confirmation
-    } else {
-      alert("Please upload an image before submitting.");
-    }
-  }
-  },  
+      if (this.selectedFile) {
+        this.imageConfirmed = true; // Mark image as confirmed
+        this.close(); // Close modal after confirmation
+      } else {
+        alert("Please upload an image before submitting.");
+      }
+    },
+  },
 };
 </script>
 
@@ -192,7 +210,7 @@ handleDrop(event) {
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Teko:wght@300..700&display=swap");
 
-.file-upload{
+.file-upload {
   width: 100%;
   height: 100vh;
   display: flex;
@@ -206,20 +224,20 @@ handleDrop(event) {
   backdrop-filter: blur(10px); /* Glass effect */
   display: none;
 }
-.main-box{
+.main-box {
   display: flex;
   flex-direction: column;
-  justify-content:space-around;
+  justify-content: space-around;
   align-items: center;
   padding: 10px;
-  width:550px;
+  width: 550px;
   height: 450px;
   background-color: #f4f0f0;
   border-radius: 15px;
-  box-shadow:0px 0px 0px 2px #f4f0f0  ;
+  box-shadow: 0px 0px 0px 2px #f4f0f0;
 }
 
-.upload{
+.upload {
   width: 90%;
   height: 20%;
   display: flex;
@@ -227,7 +245,7 @@ handleDrop(event) {
   justify-content: center;
   position: relative;
 }
-.close{
+.close {
   height: 50px;
   width: 50px;
   border-radius: 50px;
@@ -239,9 +257,8 @@ handleDrop(event) {
   background-size: 2rem;
   background-position: 50%;
   cursor: pointer;
-
 }
-.box{
+.box {
   width: 90%;
   height: 55%;
   border: 1.5px #03045e dashed;
@@ -251,49 +268,48 @@ handleDrop(event) {
   align-items: center;
   justify-content: center;
 }
-.box:hover{
+.box:hover {
   background-color: #e7e5e580;
 }
-.upload-btn{
+.upload-btn {
   width: 90%;
   height: 15%;
-  display:flex;
+  display: flex;
   justify-content: space-between;
   align-items: center;
   /* background-color: #03045e; */
 }
-.c-btn{
+.c-btn {
   width: 100px;
   height: 40px;
-  border: 1px solid #03045E;
-  color: #03045E;
+  border: 1px solid #03045e;
+  color: #03045e;
   font-weight: 500;
   border-radius: 20px;
 }
-.s-btn{
+.s-btn {
   width: 130px;
   height: 40px;
-  background-color: #03045E;
+  background-color: #03045e;
   color: #ffffff;
   font-weight: 500;
   border-radius: 20px;
 }
 
-.quote-container{
+.quote-container {
   color: #ffffffcf;
   font-family: Bebas Neue;
   font-size: 80px;
   margin-top: 120px;
   line-height: 80px;
   width: fit-content;
-  
 }
 .quote {
   margin-left: 50px;
   margin-top: 0;
   width: fit-content;
 }
-.sub-txt{
+.sub-txt {
   width: 500px;
   font-size: 15px;
   font-weight: 100;
@@ -310,7 +326,6 @@ handleDrop(event) {
   height: 20px;
   margin-top: 10px;
   margin-bottom: 10px;
-  
 }
 .line {
   height: 1px;
@@ -337,13 +352,13 @@ handleDrop(event) {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  
+
   /* padding-left: 80px; */
-   background-image: url(D:\med_e\src\assets\bgimg.jpg);
-      background-repeat: no-repeat;
-      background-size: cover;
-      
-  /* margin-right: 150px; */   
+  background-image: url(D:\med_e\src\assets\bgimg.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  /* margin-right: 150px; */
 }
 
 .txt {
@@ -372,7 +387,7 @@ handleDrop(event) {
   border-radius: 0px 0px 50px 0px;
   display: flex;
   flex-direction: column;
-  
+
   background: linear-gradient(
     45deg,
     hsla(239, 94%, 19%, 1) 0%,
@@ -403,7 +418,6 @@ handleDrop(event) {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  
 }
 
 .login-h {
@@ -463,7 +477,7 @@ handleDrop(event) {
   height: 45px;
   border-radius: 50px;
   color: #03045e;
-  
+
   border: 1px solid #03045e;
   font-weight: 400;
   background-image: url(D:\med_e\src\assets\image.png);

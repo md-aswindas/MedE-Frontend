@@ -1,0 +1,50 @@
+import axios from "axios";
+
+export default {
+  async fetchStoreProducts({ rootGetters }) {
+    try {
+      console.log("fetching products");
+
+      const response = await axios.get(`${rootGetters.getUrl}/api/MedE/Admin/adminViewAllProduct`);
+
+      if (response.status >= 200 && response.status < 300) {
+        return { success: true, data: response.data };
+      }
+
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || "failed to fetch" };
+    }
+  },
+
+  async deleteProduct({ rootGetters }, productId) {
+    try {
+      console.log("delete");
+      const response = await axios.delete(`${rootGetters.getUrl}/api/MedE/Store/deleteProduct`, {
+        params: { productId }
+      });
+
+      if (response.status >= 200 && response.status < 300) {
+        return { success: true, data: response.data };
+      }
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || "failed to delete" };
+    }
+  },
+
+  async loadCategories({ rootGetters }) {
+    try{
+      const response = await axios.get(`${rootGetters.getUrl}/api/MedE/Store/loadCategories`);
+      if(response.status >= 200 && response.status < 300){
+        return { success: true, data: response.data};
+      } else{
+        return { success: false, error: 'unexpected response'};
+      }
+    } catch(error){
+      console.error("error fetching Category:", error);
+      return { success: false, error: error.message || 'An error occured while fetching Category'};
+    }
+  },
+
+  
+
+}

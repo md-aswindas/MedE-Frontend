@@ -60,7 +60,7 @@
       </div>
       <div class="product-rightside">
         <div class="item-found">
-          <p>Products found !</p>
+          <p>{{ products.length }} Products found !</p>
         </div>
         <div class="product-cards" v-if="products.length">
           <div class="card" v-for="product in products" :key="product.id">
@@ -71,7 +71,7 @@
             </div>
             <div class="card-txt1">
               <h4>{{ product.productName }}</h4>
-              <h4 class="stock">Stock : {{ product.stock }}</h4>
+              <h4 class="stock">Stock : {{ product.stockCount }}</h4>
             </div>
           
             <div class="price">
@@ -127,7 +127,9 @@ export default {
     });
     }
   },
-    
+  mounted() {
+    this.loadProducts();
+  },
 };
 </script>
 
