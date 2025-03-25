@@ -137,7 +137,7 @@
             <p>₹ {{ product.actualPrice }}</p>
             <p>{{ product.offerPercentage }} %</p>
             <div class="product-btns">
-              <button class="p-btn update">
+              <button class="p-btn update" @click="openUpdateDialog(product)">
                 <v-icon>mdi-update</v-icon>&nbsp; Update
               </button>
               <button
@@ -228,6 +228,7 @@
                 hint="For example, vicks"
                 label="Product Name"
                 variant="outlined"
+                v-model="productName"
               ></v-text-field>
 
               <!-- <v-select
@@ -246,12 +247,12 @@
                 @update:model-value="selected"
                 variant="outlined"
                 class="field-p-dialog"
-
               ></v-select>
             </div>
             <v-textarea
               class="field-dialog"
               label="Product Description"
+              v-model="productDesc"
               row-height="25"
               rows="3"
               variant="outlined"
@@ -262,12 +263,14 @@
                 class="field-p-dialog"
                 hint="For example, 100 no"
                 label="Stock"
+                v-model="stock"
                 variant="outlined"
               ></v-text-field>
               <v-text-field
                 class="field-p-dialog"
-                hint="For example, 10-12-2080"
+                hint="yyyy-mm-dd"
                 label="Expiry Date"
+                v-model="expiryDate"
                 variant="outlined"
               ></v-text-field>
             </div>
@@ -276,12 +279,14 @@
                 class="field-p-dialog"
                 hint="For example, ₹200"
                 label="Price"
+                v-model="actualPrice"
                 variant="outlined"
               ></v-text-field>
               <v-text-field
                 class="field-p-dialog"
                 hint="For example, 20%"
                 label="Offer Percentage"
+                v-model="offerPercentage"
                 variant="outlined"
               ></v-text-field>
               <button class="btn-dialog" @click="addImageDialog = true">
@@ -289,7 +294,7 @@
               </button>
             </div>
             <div class="price-dialog">
-              <button class="add-dialog">Add</button>
+              <button class="add-dialog" @click="StoreAddProduct">Add</button>
               <button
                 class="add-dialog cancel-dialog"
                 @click="addProductDialog = false"
@@ -300,7 +305,105 @@
           </div>
         </div>
       </v-dialog>
+      <!-- Update product dialog -->
 
+      <v-dialog v-model="updateProductDialog" width="100%" height="775px">
+        <div class="container-dialog">
+          <div class="addproduct-dialog">
+            <h1 style="margin-bottom: 30px">Update Product</h1>
+            <div class="price-dialog">
+              <v-text-field
+                class="field-p-dialog"
+                hint="For example, vicks"
+                label="Product Name"
+                variant="outlined"
+                v-model="productName"
+                disabled
+              ></v-text-field>
+
+              <!-- <v-select
+                label="Category"
+                :items="category"
+                variant="outlined"
+                class="field-p-dialog"
+              ></v-select> -->
+
+              <v-select
+                label="Category"
+                :items="category"
+                item-title="categoryName"
+                item-value="categoryId"
+                v-model="selectedCategory"
+                @update:model-value="selected"
+                variant="outlined"
+                class="field-p-dialog"
+                disabled
+              ></v-select>
+            </div>
+            <v-textarea
+              class="field-dialog"
+              label="Product Description"
+              v-model="productDesc"
+              row-height="25"
+              rows="3"
+              variant="outlined"
+              auto-grow
+              disabled
+            ></v-textarea>
+            <div class="price-dialog">
+              <v-text-field
+                class="field-p-dialog"
+                hint="For example, 100 no"
+                label="Stock"
+                v-model="stock"
+                variant="outlined"
+              ></v-text-field>
+              <v-text-field
+                class="field-p-dialog"
+                hint="For example, 10-12-2080"
+                label="Expiry Date"
+                v-model="expiryDate"
+                variant="outlined"
+                disabled
+              ></v-text-field>
+            </div>
+            <div class="price-dialog">
+              <v-text-field
+                class="field-p-dialog"
+                hint="For example, ₹200"
+                label="Price"
+                v-model="actualPrice"
+                variant="outlined"
+              ></v-text-field>
+              <v-text-field
+                class="field-p-dialog"
+                hint="For example, 20%"
+                label="Offer Percentage"
+                v-model="offerPercentage"
+                variant="outlined"
+              ></v-text-field>
+              <button
+                class="btn-dialog"
+                @click="addImageDialog = true"
+                disabled
+              >
+                <v-icon>mdi-image</v-icon> Add image
+              </button>
+            </div>
+            <div class="price-dialog">
+              <button class="add-dialog" @click="UpdateProduct()">
+                Update
+              </button>
+              <button
+                class="add-dialog cancel-dialog"
+                @click="updateProductDialog = false"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </v-dialog>
       <!-- add image dialog -->
 
       <v-dialog v-model="addImageDialog" margin="0" padding="0">
@@ -356,26 +459,55 @@ import { mapActions } from "vuex";
 export default {
   data() {
     return {
+      // fetch product
+
       products: [],
       productId: "",
-      category: [],          // Stores categories fetched from the API
-      selectedCategory: "",  // Stores the currently selected categoryId
+
+      // --------------------------------------
+
+      // select category
+
+      category: [], // Stores categories fetched from the API
+      selectedCategory: "", // Stores the currently selected categoryId
+
+      // -------------------------------------------
+
+      // add product
+      productName: "",
+      productDesc: "",
+      stock: "",
+      expiryDate: "",
+      actualPrice: "",
+      offerPercentage: "",
+      dragging: false,
+      imageFile: null,
+      imageUrl: null,
+
+      // ----------------------------------------
 
       statusActive: false,
       statusPending: false,
       statusReject: true,
 
+      // ----------------------------------------
       orderIsVisible: true,
       productIsVisible: false,
       prescriptionIsVisible: false,
       feedbackIsVisible: false,
 
+      // ----------------------------------------
+
+      // Dialogbox
+
       addProductDialog: false,
+      updateProductDialog: false,
       addImageDialog: false,
     };
   },
-  created() {              //Lifecycle Hook 
-    this.loadCategory(); 
+  created() {
+    //Lifecycle Hook
+    this.loadCategory();
   },
   mounted() {
     this.loadStoreProducts();
@@ -390,6 +522,79 @@ export default {
     debugDeleteProduct(product) {
       console.log("Product clicked for deletion:", product);
       this.deleteStoreProduct(product.productId); // Ensure the correct property is passed
+    },
+
+    openUpdateDialog(product) {
+      // Set form fields with product data
+      this.productId = product.productId;
+      this.productName = product.productName;
+      this.productDesc = product.productDesc;
+      this.stock = product.stockCount;
+      this.actualPrice = product.actualPrice;
+      this.offerPercentage = product.offerPercentage;
+      this.expiryDate = product.expiryDate;
+      this.selectedCategory = product.categoryId;
+     
+      // Open the dialog
+      this.updateProductDialog = true;
+    },
+
+    async UpdateProduct() {
+      const payload = {
+        productId: this.productId,
+        stock: this.stock,
+        actualPrice: this.actualPrice,
+        offerPercentage: this.offerPercentage,
+        
+      };
+
+      try {
+        const response = await this.$store.dispatch("MedEStore/updateProduct", payload);
+        if (response) {
+          alert("Product Updated Successfully");
+          this.loadStoreProducts();
+          this.updateProductDialog=false;
+        } else {
+          console.log("Error updating product");
+        }
+      } catch (error) {
+        console.log("Update failed:", error);
+      }
+    },
+
+    async StoreAddProduct() {
+      const formData = new FormData();
+      formData.append("productImage", this.selectedFile);
+      const product = {
+        productName: this.productName,
+        productDesc: this.productDesc,
+        stock: this.stock,
+        actualPrice: this.actualPrice,
+        offerPercentage: this.offerPercentage,
+        expiryDate: this.expiryDate,
+        categoryId: this.selectedCategory,
+        storeId: 1,
+      };
+
+      formData.append(
+        "productModel",
+        new Blob([JSON.stringify(product)], { type: "application/json" })
+      );
+      try {
+        const response = await this.$store.dispatch(
+          "MedEStore/addProducts",
+          formData
+        );
+        if (response) {
+          alert("Product Added ✅" + response);
+          this.addProductDialog = false;
+          this.loadStoreProducts();
+        } else {
+          console.log("error");
+        }
+      } catch (error) {
+        console.error(error);
+      }
     },
     async loadStoreProducts() {
       try {
@@ -524,7 +729,6 @@ export default {
       }
     },
   },
-  
 };
 </script>
 

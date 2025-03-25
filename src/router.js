@@ -17,7 +17,7 @@ const router = createRouter({
     {path:'/storeHome',component:()=> import('./components/StoreHome.vue')},
     {path:'/admin',component:()=> import('./components/AdminLogin.vue')},
     {path:'/adminHome',component:()=> import('./components/AdminHome.vue')},
-    {path:'/addProduct',component:()=> import('./components/AddProduct.vue')}
+    // {path:'/addProduct',component:()=> import('./components/AddProduct.vue')}
   ],
 });
 

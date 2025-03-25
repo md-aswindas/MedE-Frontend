@@ -32,19 +32,44 @@ export default {
   },
 
   async loadCategories({ rootGetters }) {
-    try{
+    try {
       const response = await axios.get(`${rootGetters.getUrl}/api/MedE/Store/loadCategories`);
-      if(response.status >= 200 && response.status < 300){
-        return { success: true, data: response.data};
-      } else{
-        return { success: false, error: 'unexpected response'};
+      if (response.status >= 200 && response.status < 300) {
+        return { success: true, data: response.data };
+      } else {
+        return { success: false, error: 'unexpected response' };
       }
-    } catch(error){
+    } catch (error) {
       console.error("error fetching Category:", error);
-      return { success: false, error: error.message || 'An error occured while fetching Category'};
+      return { success: false, error: error.message || 'An error occured while fetching Category' };
     }
   },
 
-  
+  async addProducts({ rootGetters }, payload) {
+    console.log("sending payload:", payload);
+    const response = await axios.post(`${rootGetters.getUrl}/api/MedE/Store/addProduct`, payload, { headers: { "Content-Type": "multipart/form-data" } });
+    if (response.status >= 200 && response.status < 300) {
+      console.log(response);
+      return true;
+    }
+  },
+
+  async updateProduct({ rootGetters }, payload) {
+    console.log("sending payload", payload);
+    const response = await axios.put(`${rootGetters.getUrl}/api/MedE/Store/updateProduct`, null, {
+      params: {
+        productId: payload.productId,
+        stock: payload.stock,
+        actualPrice: payload.actualPrice,
+        offerPercentage: payload.offerPercentage,
+        store_id: 1,
+      },
+    });
+    if (response.status >= 200 && response.status < 300) {
+      console.log(response);
+      return true;
+    }
+  }
+
 
 }
