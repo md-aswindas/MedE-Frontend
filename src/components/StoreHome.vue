@@ -111,7 +111,7 @@
             </div>
           </div>
         </div>
-        <div class="product-content" v-if="products.length">
+        <div class="product-content" v-if="products.length>0">
           <div
             class="product-card"
             v-for="product in products"
@@ -123,8 +123,8 @@
               <h2>{{ product.productName }}</h2>
               <h4>stock : {{ product.stockCount }}</h4>
             </div>
-            <p>category</p>
-            <p>expiry date</p>
+            <p>{{ product.categoryName }}</p>
+            <p>{{ product.expiryDate }}</p>
             <p>
               ₹
               {{
@@ -134,7 +134,9 @@
                 )
               }}
             </p>
-            <p>₹ {{ product.actualPrice }}</p>
+            <p style="text-decoration: line-through">
+              ₹ {{ product.actualPrice }}
+            </p>
             <p>{{ product.offerPercentage }} %</p>
             <div class="product-btns">
               <button class="p-btn update" @click="openUpdateDialog(product)">
@@ -528,13 +530,15 @@ export default {
       // Set form fields with product data
       this.productId = product.productId;
       this.productName = product.productName;
-      this.productDesc = product.productDesc;
+      this.productDesc = product.productDescription;
       this.stock = product.stockCount;
       this.actualPrice = product.actualPrice;
       this.offerPercentage = product.offerPercentage;
       this.expiryDate = product.expiryDate;
       this.selectedCategory = product.categoryId;
-     
+      
+      
+
       // Open the dialog
       this.updateProductDialog = true;
     },
@@ -545,15 +549,17 @@ export default {
         stock: this.stock,
         actualPrice: this.actualPrice,
         offerPercentage: this.offerPercentage,
-        
       };
 
       try {
-        const response = await this.$store.dispatch("MedEStore/updateProduct", payload);
+        const response = await this.$store.dispatch(
+          "MedEStore/updateProduct",
+          payload
+        );
         if (response) {
           alert("Product Updated Successfully");
           this.loadStoreProducts();
-          this.updateProductDialog=false;
+          this.updateProductDialog = false;
         } else {
           console.log("Error updating product");
         }
@@ -607,6 +613,7 @@ export default {
           this.products = result.data;
         } else {
           alert(`Error: ${result.error}`);
+
         }
       } catch (error) {
         console.error("Error loading products :", error);
