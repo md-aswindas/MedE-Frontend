@@ -17,6 +17,21 @@ export default {
     }
   },
 
+  async fetchStoreFeedback({ rootGetters }, storeId) {
+    try{
+      console.log("Fetching Feedback",storeId);
+
+      const response = await axios.get(`${rootGetters.getUrl}/api/MedE/Store/fetchFeedBack`,{params: { Store_id: storeId }  });
+
+      if(response.status >= 200 && response.status < 300){
+        return { success : true, data: response.data };
+      }
+      
+    }catch(error){
+      return { success: false, error: error.  response?.data?.message || "failed to fetch"};
+    }
+  },
+
   async deleteProduct({ rootGetters }, productId) {
     try {
       console.log("delete");
@@ -70,7 +85,32 @@ export default {
       console.log(response);
       return true;
     }
-  }
+  },
 
+  async searchProducts({ rootGetters }, { storeId, productName }) {
+    try {
+      console.log("🚀 Sending request to search API...");
+  
+      const response = await axios.get(
+        `${rootGetters.getUrl}/api/MedE/Store/searchStoreProduct`,
+        {
+          params: { store_id: storeId, productName },
+        }
+      );
+  
+      console.log("🔹 API Response Data:", response.data);
+  
+      if (response.status === 200) {
+        return { success: true, data: response.data };
+      } else {
+        return { success: false, data: [] };
+      }
+    } catch (error) {
+      console.error("❌ API Error:", error);
+      return { success: false, data: [] };
+    }
+  }
+  
+  
 
 }

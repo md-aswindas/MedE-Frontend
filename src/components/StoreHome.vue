@@ -98,6 +98,8 @@
                 type="text"
                 name="search"
                 id="search"
+                v-model="searchQuery"
+                @input="searchProducts"
                 placeholder="Search"
                 class="search"
                 style="
@@ -111,7 +113,7 @@
             </div>
           </div>
         </div>
-        <div class="product-content" v-if="products.length>0">
+        <div class="product-content" v-if="products.length > 0">
           <div
             class="product-card"
             v-for="product in products"
@@ -121,7 +123,7 @@
 
             <div class="name">
               <h2>{{ product.productName }}</h2>
-              <h4>stock : {{ product.stockCount }}</h4>
+              <h4>stock : {{ product.stockCount ?? product.stock }}</h4>
             </div>
             <p>{{ product.categoryName }}</p>
             <p>{{ product.expiryDate }}</p>
@@ -192,8 +194,9 @@
             <v-icon>mdi-plus</v-icon>&nbsp; Add Products
           </button> -->
         </div>
-        <div class="product-content">
-          <div class="product-card">
+        <div class="product-content" v-if="feedbacks.length>0">
+          <div class="product-card" v-for="feedback in feedbacks"
+          :key="feedback.id">
             <img
               src=""
               alt=""
@@ -205,13 +208,12 @@
                 border: 1px solid #03045e;
               "
             />
-            <p>user name</p>
-            <p>⭐⭐⭐⭐⭐</p>
+            <p>{{feedback.user_id}}</p>
+            <v-rating v-model="feedback.rating" readonly size="30px"></v-rating>
 
             <div class="product-btns feedback">
               <p>
-                feed back jhvcwk efkcjbelcbewo kagdckjbwlcsoc kusudgckdscklb
-                ksgdkcds oi ksgdckb
+              {{ feedback.comment }}
               </p>
             </div>
             <!-- <p>offer percentage</p> -->
@@ -461,10 +463,17 @@ import { mapActions } from "vuex";
 export default {
   data() {
     return {
+      searchQuery: "",
+      storeId: 1,
       // fetch product
 
       products: [],
       productId: "",
+
+      // fetch feedback
+
+      feedbacks:[],
+      
 
       // --------------------------------------
 
@@ -513,6 +522,8 @@ export default {
   },
   mounted() {
     this.loadStoreProducts();
+    this.loadStoreFeedBack();
+    // console.log("Mounted Hook: Fetching product images...");
   },
   methods: {
     ...mapActions(["fetchStoreProducts"]),
@@ -526,6 +537,28 @@ export default {
       this.deleteStoreProduct(product.productId); // Ensure the correct property is passed
     },
 
+    async searchProducts() {
+      if (!this.searchQuery.trim()) {
+        console.log("🔴 Search query is empty. Skipping API call.");
+        return; // Stop if input is empty
+      }
+
+      console.log("✅ Calling search API with:", this.searchQuery);
+
+      const response = await this.$store.dispatch("MedEStore/searchProducts", {
+        storeId: this.storeId,
+        productName: this.searchQuery,
+      });
+
+      console.log("🔹 API Response:", response);
+
+      if (response.success) {
+        this.products = response.data;
+      } else {
+        this.products = [];
+      }
+    },
+
     openUpdateDialog(product) {
       // Set form fields with product data
       this.productId = product.productId;
@@ -536,8 +569,6 @@ export default {
       this.offerPercentage = product.offerPercentage;
       this.expiryDate = product.expiryDate;
       this.selectedCategory = product.categoryId;
-      
-      
 
       // Open the dialog
       this.updateProductDialog = true;
@@ -613,10 +644,26 @@ export default {
           this.products = result.data;
         } else {
           alert(`Error: ${result.error}`);
-
         }
       } catch (error) {
         console.error("Error loading products :", error);
+      }
+    },
+
+    async loadStoreFeedBack(){
+      try{
+        const storeId = 1;
+        const result = await this.$store.dispatch("MedEStore/fetchStoreFeedback",storeId);
+        if(result.success){
+          console.log("fetched feedback:", result.data);
+          this.feedbacks = result.data;
+        } else {
+          alert(`Error: ${result.error}`);
+        }
+        
+      }catch(error){
+        console.error("Error loading feedback :", error);
+        
       }
     },
 
@@ -995,7 +1042,7 @@ input:focus {
   justify-content: space-evenly;
 }
 .feedback {
-  width: 730px;
+  width: 710px;
 }
 .p-btn {
   height: 40px;

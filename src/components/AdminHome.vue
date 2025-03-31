@@ -384,18 +384,6 @@ export default {
   justify-content: center;
   align-items: center;
 }
-.txt {
-  color: white;
-  width: 272px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-.profile-top {
-  height: 20%;
-  display: flex;
-}
 .profile::after {
   content: "";
   position: absolute;
@@ -416,6 +404,19 @@ export default {
   border-top-left-radius: 20px;
   box-shadow: -15px -15px 0 8px #000000;
 }
+.txt {
+  color: white;
+  width: 272px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.profile-top {
+  height: 20%;
+  display: flex;
+}
+
 .profile p {
   width: 80%;
   height: 84%;
