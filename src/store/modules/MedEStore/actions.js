@@ -32,6 +32,20 @@ export default {
     }
   },
 
+  async fetchPrescription({rootGetters}, storeId){
+    try{
+      console.log("Fetching prescription", storeId);
+
+      const response = await axios.get(`${rootGetters.getUrl}/api/MedE/Store/fetchPrescription`,{params: { storeId: storeId }  })
+      
+      if(response.status >= 200 && response.status < 300){
+        return { success : true, data: response.data };
+      }
+    } catch(error){
+      return { success: false, error: error.response?.data?.message || "failed to fetch"};
+    }
+  },
+
   async deleteProduct({ rootGetters }, productId) {
     try {
       console.log("delete");

@@ -113,7 +113,7 @@
             </div>
           </div>
         </div>
-        <div class="product-content" v-if="products.length > 0">
+        <div class="product-content content-2" v-if="products.length > 0">
           <div
             class="product-card"
             v-for="product in products"
@@ -160,16 +160,17 @@
       <div class="products" v-if="prescriptionIsVisible">
         <div class="product-head">
           <h2>Prescription List</h2>
-          <button class="add-btn">
+          <!-- <button class="add-btn">
             <v-icon>mdi-plus</v-icon>&nbsp; Add Products
-          </button>
+          </button> -->
         </div>
-        <div class="product-content">
-          <div class="product-card">
-            <img src="" alt="" style="width: 90px; height: 90px" />
-            <p>user name</p>
-            <p>email</p>
-            <p>phone number</p>
+        <div class="product-content"  v-if="prescriptions.length>0">
+          <div class="product-card" v-for="prescription in prescriptions" :key="prescription.id">
+            <!-- <img src="" alt="" style="width: 90px; height: 90px" /> -->
+             <div style="width: 70px; height: 70px;  display: flex; justify-content: center; align-items: center; " ><v-icon size="50px">mdi-account-box-outline</v-icon></div>
+            <p>{{prescription.userName}}</p>
+            <p>{{prescription.email}}</p>
+            <p>{{prescription.phoneNumber}}</p>
             <p><v-icon>mdi-eye</v-icon></p>
 
             <div class="product-btns">
@@ -197,7 +198,7 @@
         <div class="product-content" v-if="feedbacks.length>0">
           <div class="product-card" v-for="feedback in feedbacks"
           :key="feedback.id">
-            <img
+            <!-- <img
               src=""
               alt=""
               style="
@@ -206,10 +207,21 @@
                 border-radius: 50px;
                 background-size: cover;
                 border: 1px solid #03045e;
+                margin-right: 50px;
               "
-            />
+            /> -->
+            <div style="width: 70px;
+                height: 70px;
+                border-radius: 50px;
+                background-size: cover;
+                /* border: 1px solid #03045e; */
+                margin-right: 50px;
+                margin-left: 20px;
+                display: flex; justify-content: center; align-items: center;"
+                >
+                <v-icon size="50px">mdi-account-circle-outline</v-icon></div>
             <p>{{feedback.user_id}}</p>
-            <v-rating v-model="feedback.rating" readonly size="30px"></v-rating>
+            <v-rating v-model="feedback.rating" readonly size="30px" active-color="yellow" ></v-rating>
 
             <div class="product-btns feedback">
               <p>
@@ -474,6 +486,9 @@ export default {
 
       feedbacks:[],
       
+      // fetch prescription
+
+      prescriptions:[],
 
       // --------------------------------------
 
@@ -523,6 +538,7 @@ export default {
   mounted() {
     this.loadStoreProducts();
     this.loadStoreFeedBack();
+    this.loadPrescription();
     // console.log("Mounted Hook: Fetching product images...");
   },
   methods: {
@@ -664,6 +680,21 @@ export default {
       }catch(error){
         console.error("Error loading feedback :", error);
         
+      }
+    },
+
+    async loadPrescription(){
+      try{
+        const storeId = 1;
+        const result = await this.$store.dispatch("MedEStore/fetchPrescription",storeId);
+        if(result.success){
+          console.log("fetched prescriptions:", result.data);
+          this.prescriptions = result.data;
+        } else {
+          alert(`Error: ${result.error}`);
+        }
+      }catch(error){
+        console.error("Error loading prescription :", error);
       }
     },
 
@@ -988,6 +1019,12 @@ input:focus {
 .product-content::-webkit-scrollbar {
   display: none;
 }
+.product-content p{
+  width: 200px;
+}
+.content-2 p{
+  width: 120px;
+}
 .product-head {
   height: 10%;
   width: 100%;
@@ -1042,7 +1079,7 @@ input:focus {
   justify-content: space-evenly;
 }
 .feedback {
-  width: 710px;
+  width: 600px;
 }
 .p-btn {
   height: 40px;
