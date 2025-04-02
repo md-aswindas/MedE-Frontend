@@ -10,7 +10,9 @@
           <h4 @click="productss" tabindex="0">
             <v-icon>mdi-shopping-outline</v-icon>&nbsp; Products
           </h4>
-          <h4><v-icon>mdi-movie-outline</v-icon>&nbsp; Ads</h4>
+          <h4 @click="ads" tabindex="0">
+            <v-icon>mdi-movie-outline</v-icon>&nbsp; Ads
+          </h4>
           <h4 @click="feedback" tabindex="0">
             <v-icon>mdi-comment-quote-outline</v-icon>&nbsp; FeedBack
           </h4>
@@ -48,6 +50,13 @@
               <!-- <div class="nav-item">
                 <v-icon size="2rem">mdi-magnify</v-icon>
               </div> -->
+              <v-rating
+                v-model="averageRating"
+                readonly
+                size="30px"
+                active-color="#ffa534"
+                color="#ffa534"
+              ></v-rating>
               <div class="nav-item nav-profile"></div>
             </div>
           </div>
@@ -164,13 +173,27 @@
             <v-icon>mdi-plus</v-icon>&nbsp; Add Products
           </button> -->
         </div>
-        <div class="product-content"  v-if="prescriptions.length>0">
-          <div class="product-card" v-for="prescription in prescriptions" :key="prescription.id">
+        <div class="product-content" v-if="prescriptions.length > 0">
+          <div
+            class="product-card"
+            v-for="prescription in prescriptions"
+            :key="prescription.id"
+          >
             <!-- <img src="" alt="" style="width: 90px; height: 90px" /> -->
-             <div style="width: 70px; height: 70px;  display: flex; justify-content: center; align-items: center; " ><v-icon size="50px">mdi-account-box-outline</v-icon></div>
-            <p>{{prescription.userName}}</p>
-            <p>{{prescription.email}}</p>
-            <p>{{prescription.phoneNumber}}</p>
+            <div
+              style="
+                width: 70px;
+                height: 70px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+              "
+            >
+              <v-icon size="50px">mdi-account-box-outline</v-icon>
+            </div>
+            <p>{{ prescription.userName }}</p>
+            <p>{{ prescription.email }}</p>
+            <p>{{ prescription.phoneNumber }}</p>
             <p><v-icon>mdi-eye</v-icon></p>
 
             <div class="product-btns">
@@ -195,9 +218,12 @@
             <v-icon>mdi-plus</v-icon>&nbsp; Add Products
           </button> -->
         </div>
-        <div class="product-content" v-if="feedbacks.length>0">
-          <div class="product-card" v-for="feedback in feedbacks"
-          :key="feedback.id">
+        <div class="product-content" v-if="feedbacks.length > 0">
+          <div
+            class="product-card"
+            v-for="feedback in feedbacks"
+            :key="feedback.id"
+          >
             <!-- <img
               src=""
               alt=""
@@ -210,22 +236,34 @@
                 margin-right: 50px;
               "
             /> -->
-            <div style="width: 70px;
+            <div
+              style="
+                width: 70px;
                 height: 70px;
                 border-radius: 50px;
                 background-size: cover;
                 /* border: 1px solid #03045e; */
                 margin-right: 50px;
                 margin-left: 20px;
-                display: flex; justify-content: center; align-items: center;"
-                >
-                <v-icon size="50px">mdi-account-circle-outline</v-icon></div>
-            <p>{{feedback.user_id}}</p>
-            <v-rating v-model="feedback.rating" readonly size="30px" active-color="yellow" ></v-rating>
+                display: flex;
+                justify-content: center;
+                align-items: center;
+              "
+            >
+              <v-icon size="50px">mdi-account-circle-outline</v-icon>
+            </div>
+            <p>{{ feedback.user_id }}</p>
+            <v-rating
+              v-model="feedback.rating"
+              readonly
+              size="30px"
+              active-color="#ffa534"
+              color="#ffa534"
+            ></v-rating>
 
             <div class="product-btns feedback">
               <p>
-              {{ feedback.comment }}
+                {{ feedback.comment }}
               </p>
             </div>
             <!-- <p>offer percentage</p> -->
@@ -465,6 +503,57 @@
           </div>
         </div>
       </v-dialog>
+      <div class="ads" v-if="adsIsVisible">
+        <div class="ads-div1">
+          <div class="add-ads">
+            <h3>Add Ads</h3>
+          </div>
+          <div class="add-ads-cntnt">
+            <v-text-field
+                class="field-p-dialog"
+                hint="festival Sale"
+                label="Offer Name"
+                v-model="offerName"
+                variant="outlined"
+              ></v-text-field>
+              <v-text-field
+                class="field-p-dialog"
+                hint="50%"
+                label="Offer Percentage"
+                v-model="offerPercentage"
+                variant="outlined"
+              ></v-text-field>
+              <v-text-field
+                class="field-p-dialog"
+                hint="2025-03-12"
+                label="Offer Start Date"
+                v-model="from"
+                variant="outlined"
+              ></v-text-field>
+              <v-text-field
+                class="field-p-dialog"
+                hint="2025-04-12"
+                label="Offer End Date"
+                v-model="to"
+                variant="outlined"
+              ></v-text-field>
+              <v-text-field
+                class="field-p-dialog"
+                hint="*Free Delivery above ₹500"
+                label="Conditions*"
+                v-model="to"
+                variant="outlined"
+              ></v-text-field>
+              <button class="add-dialog add-ads-btn" >Continue</button>
+              <p>Conditions Apply*</p>
+          </div>
+        </div>
+        <div class="ads-div2">
+          <div class="add-ads">
+            <h3>Your Ads</h3>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -484,11 +573,11 @@ export default {
 
       // fetch feedback
 
-      feedbacks:[],
-      
+      feedbacks: [],
+      averageRating: "",
       // fetch prescription
 
-      prescriptions:[],
+      prescriptions: [],
 
       // --------------------------------------
 
@@ -512,15 +601,16 @@ export default {
 
       // ----------------------------------------
 
-      statusActive: false,
+      statusActive: true,
       statusPending: false,
-      statusReject: true,
+      statusReject: false,
 
       // ----------------------------------------
       orderIsVisible: true,
       productIsVisible: false,
       prescriptionIsVisible: false,
       feedbackIsVisible: false,
+      adsIsVisible: false,
 
       // ----------------------------------------
 
@@ -666,34 +756,44 @@ export default {
       }
     },
 
-    async loadStoreFeedBack(){
-      try{
+    async loadStoreFeedBack() {
+      try {
         const storeId = 1;
-        const result = await this.$store.dispatch("MedEStore/fetchStoreFeedback",storeId);
-        if(result.success){
+        const result = await this.$store.dispatch(
+          "MedEStore/fetchStoreFeedback",
+          storeId
+        );
+        if (result.success) {
           console.log("fetched feedback:", result.data);
           this.feedbacks = result.data;
         } else {
           alert(`Error: ${result.error}`);
         }
-        
-      }catch(error){
+        const total = this.feedbacks.reduce(
+          (sum, feedback) => sum + feedback.rating,
+          0
+        );
+        this.averageRating = total / this.feedbacks.length;
+        console.log("average rating :", this.averageRating);
+      } catch (error) {
         console.error("Error loading feedback :", error);
-        
       }
     },
 
-    async loadPrescription(){
-      try{
+    async loadPrescription() {
+      try {
         const storeId = 1;
-        const result = await this.$store.dispatch("MedEStore/fetchPrescription",storeId);
-        if(result.success){
+        const result = await this.$store.dispatch(
+          "MedEStore/fetchPrescription",
+          storeId
+        );
+        if (result.success) {
           console.log("fetched prescriptions:", result.data);
           this.prescriptions = result.data;
         } else {
           alert(`Error: ${result.error}`);
         }
-      }catch(error){
+      } catch (error) {
         console.error("Error loading prescription :", error);
       }
     },
@@ -743,24 +843,35 @@ export default {
       this.productIsVisible = true;
       this.prescriptionIsVisible = false;
       this.feedbackIsVisible = false;
+      this.adsIsVisible = false;
     },
     orders() {
       this.orderIsVisible = true;
       this.productIsVisible = false;
       this.prescriptionIsVisible = false;
       this.feedbackIsVisible = false;
+      this.adsIsVisible = false;
     },
     prescription() {
       this.prescriptionIsVisible = true;
       this.orderIsVisible = false;
       this.productIsVisible = false;
       this.feedbackIsVisible = false;
+      this.adsIsVisible = false;
     },
     feedback() {
       this.feedbackIsVisible = true;
       this.prescriptionIsVisible = false;
       this.orderIsVisible = false;
       this.productIsVisible = false;
+      this.adsIsVisible = false;
+    },
+    ads() {
+      this.feedbackIsVisible = false;
+      this.prescriptionIsVisible = false;
+      this.orderIsVisible = false;
+      this.productIsVisible = false;
+      this.adsIsVisible = true;
     },
     // file upload
 
@@ -1007,6 +1118,54 @@ input:focus {
   align-items: center;
   border: 1px solid white;
 }
+.ads {
+  width: 90%;
+  height: 95vh;
+  margin-left: 20px;
+  /* padding: 20px 20px 20px 20px; */
+  border-radius: 20px;
+  /* border: 1px solid white; */
+  display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 8px;
+}
+    
+.ads-div1 {
+    grid-column: span 3 / span 3;
+    grid-row: span 5 / span 5;
+    /* border: 1px solid #03045E; */
+    border-radius: 20px;
+
+}
+.add-ads{
+  height: 60px;
+  width: 100%;
+  border-radius: 20px;
+  background-color: #03045E;
+  color: #ffffff;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  padding-left: 20px;
+}
+
+.add-ads-cntnt{
+  width: 100%;
+  height: 655px;
+  border-radius: 20px;
+  border: 1px solid #ffffff;
+  padding: 30px;
+}
+
+.ads-div2 {
+    grid-column: span 2 / span 2;
+    grid-row: span 5 / span 5;
+    grid-column-start: 4;
+    /* border: 1px solid #03045E; */
+    border-radius: 20px;
+}
+        
 .product-content {
   width: 100%;
   height: 662px;
@@ -1019,10 +1178,10 @@ input:focus {
 .product-content::-webkit-scrollbar {
   display: none;
 }
-.product-content p{
+.product-content p {
   width: 200px;
 }
-.content-2 p{
+.content-2 p {
   width: 120px;
 }
 .product-head {
@@ -1144,6 +1303,16 @@ input:focus {
   height: 50px;
   border-radius: 5px;
   margin-top: 10px;
+}
+.add-ads-btn{
+  width: 100%;
+  background-color: #ff0101;
+  color: white;
+  font-weight: 600;
+  height: 50px;
+  border-radius: 5px;
+  margin-top: 10px;
+  margin-bottom: 30px;
 }
 .cancel-dialog {
   background-color: #ff0101;
