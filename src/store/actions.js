@@ -8,12 +8,13 @@ export default{
       return true;
     }
   },
-  async loginStore({rootGetters},payload){
+  // add commit,
+  async loginStore({commit,rootGetters},payload){
     console.log("Sending payload:", payload);
     const response = await axios.post(`${rootGetters.getUrl}/api/MedE/Store/storeLogin`,payload);
     if(response.status>=200 && response.status<300){
       console.log(response);
-      
+      commit('setstore_id',response.data.store_id);
       return true;
     }
   },

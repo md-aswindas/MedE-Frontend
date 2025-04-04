@@ -15,7 +15,12 @@ const store = createStore({
   },
   state(){
     return{
-      base_url:'http://localhost:8081'
+      base_url:'http://localhost:8081',
+      // session storage
+      auth:{
+        store_id : sessionStorage.getItem("store_id")||"",
+      },
+      // ----------------------
     };
   },
   mutations:rootMutations,

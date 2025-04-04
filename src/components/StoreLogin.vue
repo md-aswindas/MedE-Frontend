@@ -70,14 +70,18 @@
 
     </div>
   </div>
+   
 </template>
  
 <script>
+
+
 export default {
   data() {
     return {
       licenseNumber: "",
       password: "",
+      
     };
   },
   methods: {
@@ -89,7 +93,10 @@ export default {
       try {
         const response = await this.$store.dispatch("loginStore", payload);
         if (response) {
-          alert("successfully login!!!!");
+          this.snackbar = true; // Show snackbar on success
+            alert("login success");
+            this.$router.push("/storeHome"); // Redirect after a delay
+          
         } else {
           console.log("error");
         }

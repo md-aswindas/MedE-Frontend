@@ -1,11 +1,11 @@
 import axios from "axios";
 
 export default {
-  async fetchStoreProducts({ rootGetters }) {
+  async fetchStoreProducts({ rootGetters }, storeId) {
     try {
       console.log("fetching products");
 
-      const response = await axios.get(`${rootGetters.getUrl}/api/MedE/Admin/adminViewAllProduct`);
+      const response = await axios.get(`${rootGetters.getUrl}/api/MedE/Store/StoreViewAllProducts`,{params: { storeId: storeId }});
 
       if (response.status >= 200 && response.status < 300) {
         return { success: true, data: response.data };
@@ -92,7 +92,7 @@ export default {
         stock: payload.stock,
         actualPrice: payload.actualPrice,
         offerPercentage: payload.offerPercentage,
-        store_id: 1,
+        store_id: payload.storeId,
       },
     });
     if (response.status >= 200 && response.status < 300) {

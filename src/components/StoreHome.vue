@@ -53,13 +53,113 @@
               <v-rating
                 v-model="averageRating"
                 readonly
+                half-increments
                 size="30px"
                 active-color="#ffa534"
                 color="#ffa534"
               ></v-rating>
-              <div class="nav-item nav-profile"></div>
+              <div class="nav-item nav-profile" @click="profileDialog = true">
+                <v-icon color="#03045E" size="30px">mdi-storefront</v-icon>
+              </div>
             </div>
           </div>
+          <v-dialog activator="parent" max-width="500" height="700px">
+            <template v-slot:default="{ isActive }">
+              <v-card rounded="lg">
+                <v-card-title class="d-flex justify-space-between align-center">
+                  <div class="text-h5 text-medium-emphasis ps-2">
+                    Store Profile
+                  </div>
+
+                  <v-btn
+                    icon="mdi-close"
+                    variant="text"
+                    @click="isActive.value = false"
+                  ></v-btn>
+                </v-card-title>
+
+                <v-divider class="mb-4"></v-divider>
+
+                <v-card-text>
+                  <v-text-field
+                    :class="isReadonly ? 'readonly-field' : 'editable-field'"
+                    append-inner-icon="mdi-account"
+                    label="Store Name"
+                    model-value="John Doe"
+                    variant="outlined"
+                    :readonly="isReadonly"
+                  ></v-text-field>
+                  <v-text-field
+                    color="#03045E"
+                    append-inner-icon="mdi-history"
+                    label="Status Name"
+                    model-value="Active"
+                    variant="outlined"
+                    readonly
+                  ></v-text-field>
+                  <v-text-field
+                    color="#03045E"
+                    append-inner-icon="mdi-account"
+                    label="License Number"
+                    model-value="Lic-98602"
+                    variant="outlined"
+                    readonly
+                  ></v-text-field>
+                  <v-text-field
+                    :class="isReadonly ? 'readonly-field' : 'editable-field'"
+                    append-inner-icon="mdi-cellphone"
+                    label="Phone Number"
+                    model-value="9567954754"
+                    variant="outlined"
+                    :readonly="isReadonly"
+                  ></v-text-field>
+                  <v-text-field
+                    :class="isReadonly ? 'readonly-field' : 'editable-field'"
+                    append-inner-icon="mdi-lock"
+                    label="Password"
+                    model-value="Password"
+                    variant="outlined"
+                    :readonly="isReadonly"
+                  ></v-text-field>
+                  <v-text-field
+                    color="#03045E"
+                    append-inner-icon="mdi-calendar-range"
+                    label="Created Date"
+                    model-value="2024-12-26"
+                    variant="outlined"
+                    readonly
+                  ></v-text-field>
+                </v-card-text>
+
+                <v-divider class="mt-2"></v-divider>
+
+                <v-card-actions class="my-2 d-flex justify-center">
+                  <v-btn
+                  class="text-none"
+                  color="#ff0000"
+                  variant="flat"
+                    rounded="x2"
+                    width="48%"
+                    height="50px"
+                  text="Edit"
+                  @click="toggleReadonly"
+                  
+                > {{ isReadonly ? "Edit" : "Lock" }} </v-btn>
+
+                  <v-btn
+                    class="text-none"
+                    color="#03045E"
+                    rounded="x2"
+                    width="48%"
+                    height="50px"
+                    text="Save"
+                    variant="flat"
+                    @click="isActive.value = false"
+                  ></v-btn>
+                </v-card-actions>
+              </v-card>
+            </template>
+          </v-dialog>
           <div class="div2">
             <h3>Total Orders</h3>
             <h1
@@ -256,6 +356,7 @@
             <v-rating
               v-model="feedback.rating"
               readonly
+              half-increments
               size="30px"
               active-color="#ffa534"
               color="#ffa534"
@@ -510,42 +611,42 @@
           </div>
           <div class="add-ads-cntnt">
             <v-text-field
-                class="field-p-dialog"
-                hint="festival Sale"
-                label="Offer Name"
-                v-model="offerName"
-                variant="outlined"
-              ></v-text-field>
-              <v-text-field
-                class="field-p-dialog"
-                hint="50%"
-                label="Offer Percentage"
-                v-model="offerPercentage"
-                variant="outlined"
-              ></v-text-field>
-              <v-text-field
-                class="field-p-dialog"
-                hint="2025-03-12"
-                label="Offer Start Date"
-                v-model="from"
-                variant="outlined"
-              ></v-text-field>
-              <v-text-field
-                class="field-p-dialog"
-                hint="2025-04-12"
-                label="Offer End Date"
-                v-model="to"
-                variant="outlined"
-              ></v-text-field>
-              <v-text-field
-                class="field-p-dialog"
-                hint="*Free Delivery above ₹500"
-                label="Conditions*"
-                v-model="to"
-                variant="outlined"
-              ></v-text-field>
-              <button class="add-dialog add-ads-btn" >Continue</button>
-              <p>Conditions Apply*</p>
+              class="field-p-dialog"
+              hint="festival Sale"
+              label="Offer Name"
+              v-model="offerName"
+              variant="outlined"
+            ></v-text-field>
+            <v-text-field
+              class="field-p-dialog"
+              hint="50%"
+              label="Offer Percentage"
+              v-model="offerPercentage"
+              variant="outlined"
+            ></v-text-field>
+            <v-text-field
+              class="field-p-dialog"
+              hint="2025-03-12"
+              label="Offer Start Date"
+              v-model="from"
+              variant="outlined"
+            ></v-text-field>
+            <v-text-field
+              class="field-p-dialog"
+              hint="2025-04-12"
+              label="Offer End Date"
+              v-model="to"
+              variant="outlined"
+            ></v-text-field>
+            <v-text-field
+              class="field-p-dialog"
+              hint="*Free Delivery above ₹500"
+              label="Conditions*"
+              v-model="to"
+              variant="outlined"
+            ></v-text-field>
+            <button class="add-dialog add-ads-btn">Continue</button>
+            <p>Conditions Apply*</p>
           </div>
         </div>
         <div class="ads-div2">
@@ -559,7 +660,8 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   data() {
@@ -619,6 +721,10 @@ export default {
       addProductDialog: false,
       updateProductDialog: false,
       addImageDialog: false,
+      profileDialog: false,
+
+      isReadonly:true,
+      
     };
   },
   created() {
@@ -630,6 +736,9 @@ export default {
     this.loadStoreFeedBack();
     this.loadPrescription();
     // console.log("Mounted Hook: Fetching product images...");
+  },
+  computed: {
+    ...mapGetters(["getstore_id"]),
   },
   methods: {
     ...mapActions(["fetchStoreProducts"]),
@@ -643,6 +752,11 @@ export default {
       this.deleteStoreProduct(product.productId); // Ensure the correct property is passed
     },
 
+    toggleReadonly() {
+      this.isReadonly = !this.isReadonly; // Toggle between readonly and editable
+      this.fieldColor =  "#FF0000";
+    },
+
     async searchProducts() {
       if (!this.searchQuery.trim()) {
         console.log("🔴 Search query is empty. Skipping API call.");
@@ -652,7 +766,7 @@ export default {
       console.log("✅ Calling search API with:", this.searchQuery);
 
       const response = await this.$store.dispatch("MedEStore/searchProducts", {
-        storeId: this.storeId,
+        storeId: this.getstore_id,
         productName: this.searchQuery,
       });
 
@@ -716,7 +830,7 @@ export default {
         offerPercentage: this.offerPercentage,
         expiryDate: this.expiryDate,
         categoryId: this.selectedCategory,
-        storeId: 1,
+        storeId: this.getstore_id,
       };
 
       formData.append(
@@ -741,8 +855,10 @@ export default {
     },
     async loadStoreProducts() {
       try {
+        const storeId = this.getstore_id;
         const result = await this.$store.dispatch(
-          "MedEStore/fetchStoreProducts"
+          "MedEStore/fetchStoreProducts",
+          storeId
         );
         console.log("API Response:", result);
         if (result.success) {
@@ -758,7 +874,7 @@ export default {
 
     async loadStoreFeedBack() {
       try {
-        const storeId = 1;
+        const storeId = this.getstore_id;
         const result = await this.$store.dispatch(
           "MedEStore/fetchStoreFeedback",
           storeId
@@ -774,7 +890,7 @@ export default {
           0
         );
         this.averageRating = total / this.feedbacks.length;
-        console.log("average rating :", this.averageRating);
+        console.log("average rating :", this.averageRating.toFixed(1));
       } catch (error) {
         console.error("Error loading feedback :", error);
       }
@@ -782,7 +898,7 @@ export default {
 
     async loadPrescription() {
       try {
-        const storeId = 1;
+        const storeId = this.getstore_id;
         const result = await this.$store.dispatch(
           "MedEStore/fetchPrescription",
           storeId
@@ -1036,8 +1152,13 @@ input:focus {
   height: 50px;
   width: 50px;
   border: 0;
+  /* border: 2px solid #03045E; */
   border-radius: 50%;
   background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
 }
 .btn {
   height: 45px;
@@ -1126,23 +1247,22 @@ input:focus {
   border-radius: 20px;
   /* border: 1px solid white; */
   display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(5, 1fr);
-    gap: 8px;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: 8px;
 }
-    
-.ads-div1 {
-    grid-column: span 3 / span 3;
-    grid-row: span 5 / span 5;
-    /* border: 1px solid #03045E; */
-    border-radius: 20px;
 
+.ads-div1 {
+  grid-column: span 3 / span 3;
+  grid-row: span 5 / span 5;
+  /* border: 1px solid #03045E; */
+  border-radius: 20px;
 }
-.add-ads{
+.add-ads {
   height: 60px;
   width: 100%;
   border-radius: 20px;
-  background-color: #03045E;
+  background-color: #03045e;
   color: #ffffff;
   margin-bottom: 20px;
   display: flex;
@@ -1150,7 +1270,7 @@ input:focus {
   padding-left: 20px;
 }
 
-.add-ads-cntnt{
+.add-ads-cntnt {
   width: 100%;
   height: 655px;
   border-radius: 20px;
@@ -1159,13 +1279,13 @@ input:focus {
 }
 
 .ads-div2 {
-    grid-column: span 2 / span 2;
-    grid-row: span 5 / span 5;
-    grid-column-start: 4;
-    /* border: 1px solid #03045E; */
-    border-radius: 20px;
+  grid-column: span 2 / span 2;
+  grid-row: span 5 / span 5;
+  grid-column-start: 4;
+  /* border: 1px solid #03045E; */
+  border-radius: 20px;
 }
-        
+
 .product-content {
   width: 100%;
   height: 662px;
@@ -1304,7 +1424,7 @@ input:focus {
   border-radius: 5px;
   margin-top: 10px;
 }
-.add-ads-btn{
+.add-ads-btn {
   width: 100%;
   background-color: #ff0101;
   color: white;
@@ -1406,5 +1526,13 @@ input:focus {
   color: #ffffff;
   font-weight: 500;
   border-radius: 20px;
+}
+/* ::v-deep(.readonly-field .v-input__control) {
+  background-color: #f0f0f0 !important;
+  color: #ffeb3b; 
+} */
+
+::v-deep(.editable-field .v-input__control) {
+  color: #ff0000 !important; /* Yellow */
 }
 </style>
