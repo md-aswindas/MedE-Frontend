@@ -12,7 +12,7 @@ export default {
       }
 
     } catch (error) {
-      return { success: false, error: error.response?.data?.message || "failed to fetch" };
+      return { success: false, error: error.response?.data?.message || "failed to fetch products" };
       
     }
   },
@@ -28,7 +28,7 @@ export default {
       }
       
     }catch(error){
-      return { success: false, error: error.  response?.data?.message || "failed to fetch"};
+      return { success: false, error: error.  response?.data?.message || "failed to fetch feedback"};
     }
   },
 
@@ -42,7 +42,20 @@ export default {
         return { success : true, data: response.data };
       }
     } catch(error){
-      return { success: false, error: error.response?.data?.message || "failed to fetch"};
+      return { success: false, error: error.response?.data?.message || "failed to fetch prescription"};
+    }
+  },
+
+  async fetchStoreProfile({rootGetters},storeId){
+    try{
+      console.log("fetching profile",storeId);
+      const response = await axios.get(`${rootGetters.getUrl}/api/MedE/Store/profile`,{params: { Store_id:storeId}});
+
+      if(response.status >= 200 && response.status < 300){
+        return { success: true, data: response.data};
+      }
+    } catch(error){
+      return{ success: false, error: error.response?.data?.message ||" failed to fetch profile"};
     }
   },
 
@@ -94,6 +107,7 @@ export default {
         offerPercentage: payload.offerPercentage,
         store_id: payload.storeId,
       },
+    
     });
     if (response.status >= 200 && response.status < 300) {
       console.log(response);

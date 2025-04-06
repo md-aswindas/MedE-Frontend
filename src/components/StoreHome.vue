@@ -1,11 +1,12 @@
 <template>
   <div class="container">
     <div class="blur">
+      <!-- NAVIGATION BAR -->
       <div class="sidebar">
         <h2>Med E</h2>
         <div class="sidebar-content">
           <h4 @click="orders" tabindex="0">
-            <v-icon>mdi-cart-outline</v-icon>&nbsp; Orders
+            <v-icon>mdi-home-outline</v-icon>&nbsp; Home
           </h4>
           <h4 @click="productss" tabindex="0">
             <v-icon>mdi-shopping-outline</v-icon>&nbsp; Products
@@ -21,8 +22,11 @@
           </h4>
         </div>
       </div>
+
+      <!-- HOME PAGE -->
       <div class="content order" ref="order" v-if="orderIsVisible">
         <div class="parent">
+          <!-- HOME PAGE TOP DETAILS -->
           <div class="div1">
             <h2>Hey Store !</h2>
             <div class="nav">
@@ -47,9 +51,6 @@
               >
                 <v-icon>mdi-progress-close</v-icon>&nbsp; Rejected
               </button>
-              <!-- <div class="nav-item">
-                <v-icon size="2rem">mdi-magnify</v-icon>
-              </div> -->
               <v-rating
                 v-model="averageRating"
                 readonly
@@ -59,10 +60,15 @@
                 color="#ffa534"
               ></v-rating>
               <div class="nav-item nav-profile" @click="profileDialog = true">
-                <v-icon color="#03045E" size="30px">mdi-storefront</v-icon>
+                <h4>
+                  <v-icon color="#03045E" size="30px">mdi-storefront</v-icon
+                  >&nbsp; My Profile
+                </h4>
               </div>
             </div>
           </div>
+
+          <!-- STORE PROFILE DIALOG BOX -->
           <v-dialog activator="parent" max-width="500" height="700px">
             <template v-slot:default="{ isActive }">
               <v-card rounded="lg">
@@ -83,9 +89,9 @@
                 <v-card-text>
                   <v-text-field
                     :class="isReadonly ? 'readonly-field' : 'editable-field'"
-                    append-inner-icon="mdi-account"
+                    append-inner-icon="mdi-storefront"
                     label="Store Name"
-                    model-value="John Doe"
+                    v-model="profile.storeName"
                     variant="outlined"
                     :readonly="isReadonly"
                   ></v-text-field>
@@ -93,7 +99,7 @@
                     color="#03045E"
                     append-inner-icon="mdi-history"
                     label="Status Name"
-                    model-value="Active"
+                    :model-value="profile.statusName"
                     variant="outlined"
                     readonly
                   ></v-text-field>
@@ -101,7 +107,7 @@
                     color="#03045E"
                     append-inner-icon="mdi-account"
                     label="License Number"
-                    model-value="Lic-98602"
+                    :model-value="profile.licenseNumber"
                     variant="outlined"
                     readonly
                   ></v-text-field>
@@ -109,7 +115,7 @@
                     :class="isReadonly ? 'readonly-field' : 'editable-field'"
                     append-inner-icon="mdi-cellphone"
                     label="Phone Number"
-                    model-value="9567954754"
+                    v-model="profile.phoneNumber"
                     variant="outlined"
                     :readonly="isReadonly"
                   ></v-text-field>
@@ -117,7 +123,7 @@
                     :class="isReadonly ? 'readonly-field' : 'editable-field'"
                     append-inner-icon="mdi-lock"
                     label="Password"
-                    model-value="Password"
+                    v-model="profile.storePassword"
                     variant="outlined"
                     :readonly="isReadonly"
                   ></v-text-field>
@@ -125,7 +131,7 @@
                     color="#03045E"
                     append-inner-icon="mdi-calendar-range"
                     label="Created Date"
-                    model-value="2024-12-26"
+                    :model-value="profile.registrationDate"
                     variant="outlined"
                     readonly
                   ></v-text-field>
@@ -135,16 +141,17 @@
 
                 <v-card-actions class="my-2 d-flex justify-center">
                   <v-btn
-                  class="text-none"
-                  color="#ff0000"
-                  variant="flat"
+                    class="text-none"
+                    color="#ff0000"
+                    variant="flat"
                     rounded="x2"
                     width="48%"
                     height="50px"
-                  text="Edit"
-                  @click="toggleReadonly"
-                  
-                > {{ isReadonly ? "Edit" : "Lock" }} </v-btn>
+                    text="Edit Profile"
+                    @click="toggleReadonly"
+                  >
+                    {{ isReadonly ? "Edit Profile" : "Lock Edit" }}
+                  </v-btn>
 
                   <v-btn
                     class="text-none"
@@ -152,7 +159,7 @@
                     rounded="x2"
                     width="48%"
                     height="50px"
-                    text="Save"
+                    text="Save Profile"
                     variant="flat"
                     @click="isActive.value = false"
                   ></v-btn>
@@ -193,6 +200,7 @@
         </div>
       </div>
 
+      <!-- PRODUCT PAGE -->
       <div class="products" v-if="productIsVisible">
         <div class="product-head">
           <h2>Products</h2>
@@ -202,6 +210,7 @@
               <v-icon>mdi-plus</v-icon>&nbsp; Add Products
             </button>
 
+            <!-- PRODUCT SEARCH BAR -->
             <div class="nav-item">
               <input
                 type="text"
@@ -222,6 +231,8 @@
             </div>
           </div>
         </div>
+
+        <!-- PRODUCT CONTENTS -->
         <div class="product-content content-2" v-if="products.length > 0">
           <div
             class="product-card"
@@ -234,7 +245,7 @@
               <h2>{{ product.productName }}</h2>
               <h4>stock : {{ product.stockCount ?? product.stock }}</h4>
             </div>
-            <p>{{ product.categoryName }}</p>
+            <p>{{ product.productDesc }}</p>
             <p>{{ product.expiryDate }}</p>
             <p>
               ₹
@@ -264,22 +275,20 @@
         </div>
       </div>
 
-      <!-- prescription list -->
+      <!-- PRESCRIPTION PAGE -->
 
       <div class="products" v-if="prescriptionIsVisible">
         <div class="product-head">
           <h2>Prescription List</h2>
-          <!-- <button class="add-btn">
-            <v-icon>mdi-plus</v-icon>&nbsp; Add Products
-          </button> -->
         </div>
+
+        <!-- PRESCRIPTION CONTENTS -->
         <div class="product-content" v-if="prescriptions.length > 0">
           <div
             class="product-card"
             v-for="prescription in prescriptions"
             :key="prescription.id"
           >
-            <!-- <img src="" alt="" style="width: 90px; height: 90px" /> -->
             <div
               style="
                 width: 70px;
@@ -304,38 +313,23 @@
                 <v-icon>mdi-trash-can-outline</v-icon>&nbsp; Reject
               </button>
             </div>
-            <!-- <p>offer percentage</p> -->
           </div>
         </div>
       </div>
 
-      <!-- Feedbacks -->
-
+      <!-- FEEDBACK PAGE -->
       <div class="products" v-if="feedbackIsVisible">
         <div class="product-head">
           <h2>FeedBacks</h2>
-          <!-- <button class="add-btn">
-            <v-icon>mdi-plus</v-icon>&nbsp; Add Products
-          </button> -->
         </div>
+
+        <!-- FEEDBACK CONTENT -->
         <div class="product-content" v-if="feedbacks.length > 0">
           <div
             class="product-card"
             v-for="feedback in feedbacks"
             :key="feedback.id"
           >
-            <!-- <img
-              src=""
-              alt=""
-              style="
-                width: 70px;
-                height: 70px;
-                border-radius: 50px;
-                background-size: cover;
-                border: 1px solid #03045e;
-                margin-right: 50px;
-              "
-            /> -->
             <div
               style="
                 width: 70px;
@@ -367,12 +361,11 @@
                 {{ feedback.comment }}
               </p>
             </div>
-            <!-- <p>offer percentage</p> -->
           </div>
         </div>
       </div>
-      <!-- add product dialog -->
 
+      <!-- ADD PRODUCTS DIALOG BOX -->
       <v-dialog v-model="addProductDialog" width="100%" height="775px">
         <div class="container-dialog">
           <div class="addproduct-dialog">
@@ -385,14 +378,6 @@
                 variant="outlined"
                 v-model="productName"
               ></v-text-field>
-
-              <!-- <v-select
-                label="Category"
-                :items="category"
-                variant="outlined"
-                class="field-p-dialog"
-              ></v-select> -->
-
               <v-select
                 label="Category"
                 :items="category"
@@ -460,8 +445,8 @@
           </div>
         </div>
       </v-dialog>
-      <!-- Update product dialog -->
 
+      <!-- UPDATE PRODUCT DIALOG BOX -->
       <v-dialog v-model="updateProductDialog" width="100%" height="775px">
         <div class="container-dialog">
           <div class="addproduct-dialog">
@@ -475,14 +460,6 @@
                 v-model="productName"
                 disabled
               ></v-text-field>
-
-              <!-- <v-select
-                label="Category"
-                :items="category"
-                variant="outlined"
-                class="field-p-dialog"
-              ></v-select> -->
-
               <v-select
                 label="Category"
                 :items="category"
@@ -495,6 +472,7 @@
                 disabled
               ></v-select>
             </div>
+            
             <v-textarea
               class="field-dialog"
               label="Product Description"
@@ -513,6 +491,7 @@
                 v-model="stock"
                 variant="outlined"
               ></v-text-field>
+              
               <v-text-field
                 class="field-p-dialog"
                 hint="For example, 10-12-2080"
@@ -559,8 +538,8 @@
           </div>
         </div>
       </v-dialog>
-      <!-- add image dialog -->
 
+      <!-- UPLOAD IMAGE DIALOG BOX -->
       <v-dialog v-model="addImageDialog" margin="0" padding="0">
         <div class="file-upload" id="fileUpload">
           <div class="main-box">
@@ -604,7 +583,11 @@
           </div>
         </div>
       </v-dialog>
+
+      <!-- ADS PAGE -->
       <div class="ads" v-if="adsIsVisible">
+
+        <!-- ADD ADS -->
         <div class="ads-div1">
           <div class="add-ads">
             <h3>Add Ads</h3>
@@ -614,41 +597,43 @@
               class="field-p-dialog"
               hint="festival Sale"
               label="Offer Name"
-              v-model="offerName"
+              
               variant="outlined"
             ></v-text-field>
             <v-text-field
               class="field-p-dialog"
               hint="50%"
               label="Offer Percentage"
-              v-model="offerPercentage"
+              
               variant="outlined"
             ></v-text-field>
             <v-text-field
               class="field-p-dialog"
               hint="2025-03-12"
               label="Offer Start Date"
-              v-model="from"
+              
               variant="outlined"
             ></v-text-field>
             <v-text-field
               class="field-p-dialog"
               hint="2025-04-12"
               label="Offer End Date"
-              v-model="to"
+              
               variant="outlined"
             ></v-text-field>
             <v-text-field
               class="field-p-dialog"
               hint="*Free Delivery above ₹500"
               label="Conditions*"
-              v-model="to"
+              
               variant="outlined"
             ></v-text-field>
             <button class="add-dialog add-ads-btn">Continue</button>
             <p>Conditions Apply*</p>
           </div>
         </div>
+
+        <!-- DISPLAY ADS -->
         <div class="ads-div2">
           <div class="add-ads">
             <h3>Your Ads</h3>
@@ -660,37 +645,41 @@
 </template>
 
 <script>
-
 import { mapActions, mapGetters } from "vuex";
 
 export default {
   data() {
     return {
-      searchQuery: "",
-      storeId: 1,
-      // fetch product
 
+      // PROFILE DATA
+      profile: {
+        storeName: "",
+        statusName: "",
+        licenseNumber: "",
+        phoneNumber: "",
+        storePassword: "",
+        registrationDate: "",
+      },
+
+      // SEARCH PRODUCT DATA
+      searchQuery: "",
+    
+      // PRODUCTS DATA LIST
       products: [],
       productId: "",
 
-      // fetch feedback
-
+      // FEEDBACK DATA LIST
       feedbacks: [],
       averageRating: "",
-      // fetch prescription
-
+     
+      // PRESCRIPTION DATA LIST
       prescriptions: [],
 
-      // --------------------------------------
-
-      // select category
-
+      // CATEGORY LIST
       category: [], // Stores categories fetched from the API
       selectedCategory: "", // Stores the currently selected categoryId
 
-      // -------------------------------------------
-
-      // add product
+      // PRODUCT DATA
       productName: "",
       productDesc: "",
       stock: "",
@@ -701,13 +690,7 @@ export default {
       imageFile: null,
       imageUrl: null,
 
-      // ----------------------------------------
 
-      statusActive: true,
-      statusPending: false,
-      statusReject: false,
-
-      // ----------------------------------------
       orderIsVisible: true,
       productIsVisible: false,
       prescriptionIsVisible: false,
@@ -723,8 +706,7 @@ export default {
       addImageDialog: false,
       profileDialog: false,
 
-      isReadonly:true,
-      
+      isReadonly: true,
     };
   },
   created() {
@@ -735,10 +717,22 @@ export default {
     this.loadStoreProducts();
     this.loadStoreFeedBack();
     this.loadPrescription();
+    this.loadStoreProfile();
     // console.log("Mounted Hook: Fetching product images...");
   },
   computed: {
     ...mapGetters(["getstore_id"]),
+
+    // CHECK THE STORE STATUS
+    statusActive() {
+      return this.profile.statusName === "Active";
+    },
+    statusPending() {
+      return this.profile.statusName === "Pending";
+    },
+    statusReject() {
+      return this.profile.statusName === "Rejected";
+    },
   },
   methods: {
     ...mapActions(["fetchStoreProducts"]),
@@ -754,7 +748,7 @@ export default {
 
     toggleReadonly() {
       this.isReadonly = !this.isReadonly; // Toggle between readonly and editable
-      this.fieldColor =  "#FF0000";
+      this.fieldColor = "#FF0000";
     },
 
     async searchProducts() {
@@ -783,8 +777,8 @@ export default {
       // Set form fields with product data
       this.productId = product.productId;
       this.productName = product.productName;
-      this.productDesc = product.productDescription;
-      this.stock = product.stockCount;
+      this.productDesc = product.productDesc;
+      this.stock = product.stock;
       this.actualPrice = product.actualPrice;
       this.offerPercentage = product.offerPercentage;
       this.expiryDate = product.expiryDate;
@@ -800,6 +794,7 @@ export default {
         stock: this.stock,
         actualPrice: this.actualPrice,
         offerPercentage: this.offerPercentage,
+        storeId: this.getstore_id,
       };
 
       try {
@@ -893,6 +888,24 @@ export default {
         console.log("average rating :", this.averageRating.toFixed(1));
       } catch (error) {
         console.error("Error loading feedback :", error);
+      }
+    },
+
+    async loadStoreProfile() {
+      try {
+        const storeId = this.getstore_id;
+        const result = await this.$store.dispatch(
+          "MedEStore/fetchStoreProfile",
+          storeId
+        );
+        if (result.success) {
+          console.log("fetched profile:", result.data);
+          this.profile = result.data[0];
+        } else {
+          alert(`Error: ${result.error}`);
+        }
+      } catch (error) {
+        console.error("Error loading profile :", error);
       }
     },
 
@@ -1149,12 +1162,13 @@ input:focus {
   outline: none; /* Prevents the default outline */
 }
 .nav-profile {
-  height: 50px;
-  width: 50px;
+  height: 45px;
+  width: 170px;
   border: 0;
   /* border: 2px solid #03045E; */
-  border-radius: 50%;
+  border-radius: 50px;
   background-color: white;
+  color: #03045e;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1272,7 +1286,7 @@ input:focus {
 
 .add-ads-cntnt {
   width: 100%;
-  height: 655px;
+  height: 615px;
   border-radius: 20px;
   border: 1px solid #ffffff;
   padding: 30px;
@@ -1533,6 +1547,6 @@ input:focus {
 } */
 
 ::v-deep(.editable-field .v-input__control) {
-  color: #ff0000 !important; /* Yellow */
+  color: #ff0000 !important;
 }
 </style>
