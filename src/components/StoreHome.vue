@@ -5,22 +5,45 @@
       <div class="sidebar">
         <h2>Med E</h2>
         <div class="sidebar-content">
-          <h4 @click="orders" tabindex="0">
+          <h4
+            :class="{ active: selectedItem === 'home' }"
+            @click="select('home')"
+            tabindex="0"
+          >
             <v-icon>mdi-home-outline</v-icon>&nbsp; Home
           </h4>
-          <h4 @click="productss" tabindex="0">
+          <h4
+            :class="{ active: selectedItem === 'products' }"
+            @click="select('products')"
+            tabindex="0"
+          >
             <v-icon>mdi-shopping-outline</v-icon>&nbsp; Products
           </h4>
-          <h4 @click="ads" tabindex="0">
+          <h4
+            :class="{ active: selectedItem === 'ads' }"
+            @click="select('ads')"
+            tabindex="0"
+          >
             <v-icon>mdi-movie-outline</v-icon>&nbsp; Ads
           </h4>
-          <h4 @click="feedback" tabindex="0">
+          <h4
+            :class="{ active: selectedItem === 'feedback' }"
+            @click="select('feedback')"
+            tabindex="0"
+          >
             <v-icon>mdi-comment-quote-outline</v-icon>&nbsp; FeedBack
           </h4>
-          <h4 @click="prescription" tabindex="0">
+          <h4
+            :class="{ active: selectedItem === 'prescription' }"
+            @click="select('prescription')"
+            tabindex="0"
+          >
             <v-icon>mdi-note-outline</v-icon>&nbsp; Prescription List
           </h4>
         </div>
+        <h4 class="logout" @click="logout">
+          <v-icon>mdi-logout</v-icon>&nbsp; Logout
+        </h4>
       </div>
 
       <!-- HOME PAGE -->
@@ -472,7 +495,7 @@
                 disabled
               ></v-select>
             </div>
-            
+
             <v-textarea
               class="field-dialog"
               label="Product Description"
@@ -491,7 +514,7 @@
                 v-model="stock"
                 variant="outlined"
               ></v-text-field>
-              
+
               <v-text-field
                 class="field-p-dialog"
                 hint="For example, 10-12-2080"
@@ -586,7 +609,6 @@
 
       <!-- ADS PAGE -->
       <div class="ads" v-if="adsIsVisible">
-
         <!-- ADD ADS -->
         <div class="ads-div1">
           <div class="add-ads">
@@ -597,35 +619,30 @@
               class="field-p-dialog"
               hint="festival Sale"
               label="Offer Name"
-              
               variant="outlined"
             ></v-text-field>
             <v-text-field
               class="field-p-dialog"
               hint="50%"
               label="Offer Percentage"
-              
               variant="outlined"
             ></v-text-field>
             <v-text-field
               class="field-p-dialog"
               hint="2025-03-12"
               label="Offer Start Date"
-              
               variant="outlined"
             ></v-text-field>
             <v-text-field
               class="field-p-dialog"
               hint="2025-04-12"
               label="Offer End Date"
-              
               variant="outlined"
             ></v-text-field>
             <v-text-field
               class="field-p-dialog"
               hint="*Free Delivery above ₹500"
               label="Conditions*"
-              
               variant="outlined"
             ></v-text-field>
             <button class="add-dialog add-ads-btn">Continue</button>
@@ -638,6 +655,7 @@
           <div class="add-ads">
             <h3>Your Ads</h3>
           </div>
+          <div class="add-ads-cntnt"></div>
         </div>
       </div>
     </div>
@@ -650,7 +668,6 @@ import { mapActions, mapGetters } from "vuex";
 export default {
   data() {
     return {
-
       // PROFILE DATA
       profile: {
         storeName: "",
@@ -660,10 +677,10 @@ export default {
         storePassword: "",
         registrationDate: "",
       },
-
+      selectedItem: "home",
       // SEARCH PRODUCT DATA
       searchQuery: "",
-    
+
       // PRODUCTS DATA LIST
       products: [],
       productId: "",
@@ -671,7 +688,7 @@ export default {
       // FEEDBACK DATA LIST
       feedbacks: [],
       averageRating: "",
-     
+
       // PRESCRIPTION DATA LIST
       prescriptions: [],
 
@@ -689,7 +706,6 @@ export default {
       dragging: false,
       imageFile: null,
       imageUrl: null,
-
 
       orderIsVisible: true,
       productIsVisible: false,
@@ -737,6 +753,27 @@ export default {
   methods: {
     ...mapActions(["fetchStoreProducts"]),
 
+    async logout() {
+      try{
+        const confirmation = confirm("Want to logout ?");
+        if (!confirmation) return;
+        const result = await this.$store.dispatch("logoutStore");
+        if (result) {
+          this.$router.push("/storeLogin"); // Or wherever your login route is
+        }
+      }catch(error){
+        console.log("logout failed:", error);
+      }
+      
+    },
+    select(item) {
+      this.selectedItem = item;
+      if (item === "home") this.orders();
+      else if (item === "products") this.productss();
+      else if (item === "ads") this.ads();
+      else if (item === "feedback") this.feedback();
+      else if (item === "prescription") this.prescription();
+    },
     selected(categoryId) {
       console.log("Selected CategoryId:", categoryId);
     },
@@ -1092,10 +1129,11 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
 }
 .sidebar-content {
   margin-top: 50px;
-  width: fit-content;
+  width: 210px;
   height: 40%;
   display: flex;
   flex-direction: column;
@@ -1109,11 +1147,30 @@ export default {
   padding-right: 20px;
   border-radius: 50px;
 }
-.sidebar-content h4:hover {
+
+.sidebar-content h4.active {
   background-color: #03045e;
   color: white;
+  font-weight: bold;
 }
-
+.sidebar-content h4:hover {
+  border: 1px #03045e solid;
+  cursor: pointer;
+  padding-left: 10px;
+}
+.logout {
+  cursor: pointer;
+  color: #ff0000;
+  font-weight: 500;
+  margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  padding-left: 20px;
+  padding-right: 20px;
+  border-radius: 50px;
+  position: absolute;
+  bottom: 0;
+}
 .content {
   width: 90%;
   height: 95vh;
