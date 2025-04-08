@@ -88,6 +88,20 @@ export default {
     }
   },
 
+  async deleteAds({rootGetters}, adsId){
+    try{
+      console.log("delete ads");
+      const response = await axios.delete(`${rootGetters.getUrl}/api/MedE/Store/deleteAds`,{
+        params:{ adsId}
+      });
+      if (response.status >= 200 && response.status < 300) {
+        return { success: true, data: response.data };
+      }
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || "failed to delete" };
+    }
+  },
+
   async loadCategories({ rootGetters }) {
     try {
       const response = await axios.get(`${rootGetters.getUrl}/api/MedE/Store/loadCategories`);

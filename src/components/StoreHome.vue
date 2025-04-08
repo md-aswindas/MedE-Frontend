@@ -686,7 +686,9 @@
               variant="outlined"
               v-model="conditions"
             ></v-text-field>
-            <button class="add-dialog add-ads-btn" @click="StoreAddAds()">Continue</button>
+            <button class="add-dialog add-ads-btn" @click="StoreAddAds()">
+              Continue
+            </button>
             <p>Conditions Apply*</p>
           </div>
         </div>
@@ -696,12 +698,25 @@
           <div class="add-ads">
             <h3>Your Ads</h3>
           </div>
-          <div class="add-ads-cntnt scroll" >
-            <div class="ad-card card-style2" v-for="ad in Ads"
-            :key="ad.id">
-              <h3>{{ad.offerPercentage}}% off on all Products</h3>
-              <h1>{{ad.offerName}}</h1>
-              <h5>{{ad.startDate}} &nbsp;  to   &nbsp; {{ad.endDate}}</h5>
+          <div class="add-ads-cntnt scroll">
+            <div class="ad-card card-style5" v-for="ad in Ads" :key="ad.id">
+              
+              <div class="adname one">
+                <h3>{{ ad.offerName }}</h3>
+                <div class="deletead" @click="deleteStoreAds(ad.adsId)">
+                  <v-icon size="30px">mdi-close-circle-outline</v-icon>
+                </div>
+              </div>
+              <div class="adoffer one">
+                <h1>{{ ad.offerPercentage }}% off on all Products</h1>
+              </div>
+              <div class="dates one">
+                <h5>From :&nbsp; {{ ad.startDate }}</h5>
+                <h5>To :&nbsp;{{ ad.endDate }}</h5>
+              </div>
+              <div class="condition one">
+                <h5>*&nbsp; {{ ad.conditions }}</h5>
+              </div>
             </div>
           </div>
         </div>
@@ -756,14 +771,13 @@ export default {
       imageUrl: null,
 
       // ADS DATA
-      Ads:[],
-      AdsId: "",
+      Ads: [],
+      adsId: "",
       offerName: "",
       offerPercent: "",
       conditions: "",
       offerStartDate: "",
       offerEndDate: "",
-
 
       orderIsVisible: true,
       productIsVisible: false,
@@ -926,7 +940,6 @@ export default {
           alert("Profile Updated Successfully");
           this.loadStoreProfile();
           this.profileDialog = false;
-          
         } else {
           console.log("Error updating profile");
         }
@@ -935,8 +948,7 @@ export default {
       }
     },
 
-    async StoreAddAds(){
-      
+    async StoreAddAds() {
       const payload = {
         offerName: this.offerName,
         offerPercent: parseInt(this.offerPercent),
@@ -953,7 +965,6 @@ export default {
         if (response) {
           alert("Ad added Successfully");
           this.loadStoreAds();
-                  
         } else {
           console.log("Error adding ad");
         }
@@ -1015,7 +1026,7 @@ export default {
       }
     },
 
-    async loadStoreAds(){
+    async loadStoreAds() {
       try {
         const storeId = this.getstore_id;
         const result = await this.$store.dispatch(
@@ -1117,6 +1128,32 @@ export default {
         }
       } catch (error) {
         console.error("Error deleting product:", error);
+      }
+    },
+
+    async deleteStoreAds(adsId){
+      try {
+        console.log("Deleting Ad with ID:", adsId); // Debugging
+        if (!adsId) {
+          alert("Error: Ad ID is undefined!");
+          return;
+        }
+
+        const confirmation = confirm("Delete Ad ?");
+        if (!confirmation) return;
+
+        const result = await this.$store.dispatch(
+          "MedEStore/deleteAds",
+          adsId
+        );
+
+        if (result.success) {
+          this.loadStoreAds();
+        } else {
+          alert(`Error: ${result.error}`);
+        }
+      } catch (error) {
+        console.error("Error deleting Ads:", error);
       }
     },
 
@@ -1239,6 +1276,7 @@ export default {
 
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Boldonse&family=Pacifico&family=Teko:wght@300..700&display=swap');
 .container {
   height: 100vh;
   width: 100%;
@@ -1495,30 +1533,69 @@ input:focus {
   border-radius: 20px;
   border: 1px solid #ffffff;
   padding: 30px;
-  box-sizing: border-box; 
-  
+  box-sizing: border-box;
 }
-.scroll{
+.scroll {
   display: flex;
   flex-direction: column;
   align-items: center;
   overflow-y: auto;
-  
 }
-.scroll::-webkit-scrollbar{
+.scroll::-webkit-scrollbar {
   display: none;
+}
+.one {
+  width: 100%;
 }
 .ad-card {
   /* border: 1px #16db93 solid; */
-  height: 190px;
+  height: 200px;
   width: 100%;
   border-radius: 15px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
+  padding: 10px;
   margin-bottom: 15px;
   flex-shrink: 0;
+  position: relative;
+}
+.dates {
+  display: flex;
+  justify-content: space-around;
+  
+}
+.adoffer{
+  display: flex;
+  justify-content: center;
+  font-family: Boldonse;
+  font-weight: 300;
+  font-size: 12px;
+}
+.condition{
+  padding-left: 20px;
+}
+.deletead{
+color: white;
+/* background-color: #ff0000; */
+cursor: pointer;
+border-radius: 50%;
+width: 30px;
+height: 30px;
+display: flex;
+justify-content: center;
+align-items: center;
+position: absolute;
+top: 3%;
+right: 1%;
+}
+.adname{
+  display: flex;
+  justify-content: space-between;
+  padding:0px 20px 0px 20px ;
+  font-family: Pacifico;
+  font-weight: 400;
 }
 .card-style1 {
   background: linear-gradient(to bottom right, #ffffff, #be92a2);
