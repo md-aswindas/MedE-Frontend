@@ -17,6 +17,20 @@ export default {
     }
   },
 
+  async fetchStoreAds({rootGetters}, storeId){
+    try{
+      console.log("fetching ads");
+      const response = await axios.get(`${rootGetters.getUrl}/api/MedE/Store/fetchAds`,{params:{store_id: storeId}});
+
+      if (response.status >= 200 && response.status < 300) {
+        return { success: true, data: response.data };
+      }
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || "failed to fetch Ads" };
+      
+    }
+  },
+
   async fetchStoreFeedback({ rootGetters }, storeId) {
     try{
       console.log("Fetching Feedback",storeId);
@@ -97,6 +111,22 @@ export default {
     }
   },
 
+  async addAds({ rootGetters }, payload){
+    console.log("sending Ads payload",payload);
+    const response = await axios.post(`${rootGetters.getUrl}/api/MedE/Store/addAds`, {
+      offerName: payload.offerName,
+      offerPercentage: payload.offerPercent,
+      conditions: payload.conditions,
+      startDate: payload.offerStartDate,
+      endDate: payload.offerEndDate,
+      storeId: payload.storeId,
+    });
+    if (response.status >= 200 && response.status < 300) {
+      console.log(response);
+      return true;
+    }
+  },
+
   async updateProduct({ rootGetters }, payload) {
     console.log("sending payload", payload);
     const response = await axios.put(`${rootGetters.getUrl}/api/MedE/Store/updateProduct`, null, {
@@ -110,6 +140,22 @@ export default {
     
     });
     if (response.status >= 200 && response.status < 300) {
+      console.log(response);
+      return true;
+    }
+  },
+
+  async updateProfile({rootGetters}, payload){
+    console.log("sending payload profile",payload);
+    const response = await axios.put(`${rootGetters.getUrl}/api/MedE/Store/updateProfile`, null ,{
+      params:{
+        store_id: payload.storeId,
+        store_name: payload.storeName,
+        password: payload.storePassword,
+        phone_number: payload.phoneNumber,
+      },
+    });
+    if(response.status >= 200 && response.status < 300){
       console.log(response);
       return true;
     }

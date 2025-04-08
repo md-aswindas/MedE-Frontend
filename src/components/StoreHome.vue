@@ -20,6 +20,13 @@
             <v-icon>mdi-shopping-outline</v-icon>&nbsp; Products
           </h4>
           <h4
+            :class="{ active: selectedItem === 'orders' }"
+            @click="select('orders')"
+            tabindex="0"
+          >
+            <v-icon>mdi-cart-variant</v-icon>&nbsp; Orders
+          </h4>
+          <h4
             :class="{ active: selectedItem === 'ads' }"
             @click="select('ads')"
             tabindex="0"
@@ -51,7 +58,7 @@
         <div class="parent">
           <!-- HOME PAGE TOP DETAILS -->
           <div class="div1">
-            <h2>Hey Store !</h2>
+            <h2>Hey {{ profile.storeName }} !</h2>
             <div class="nav">
               <button
                 class="btn"
@@ -92,7 +99,7 @@
           </div>
 
           <!-- STORE PROFILE DIALOG BOX -->
-          <v-dialog activator="parent" max-width="500" height="700px">
+          <v-dialog v-model="profileDialog" max-width="500" height="700px">
             <template v-slot:default="{ isActive }">
               <v-card rounded="lg">
                 <v-card-title class="d-flex justify-space-between align-center">
@@ -117,6 +124,7 @@
                     v-model="profile.storeName"
                     variant="outlined"
                     :readonly="isReadonly"
+                    color="#03045E"
                   ></v-text-field>
                   <v-text-field
                     color="#03045E"
@@ -141,6 +149,7 @@
                     v-model="profile.phoneNumber"
                     variant="outlined"
                     :readonly="isReadonly"
+                    color="#03045E"
                   ></v-text-field>
                   <v-text-field
                     :class="isReadonly ? 'readonly-field' : 'editable-field'"
@@ -149,6 +158,7 @@
                     v-model="profile.storePassword"
                     variant="outlined"
                     :readonly="isReadonly"
+                    color="#03045E"
                   ></v-text-field>
                   <v-text-field
                     color="#03045E"
@@ -184,7 +194,7 @@
                     height="50px"
                     text="Save Profile"
                     variant="flat"
-                    @click="isActive.value = false"
+                    @click="updateProfile()"
                   ></v-btn>
                 </v-card-actions>
               </v-card>
@@ -201,11 +211,37 @@
                 margin-top: 10px;
               "
             >
-              <v-icon>mdi-shopping </v-icon>&nbsp;10000
+              <v-icon>mdi-cart-variant </v-icon>&nbsp;10000
             </h1>
           </div>
-          <div class="div3">3</div>
-          <div class="div4">4</div>
+          <div class="div3">
+            <h3>Total Products</h3>
+            <h1
+              style="
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 60px;
+                margin-top: 10px;
+              "
+            >
+              <v-icon>mdi-shopping </v-icon>&nbsp;{{ products.length }}
+            </h1>
+          </div>
+          <div class="div4">
+            <h3>Orders Today</h3>
+            <h1
+              style="
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 60px;
+                margin-top: 10px;
+              "
+            >
+              <v-icon>mdi-cart-variant </v-icon>&nbsp; 50
+            </h1>
+          </div>
           <div class="div5">
             <v-date-picker
               width="100%"
@@ -218,8 +254,8 @@
               "
             ></v-date-picker>
           </div>
-          <div class="div6">6</div>
-          <div class="div7">7</div>
+          <div class="div6"><h3>Best Selling Product</h3></div>
+          <div class="div7"><h3>Chart</h3></div>
         </div>
       </div>
 
@@ -620,32 +656,37 @@
               hint="festival Sale"
               label="Offer Name"
               variant="outlined"
+              v-model="offerName"
             ></v-text-field>
             <v-text-field
               class="field-p-dialog"
               hint="50%"
               label="Offer Percentage"
               variant="outlined"
+              v-model="offerPercent"
             ></v-text-field>
             <v-text-field
               class="field-p-dialog"
               hint="2025-03-12"
               label="Offer Start Date"
               variant="outlined"
+              v-model="offerStartDate"
             ></v-text-field>
             <v-text-field
               class="field-p-dialog"
               hint="2025-04-12"
               label="Offer End Date"
               variant="outlined"
+              v-model="offerEndDate"
             ></v-text-field>
             <v-text-field
               class="field-p-dialog"
               hint="*Free Delivery above ₹500"
               label="Conditions*"
               variant="outlined"
+              v-model="conditions"
             ></v-text-field>
-            <button class="add-dialog add-ads-btn">Continue</button>
+            <button class="add-dialog add-ads-btn" @click="StoreAddAds()">Continue</button>
             <p>Conditions Apply*</p>
           </div>
         </div>
@@ -655,7 +696,14 @@
           <div class="add-ads">
             <h3>Your Ads</h3>
           </div>
-          <div class="add-ads-cntnt"></div>
+          <div class="add-ads-cntnt scroll" >
+            <div class="ad-card card-style2" v-for="ad in Ads"
+            :key="ad.id">
+              <h3>{{ad.offerPercentage}}% off on all Products</h3>
+              <h1>{{ad.offerName}}</h1>
+              <h5>{{ad.startDate}} &nbsp;  to   &nbsp; {{ad.endDate}}</h5>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -707,12 +755,22 @@ export default {
       imageFile: null,
       imageUrl: null,
 
+      // ADS DATA
+      Ads:[],
+      AdsId: "",
+      offerName: "",
+      offerPercent: "",
+      conditions: "",
+      offerStartDate: "",
+      offerEndDate: "",
+
+
       orderIsVisible: true,
       productIsVisible: false,
       prescriptionIsVisible: false,
       feedbackIsVisible: false,
       adsIsVisible: false,
-
+      realOrderVisible: false,
       // ----------------------------------------
 
       // Dialogbox
@@ -734,6 +792,7 @@ export default {
     this.loadStoreFeedBack();
     this.loadPrescription();
     this.loadStoreProfile();
+    this.loadStoreAds();
     // console.log("Mounted Hook: Fetching product images...");
   },
   computed: {
@@ -754,22 +813,22 @@ export default {
     ...mapActions(["fetchStoreProducts"]),
 
     async logout() {
-      try{
+      try {
         const confirmation = confirm("Want to logout ?");
         if (!confirmation) return;
         const result = await this.$store.dispatch("logoutStore");
         if (result) {
           this.$router.push("/storeLogin"); // Or wherever your login route is
         }
-      }catch(error){
+      } catch (error) {
         console.log("logout failed:", error);
       }
-      
     },
     select(item) {
       this.selectedItem = item;
-      if (item === "home") this.orders();
+      if (item === "home") this.home();
       else if (item === "products") this.productss();
+      else if (item === "orders") this.orders();
       else if (item === "ads") this.ads();
       else if (item === "feedback") this.feedback();
       else if (item === "prescription") this.prescription();
@@ -851,6 +910,58 @@ export default {
       }
     },
 
+    async updateProfile() {
+      const payload = {
+        storeName: this.profile.storeName,
+        storePassword: this.profile.storePassword,
+        phoneNumber: this.profile.phoneNumber,
+        storeId: this.getstore_id,
+      };
+      try {
+        const response = await this.$store.dispatch(
+          "MedEStore/updateProfile",
+          payload
+        );
+        if (response) {
+          alert("Profile Updated Successfully");
+          this.loadStoreProfile();
+          this.profileDialog = false;
+          
+        } else {
+          console.log("Error updating profile");
+        }
+      } catch (error) {
+        console.log("Update failed:", error);
+      }
+    },
+
+    async StoreAddAds(){
+      
+      const payload = {
+        offerName: this.offerName,
+        offerPercent: parseInt(this.offerPercent),
+        conditions: this.conditions,
+        offerStartDate: this.offerStartDate,
+        offerEndDate: this.offerEndDate,
+        storeId: parseInt(this.getstore_id),
+      };
+      try {
+        const response = await this.$store.dispatch(
+          "MedEStore/addAds",
+          payload
+        );
+        if (response) {
+          alert("Ad added Successfully");
+          this.loadStoreAds();
+                  
+        } else {
+          console.log("Error adding ad");
+        }
+      } catch (error) {
+        console.log("ad adding failed :", error);
+      }
+    },
+
     async StoreAddProduct() {
       const formData = new FormData();
       formData.append("productImage", this.selectedFile);
@@ -901,6 +1012,25 @@ export default {
         }
       } catch (error) {
         console.error("Error loading products :", error);
+      }
+    },
+
+    async loadStoreAds(){
+      try {
+        const storeId = this.getstore_id;
+        const result = await this.$store.dispatch(
+          "MedEStore/fetchStoreAds",
+          storeId
+        );
+        console.log("Ads fetch API Response:", result);
+        if (result.success) {
+          console.log("Fetched Ads:", result.data); // Debugging
+          this.Ads = result.data;
+        } else {
+          alert(`Error: ${result.error}`);
+        }
+      } catch (error) {
+        console.error("Error loading Ads :", error);
       }
     },
 
@@ -1010,13 +1140,15 @@ export default {
       this.prescriptionIsVisible = false;
       this.feedbackIsVisible = false;
       this.adsIsVisible = false;
+      this.realOrderVisible = false;
     },
-    orders() {
+    home() {
       this.orderIsVisible = true;
       this.productIsVisible = false;
       this.prescriptionIsVisible = false;
       this.feedbackIsVisible = false;
       this.adsIsVisible = false;
+      this.realOrderVisible = false;
     },
     prescription() {
       this.prescriptionIsVisible = true;
@@ -1024,6 +1156,7 @@ export default {
       this.productIsVisible = false;
       this.feedbackIsVisible = false;
       this.adsIsVisible = false;
+      this.realOrderVisible = false;
     },
     feedback() {
       this.feedbackIsVisible = true;
@@ -1031,6 +1164,7 @@ export default {
       this.orderIsVisible = false;
       this.productIsVisible = false;
       this.adsIsVisible = false;
+      this.realOrderVisible = false;
     },
     ads() {
       this.feedbackIsVisible = false;
@@ -1038,6 +1172,15 @@ export default {
       this.orderIsVisible = false;
       this.productIsVisible = false;
       this.adsIsVisible = true;
+      this.realOrderVisible = false;
+    },
+    orders() {
+      this.orderIsVisible = false;
+      this.productIsVisible = false;
+      this.prescriptionIsVisible = false;
+      this.feedbackIsVisible = false;
+      this.adsIsVisible = false;
+      this.realOrderVisible = true;
     },
     // file upload
 
@@ -1134,7 +1277,7 @@ export default {
 .sidebar-content {
   margin-top: 50px;
   width: 210px;
-  height: 40%;
+  height: 52%;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -1249,7 +1392,7 @@ input:focus {
   border-radius: 20px;
   background-color: #03045e;
   color: white;
-  padding: 20px 20px 20px 30px;
+  padding: 15px 20px 20px 20px;
 }
 
 .div3 {
@@ -1258,7 +1401,8 @@ input:focus {
   grid-column-start: 4;
   grid-row-start: 2;
   border-radius: 20px;
-  border: 1px solid black;
+  padding: 15px 20px 20px 20px;
+  border: 1px solid rgb(255, 255, 255);
 }
 
 .div4 {
@@ -1267,7 +1411,8 @@ input:focus {
   grid-row-start: 2;
   grid-row-end: 4;
   border-radius: 20px;
-  border: 1px solid black;
+  padding: 15px 20px 20px 20px;
+  border: 1px solid rgb(255, 255, 255);
 }
 
 .div5 {
@@ -1277,7 +1422,8 @@ input:focus {
   grid-row-start: 4;
   height: 460px;
   border-radius: 20px;
-  border: 1px solid black;
+
+  border: 1px solid rgb(255, 255, 255);
 }
 
 .div6 {
@@ -1287,7 +1433,8 @@ input:focus {
   grid-row-start: 4;
   grid-row-end: 6;
   border-radius: 20px;
-  border: 1px solid black;
+  padding: 15px 20px 20px 20px;
+  border: 1px solid rgb(255, 255, 255);
 }
 
 .div7 {
@@ -1296,7 +1443,8 @@ input:focus {
   grid-row-start: 6;
   grid-row-end: 10;
   border-radius: 20px;
-  border: 1px solid black;
+  padding: 15px 20px 20px 20px;
+  border: 1px solid rgb(255, 255, 255);
 }
 
 .products {
@@ -1347,6 +1495,50 @@ input:focus {
   border-radius: 20px;
   border: 1px solid #ffffff;
   padding: 30px;
+  box-sizing: border-box; 
+  
+}
+.scroll{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  
+}
+.scroll::-webkit-scrollbar{
+  display: none;
+}
+.ad-card {
+  /* border: 1px #16db93 solid; */
+  height: 190px;
+  width: 100%;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+  flex-shrink: 0;
+}
+.card-style1 {
+  background: linear-gradient(to bottom right, #ffffff, #be92a2);
+  color: #5a2a37;
+}
+.card-style2 {
+  background: linear-gradient(to bottom right, #ffffff, #3fa7d6);
+  color: #1e2a3a;
+}
+.card-style3 {
+  background: linear-gradient(to bottom right, #ffffff, #9c89b8);
+  color: #3c2a4d;
+}
+.card-style4 {
+  background: linear-gradient(to bottom right, #ffffff, #ff6b6b);
+  color: #5e1f1f;
+}
+.card-style5 {
+  background: linear-gradient(to bottom right, #ffffff, #4dabf7);
+  color: #1b2d44;
 }
 
 .ads-div2 {
