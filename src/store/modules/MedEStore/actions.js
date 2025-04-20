@@ -175,6 +175,21 @@ export default {
     }
   },
 
+  async rejectPrescription({rootGetters}, payload){
+    console.log("sending payload rejectprescription", payload);
+    const response = await axios.put(`${rootGetters.getUrl}/api/MedE/Store/rejectPrescription`,null,{
+      params:{
+        storeId: payload.storeId,
+        rejectionReason:payload.rejectionReason,
+        prescriptionId:payload.prescriptionId,
+      },
+    });
+    if(response.status >= 200 && response.status < 300){
+      console.log(response);
+      return true;
+    }
+  },
+
   async searchProducts({ rootGetters }, { storeId, productName }) {
     try {
       console.log("🚀 Sending request to search API...");

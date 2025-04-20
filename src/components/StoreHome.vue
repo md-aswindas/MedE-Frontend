@@ -344,7 +344,7 @@
         <!-- PRESCRIPTION CONTENTS -->
         <div class="product-content" v-if="prescriptions.length > 0">
           <div
-            class="product-card"
+            class="product-card prescription-card"
             v-for="prescription in prescriptions"
             :key="prescription.id"
           >
@@ -359,16 +359,51 @@
             >
               <v-icon size="50px">mdi-account-box-outline</v-icon>
             </div>
-            <p>{{ prescription.userName }}</p>
-            <p>{{ prescription.email }}</p>
-            <p>{{ prescription.phoneNumber }}</p>
-            <p><v-icon>mdi-eye</v-icon></p>
+            <p v-if="hide">{{ prescription.userName }}</p>
+            <p v-if="hide">{{ prescription.email }}</p>
+            <p v-if="hide">{{ prescription.phoneNumber }}</p>
+            <p v-if="hide" style="width: 80px"><v-icon>mdi-eye</v-icon></p>
 
+            <input
+              v-if="inputT"
+              type="text"
+              v-model="message"
+              id=""
+              placeholder="Enter Reject Message"
+              style="
+                width: 830px;
+                height: 50px;
+                padding-left: 20px;
+                border-radius: 50px;
+                border: 1px solid #03045e;
+                
+              "
+            />
+            <p
+              v-if="inputT"
+              style="
+                background-color: #00DC0F;
+                width: 80px;
+                padding: 0px 10px 0px 10px;
+                color: black;
+                height: 40px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-radius: 50px;
+                font-weight: 500;
+                position: absolute;
+                left: 76%;
+                cursor: pointer;
+              "
+            @click="rejectPrescription(prescription.prescriptionId)">
+              Send
+            </p>
             <div class="product-btns">
               <button class="p-btn update">
                 <v-icon>mdi-update</v-icon>&nbsp; Accept
               </button>
-              <button class="p-btn delete">
+              <button class="p-btn delete" @click="hideP(prescription.prescriptionId)">
                 <v-icon>mdi-trash-can-outline</v-icon>&nbsp; Reject
               </button>
             </div>
@@ -700,7 +735,6 @@
           </div>
           <div class="add-ads-cntnt scroll">
             <div class="ad-card card-style5" v-for="ad in Ads" :key="ad.id">
-              
               <div class="adname one">
                 <h3>{{ ad.offerName }}</h3>
                 <div class="deletead" @click="deleteStoreAds(ad.adsId)">
@@ -795,6 +829,9 @@ export default {
       profileDialog: false,
 
       isReadonly: true,
+
+      hide: true,
+      inputT: false,
     };
   },
   created() {
@@ -826,6 +863,10 @@ export default {
   methods: {
     ...mapActions(["fetchStoreProducts"]),
 
+    hideP(prescriptionId) {
+      prescriptionId.hide = !this.hide;
+      prescriptionId.inputT = !this.inputT;
+    },
     async logout() {
       try {
         const confirmation = confirm("Want to logout ?");
@@ -924,6 +965,28 @@ export default {
       }
     },
 
+    async rejectPrescription(prescriptionId){
+      const payload ={
+        storeId: this.getstore_id,
+        rejectionReason: this.message,
+        prescriptionId:prescriptionId,
+      };
+      console.log('Prescription ID:', prescriptionId);
+
+      try{
+        const response = await this.$store.dispatch("MedEStore/rejectPrescription", payload);
+        if(response){
+          alert("Prescription Rejected");
+          this.loadPrescription();
+          this.hideP();
+        } else {
+          console.log("error rejecting prescription");
+        }
+      } catch(error){
+        console.log("rejecting failed",error);
+        console.log(this.prescriptionId); // Is this undefined?
+      }
+    },
     async updateProfile() {
       const payload = {
         storeName: this.profile.storeName,
@@ -1131,7 +1194,7 @@ export default {
       }
     },
 
-    async deleteStoreAds(adsId){
+    async deleteStoreAds(adsId) {
       try {
         console.log("Deleting Ad with ID:", adsId); // Debugging
         if (!adsId) {
@@ -1142,10 +1205,7 @@ export default {
         const confirmation = confirm("Delete Ad ?");
         if (!confirmation) return;
 
-        const result = await this.$store.dispatch(
-          "MedEStore/deleteAds",
-          adsId
-        );
+        const result = await this.$store.dispatch("MedEStore/deleteAds", adsId);
 
         if (result.success) {
           this.loadStoreAds();
@@ -1276,7 +1336,7 @@ export default {
 
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Boldonse&family=Pacifico&family=Teko:wght@300..700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Boldonse&family=Pacifico&family=Teko:wght@300..700&display=swap");
 .container {
   height: 100vh;
   width: 100%;
@@ -1564,36 +1624,35 @@ input:focus {
 .dates {
   display: flex;
   justify-content: space-around;
-  
 }
-.adoffer{
+.adoffer {
   display: flex;
   justify-content: center;
   font-family: Boldonse;
   font-weight: 300;
   font-size: 12px;
 }
-.condition{
+.condition {
   padding-left: 20px;
 }
-.deletead{
-color: white;
-/* background-color: #ff0000; */
-cursor: pointer;
-border-radius: 50%;
-width: 30px;
-height: 30px;
-display: flex;
-justify-content: center;
-align-items: center;
-position: absolute;
-top: 3%;
-right: 1%;
+.deletead {
+  color: white;
+  /* background-color: #ff0000; */
+  cursor: pointer;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 3%;
+  right: 1%;
 }
-.adname{
+.adname {
   display: flex;
   justify-content: space-between;
-  padding:0px 20px 0px 20px ;
+  padding: 0px 20px 0px 20px;
   font-family: Pacifico;
   font-weight: 400;
 }
@@ -1677,6 +1736,9 @@ right: 1%;
   background: rgba(255, 255, 255, 0.215);
   backdrop-filter: blur(10px);
   flex-shrink: 0;
+}
+.prescription-card{
+  height: 100px;
 }
 
 .product-card p {
