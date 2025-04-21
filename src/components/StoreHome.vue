@@ -400,7 +400,7 @@
               Send
             </p>
             <div class="product-btns">
-              <button class="p-btn update">
+              <button class="p-btn update" @click="acceptPrescription(prescription.prescriptionId)">
                 <v-icon>mdi-update</v-icon>&nbsp; Accept
               </button>
               <button class="p-btn delete" @click="hideP(prescription.prescriptionId)">
@@ -863,9 +863,9 @@ export default {
   methods: {
     ...mapActions(["fetchStoreProducts"]),
 
-    hideP(prescriptionId) {
-      prescriptionId.hide = !this.hide;
-      prescriptionId.inputT = !this.inputT;
+    hideP() {
+      this.hide = !this.hide;
+      this.inputT = !this.inputT;
     },
     async logout() {
       try {
@@ -984,7 +984,25 @@ export default {
         }
       } catch(error){
         console.log("rejecting failed",error);
-        console.log(this.prescriptionId); // Is this undefined?
+      }
+    },
+    async acceptPrescription(prescriptionId){
+      const payload={
+        storeId:this.getstore_id,
+        prescriptionId:prescriptionId,
+      };
+      try{
+        const response = await this.$store.dispatch("MedEStore/acceptPrescription",payload);
+        if (response) {
+          alert("Prescription accepted");
+          this.loadPrescription();
+        }else{
+          console.log("error accepting prescription");
+        }
+      } catch(error){
+        console.log("accepting failed",error);
+
+        
       }
     },
     async updateProfile() {

@@ -189,6 +189,19 @@ export default {
       return true;
     }
   },
+  async acceptPrescription({rootGetters},payload){
+    const response = await axios.put(`${rootGetters.getUrl}/api/MedE/Store/acceptPrescription`,null,{
+      params:{
+        storeId:payload.storeId,
+        prescriptionId:payload.prescriptionId,
+      },
+    });
+    if(response.status>=200 && response.status <300){
+      console.log(response);
+      return true;
+      
+    }
+  },
 
   async searchProducts({ rootGetters }, { storeId, productName }) {
     try {
