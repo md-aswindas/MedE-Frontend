@@ -99,7 +99,7 @@
           </div>
 
           <!-- STORE PROFILE DIALOG BOX -->
-          <v-dialog v-model="profileDialog" max-width="500" height="700px">
+          <v-dialog v-model="profileDialog" max-width="500" height="680px">
             <template v-slot:default="{ isActive }">
               <v-card rounded="lg">
                 <v-card-title class="d-flex justify-space-between align-center">
@@ -200,6 +200,8 @@
               </v-card>
             </template>
           </v-dialog>
+
+          <!-- HOME PAGE -->
           <div class="div2">
             <h3>Total Orders</h3>
             <h1
@@ -376,13 +378,12 @@
                 padding-left: 20px;
                 border-radius: 50px;
                 border: 1px solid #03045e;
-                
               "
             />
             <p
               v-if="inputT"
               style="
-                background-color: #00DC0F;
+                background-color: #00dc0f;
                 width: 80px;
                 padding: 0px 10px 0px 10px;
                 color: black;
@@ -396,14 +397,21 @@
                 left: 76%;
                 cursor: pointer;
               "
-            @click="rejectPrescription(prescription.prescriptionId)">
+              @click="rejectPrescription(prescription.prescriptionId)"
+            >
               Send
             </p>
             <div class="product-btns">
-              <button class="p-btn update" @click="acceptPrescription(prescription.prescriptionId)">
+              <button
+                class="p-btn update"
+                @click="acceptPrescription(prescription.prescriptionId)"
+              >
                 <v-icon>mdi-update</v-icon>&nbsp; Accept
               </button>
-              <button class="p-btn delete" @click="hideP(prescription.prescriptionId)">
+              <button
+                class="p-btn delete"
+                @click="hideP(prescription.prescriptionId)"
+              >
                 <v-icon>mdi-trash-can-outline</v-icon>&nbsp; Reject
               </button>
             </div>
@@ -678,6 +686,23 @@
         </div>
       </v-dialog>
 
+      <!-- MAP PAGE -->
+      <div class="ads map" v-if="realOrderVisible">
+        <v-btn @click="loadMap">Show Map</v-btn>
+        <v-btn color="red" @click="useCurrentLocation">Use Current Location</v-btn>
+
+        <div
+          ref="mapContainer"
+          style="
+            height: 100%;
+            width: 100%;
+            border-radius: 20px;
+            margin-top: 20px;
+          "
+        ></div>
+        <v-btn style="background-color: #00dc0f;" @click="addStoreLocation()">Save location</v-btn>
+      </div>
+
       <!-- ADS PAGE -->
       <div class="ads" v-if="adsIsVisible">
         <!-- ADD ADS -->
@@ -762,9 +787,18 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 
+import { nextTick } from "vue";
+import L from "leaflet";
+import "leaflet-control-geocoder"; // just import to register it globally
+
 export default {
   data() {
     return {
+      map: null,
+      marker: null,
+      latitude: null,
+      longitude: null,
+
       // PROFILE DATA
       profile: {
         storeName: "",
@@ -827,7 +861,7 @@ export default {
       updateProductDialog: false,
       addImageDialog: false,
       profileDialog: false,
-
+      dialog: false,
       isReadonly: true,
 
       hide: true,
@@ -862,6 +896,82 @@ export default {
   },
   methods: {
     ...mapActions(["fetchStoreProducts"]),
+
+    loadMap() {
+      nextTick(() => {
+        const container = this.$refs.mapContainer;
+
+        if (container && !this.map) {
+          this.map = L.map(container).setView([9.4981, 76.3388], 19); // Kerala
+          // Add satellite imagery
+          L.tileLayer(
+            `https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=yW9Chaj3bp5BpSfoMfNq`,
+            {
+              attribution:
+                '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a>',
+              tileSize: 512,
+              zoomOffset: -1,
+            }
+          ).addTo(this.map);
+
+          // 👉 Add search control here
+          L.Control.geocoder({
+            defaultMarkGeocode: false,
+          })
+            .on("markgeocode", (e) => {
+              const bbox = e.geocode.bbox;
+              const poly = L.polygon([
+                bbox.getSouthEast(),
+                bbox.getNorthEast(),
+                bbox.getNorthWest(),
+                bbox.getSouthWest(),
+              ]).addTo(this.map);
+
+              this.map.fitBounds(poly.getBounds());
+            })
+            .addTo(this.map);
+
+          // Marker on map click
+          this.map.on("click", (e) => {
+            const { lat, lng } = e.latlng;
+            if (this.marker) {
+              this.marker.setLatLng([lat, lng]);
+            } else {
+              this.marker = L.marker([lat, lng]).addTo(this.map);
+            }
+
+            this.latitude = lat;
+            this.longitude = lng;
+            console.log(`Selected: ${lat}, ${lng}`);
+          });
+        } else if (this.map) {
+          this.map.invalidateSize();
+        }
+      });
+    },
+
+    useCurrentLocation() {
+      if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        console.log("Latitude:", latitude);
+        console.log("Longitude:", longitude);
+
+        // Store in your data if needed
+        this.latitude = latitude;
+        this.longitude = longitude;
+      },
+      (error) => {
+        console.error("Error getting location:", error);
+        alert("Could not get location.");
+      }
+    );
+  } else {
+    alert("Geolocation is not supported by this browser.");
+  }
+  },
 
     hideP() {
       this.hide = !this.hide;
@@ -965,44 +1075,67 @@ export default {
       }
     },
 
-    async rejectPrescription(prescriptionId){
-      const payload ={
+    async rejectPrescription(prescriptionId) {
+      const payload = {
         storeId: this.getstore_id,
         rejectionReason: this.message,
-        prescriptionId:prescriptionId,
+        prescriptionId: prescriptionId,
       };
-      console.log('Prescription ID:', prescriptionId);
+      console.log("Prescription ID:", prescriptionId);
 
-      try{
-        const response = await this.$store.dispatch("MedEStore/rejectPrescription", payload);
-        if(response){
+      try {
+        const response = await this.$store.dispatch(
+          "MedEStore/rejectPrescription",
+          payload
+        );
+        if (response) {
           alert("Prescription Rejected");
           this.loadPrescription();
           this.hideP();
         } else {
           console.log("error rejecting prescription");
         }
-      } catch(error){
-        console.log("rejecting failed",error);
+      } catch (error) {
+        console.log("rejecting failed", error);
       }
     },
-    async acceptPrescription(prescriptionId){
-      const payload={
-        storeId:this.getstore_id,
-        prescriptionId:prescriptionId,
+    async acceptPrescription(prescriptionId) {
+      const payload = {
+        storeId: this.getstore_id,
+        prescriptionId: prescriptionId,
       };
-      try{
-        const response = await this.$store.dispatch("MedEStore/acceptPrescription",payload);
+      try {
+        const response = await this.$store.dispatch(
+          "MedEStore/acceptPrescription",
+          payload
+        );
         if (response) {
           alert("Prescription accepted");
           this.loadPrescription();
-        }else{
+        } else {
           console.log("error accepting prescription");
         }
-      } catch(error){
-        console.log("accepting failed",error);
-
-        
+      } catch (error) {
+        console.log("accepting failed", error);
+      }
+    },
+    async addStoreLocation() {
+      if (this.latitude && this.longitude) {
+        const payload = {
+          storeId: this.getstore_id,
+          latitude: this.latitude,
+          longitude: this.longitude,
+        };
+        try{
+          const response = await this.$store.dispatch("MedEStore/addStoreLocation",payload);
+          if (response) {
+            alert("location Added");
+          } else {
+            console.log("error adding location");
+          }
+        } catch(error){
+          console.log("location addding failed", error);
+        }
       }
     },
     async updateProfile() {
@@ -1355,6 +1488,7 @@ export default {
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Boldonse&family=Pacifico&family=Teko:wght@300..700&display=swap");
+
 .container {
   height: 100vh;
   width: 100%;
@@ -1586,7 +1720,11 @@ input:focus {
   grid-template-rows: repeat(5, 1fr);
   gap: 8px;
 }
-
+.map {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 .ads-div1 {
   grid-column: span 3 / span 3;
   grid-row: span 5 / span 5;
@@ -1755,7 +1893,7 @@ input:focus {
   backdrop-filter: blur(10px);
   flex-shrink: 0;
 }
-.prescription-card{
+.prescription-card {
   height: 100px;
 }
 

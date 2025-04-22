@@ -203,6 +203,20 @@ export default {
     }
   },
 
+  async addStoreLocation({rootGetters},payload){
+    const response = await axios.put(`${rootGetters.getUrl}/api/MedE/Store/AddStoreLocation`,null,{
+      params:{
+        store_Id:payload.storeId,
+        latitude:payload.latitude,
+        longitude:payload.longitude,
+      },
+    });
+    if(response.status>=200 && response.status<300){
+      console.log(response);
+      return true;
+    }
+  },
+
   async searchProducts({ rootGetters }, { storeId, productName }) {
     try {
       console.log("🚀 Sending request to search API...");
