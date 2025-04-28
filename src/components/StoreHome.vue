@@ -689,7 +689,9 @@
       <!-- MAP PAGE -->
       <div class="ads map" v-if="realOrderVisible">
         <v-btn @click="loadMap">Show Map</v-btn>
-        <v-btn color="red" @click="useCurrentLocation">Use Current Location</v-btn>
+        <v-btn color="red" @click="useCurrentLocation"
+          >Use Current Location</v-btn
+        >
 
         <div
           ref="mapContainer"
@@ -700,7 +702,9 @@
             margin-top: 20px;
           "
         ></div>
-        <v-btn style="background-color: #00dc0f;" @click="addStoreLocation()">Save location</v-btn>
+        <v-btn style="background-color: #00dc0f" @click="addStoreLocation()"
+          >Save location</v-btn
+        >
       </div>
 
       <!-- ADS PAGE -->
@@ -879,7 +883,20 @@ export default {
     this.loadStoreProfile();
     this.loadStoreAds();
     // console.log("Mounted Hook: Fetching product images...");
+   
   },
+  watch: {
+    profile(newValue) {
+      if (newValue) {
+        if (this.statusPending) {
+          this.$router.push("/pending");
+        } else if (this.statusReject) {
+          this.$router.push("/rejected");
+        }
+      }
+    },
+  },
+
   computed: {
     ...mapGetters(["getstore_id"]),
 
@@ -952,26 +969,26 @@ export default {
 
     useCurrentLocation() {
       if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-        console.log("Latitude:", latitude);
-        console.log("Longitude:", longitude);
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            console.log("Latitude:", latitude);
+            console.log("Longitude:", longitude);
 
-        // Store in your data if needed
-        this.latitude = latitude;
-        this.longitude = longitude;
-      },
-      (error) => {
-        console.error("Error getting location:", error);
-        alert("Could not get location.");
+            // Store in your data if needed
+            this.latitude = latitude;
+            this.longitude = longitude;
+          },
+          (error) => {
+            console.error("Error getting location:", error);
+            alert("Could not get location.");
+          }
+        );
+      } else {
+        alert("Geolocation is not supported by this browser.");
       }
-    );
-  } else {
-    alert("Geolocation is not supported by this browser.");
-  }
-  },
+    },
 
     hideP() {
       this.hide = !this.hide;
@@ -1126,14 +1143,17 @@ export default {
           latitude: this.latitude,
           longitude: this.longitude,
         };
-        try{
-          const response = await this.$store.dispatch("MedEStore/addStoreLocation",payload);
+        try {
+          const response = await this.$store.dispatch(
+            "MedEStore/addStoreLocation",
+            payload
+          );
           if (response) {
             alert("location Added");
           } else {
             console.log("error adding location");
           }
-        } catch(error){
+        } catch (error) {
           console.log("location addding failed", error);
         }
       }
@@ -1233,7 +1253,7 @@ export default {
           console.log("Fetched Products:", result.data); // Debugging
           this.products = result.data;
         } else {
-          alert(`Error: ${result.error}`);
+          // alert(`Error: ${result.error}`);
         }
       } catch (error) {
         console.error("Error loading products :", error);
@@ -1252,7 +1272,7 @@ export default {
           console.log("Fetched Ads:", result.data); // Debugging
           this.Ads = result.data;
         } else {
-          alert(`Error: ${result.error}`);
+          // alert(`Error: ${result.error}`);
         }
       } catch (error) {
         console.error("Error loading Ads :", error);
@@ -1270,7 +1290,7 @@ export default {
           console.log("fetched feedback:", result.data);
           this.feedbacks = result.data;
         } else {
-          alert(`Error: ${result.error}`);
+          // alert(`Error: ${result.error}`);
         }
         const total = this.feedbacks.reduce(
           (sum, feedback) => sum + feedback.rating,
@@ -1294,7 +1314,7 @@ export default {
           console.log("fetched profile:", result.data);
           this.profile = result.data[0];
         } else {
-          alert(`Error: ${result.error}`);
+          // alert(`Error: ${result.error}`);
         }
       } catch (error) {
         console.error("Error loading profile :", error);
@@ -1312,7 +1332,7 @@ export default {
           console.log("fetched prescriptions:", result.data);
           this.prescriptions = result.data;
         } else {
-          alert(`Error: ${result.error}`);
+          // alert(`Error: ${result.error}`);
         }
       } catch (error) {
         console.error("Error loading prescription :", error);
@@ -1375,7 +1395,7 @@ export default {
           this.category = result.data;
           console.log(result);
         } else {
-          alert(`Error : ${result.error}`);
+          // alert(`Error : ${result.error}`);
         }
       } catch (error) {
         console.error("Error Loading Category:", error);

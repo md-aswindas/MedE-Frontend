@@ -145,7 +145,7 @@ export default {
       try {
         const response = await this.$store.dispatch("registerStore", formData);
         if (response) {
-          alert("StoreRegistered Successfully" + response.data.name);
+          alert("StoreRegistered Successfully" + response.data);
         } else {
           console.log("error");
         }
