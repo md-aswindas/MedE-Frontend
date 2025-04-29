@@ -99,7 +99,7 @@
           </div>
 
           <!-- STORE PROFILE DIALOG BOX -->
-          <v-dialog v-model="profileDialog" max-width="500" height="680px">
+          <v-dialog v-model="profileDialog" max-width="500" height="780px">
             <template v-slot:default="{ isActive }">
               <v-card rounded="lg">
                 <v-card-title class="d-flex justify-space-between align-center">
@@ -114,7 +114,7 @@
                   ></v-btn>
                 </v-card-title>
 
-                <v-divider class="mb-4"></v-divider>
+                <v-divider class="mb-2"></v-divider>
 
                 <v-card-text>
                   <v-text-field
@@ -151,6 +151,7 @@
                     :readonly="isReadonly"
                     color="#03045E"
                   ></v-text-field>
+
                   <v-text-field
                     :class="isReadonly ? 'readonly-field' : 'editable-field'"
                     append-inner-icon="mdi-lock"
@@ -162,6 +163,14 @@
                   ></v-text-field>
                   <v-text-field
                     color="#03045E"
+                    append-inner-icon="mdi-map-marker"
+                    label="Address"
+                    :model-value="profile.address"
+                    variant="outlined"
+                    readonly
+                  ></v-text-field>
+                  <v-text-field
+                    color="#03045E"
                     append-inner-icon="mdi-calendar-range"
                     label="Created Date"
                     :model-value="profile.registrationDate"
@@ -170,9 +179,9 @@
                   ></v-text-field>
                 </v-card-text>
 
-                <v-divider class="mt-2"></v-divider>
+                <v-divider class="mt-0"></v-divider>
 
-                <v-card-actions class="my-2 d-flex justify-center">
+                <v-card-actions class=" d-flex justify-center">
                   <v-btn
                     class="text-none"
                     color="#ff0000"
@@ -802,6 +811,7 @@ export default {
       marker: null,
       latitude: null,
       longitude: null,
+      
 
       // PROFILE DATA
       profile: {
@@ -811,6 +821,7 @@ export default {
         phoneNumber: "",
         storePassword: "",
         registrationDate: "",
+        address:"",
       },
       selectedItem: "home",
       // SEARCH PRODUCT DATA
@@ -914,6 +925,7 @@ export default {
   methods: {
     ...mapActions(["fetchStoreProducts"]),
 
+   
     loadMap() {
       nextTick(() => {
         const container = this.$refs.mapContainer;
@@ -935,7 +947,7 @@ export default {
           L.Control.geocoder({
             defaultMarkGeocode: false,
           })
-            .on("markgeocode", (e) => {
+            .on("markgeocode", async (e) => {
               const bbox = e.geocode.bbox;
               const poly = L.polygon([
                 bbox.getSouthEast(),
@@ -949,7 +961,7 @@ export default {
             .addTo(this.map);
 
           // Marker on map click
-          this.map.on("click", (e) => {
+          this.map.on("click", async (e) => {
             const { lat, lng } = e.latlng;
             if (this.marker) {
               this.marker.setLatLng([lat, lng]);
@@ -960,10 +972,33 @@ export default {
             this.latitude = lat;
             this.longitude = lng;
             console.log(`Selected: ${lat}, ${lng}`);
+            const apiKey = "yW9Chaj3bp5BpSfoMfNq"; // your actual MapTiler key
+        const url = `https://api.maptiler.com/geocoding/${lng},${lat}.json?key=${apiKey}`;
+
+        try {
+          const res = await fetch(url);
+          const data =  await res.json();
+          if (data.features && data.features.length > 0) {
+            const address = data.features[0].place_name;
+            console.log("Address:", address);
+            this.selectedAddress = address;
+
+            // Optional: Show popup with address
+            this.marker.bindPopup(address).openPopup();
+          } else {
+            this.selectedAddress = "No address found";
+          }
+        } catch (error) {
+          console.error("Error in reverse geocoding:", error);
+          this.selectedAddress = "Reverse geocoding failed";
+        }
+      
+            
           });
         } else if (this.map) {
           this.map.invalidateSize();
         }
+        
       });
     },
 
@@ -1142,6 +1177,7 @@ export default {
           storeId: this.getstore_id,
           latitude: this.latitude,
           longitude: this.longitude,
+          address:this.selectedAddress,
         };
         try {
           const response = await this.$store.dispatch(

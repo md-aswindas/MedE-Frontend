@@ -209,6 +209,7 @@ export default {
         store_Id:payload.storeId,
         latitude:payload.latitude,
         longitude:payload.longitude,
+        address:payload.address,
       },
     });
     if(response.status>=200 && response.status<300){

@@ -4,25 +4,50 @@
       <div class="left-nav">
         <h1 class="logo">MedE</h1>
         <p class="nav-txt" style="width: 140px">
-          <v-icon large color="#03045E" size="1.2rem" class="icon">mdi-map-marker</v-icon>
+          <v-icon large color="#03045E" size="1.2rem" class="icon"
+            >mdi-map-marker</v-icon
+          >
           Find a store
         </p>
       </div>
       <div class="right-nav">
-        <router-link to="/storeLogin" style="text-decoration: none; color: inherit; font-weight: 500">
+        <router-link
+          to="/storeLogin"
+          style="text-decoration: none; color: inherit; font-weight: 500"
+        >
           <p class="nav-txt" style="width: 170px">
-            <v-icon large color="#03045E" size="1.2rem" class="icon">mdi-storefront-outline</v-icon>
+            <v-icon large color="#03045E" size="1.2rem" class="icon"
+              >mdi-storefront-outline</v-icon
+            >
             Become A Seller
           </p>
         </router-link>
-        <router-link to="/userLogin" style="text-decoration: none; color: inherit; font-weight: 500">
-          <p class="nav-img" style="display: flex; justify-content: center; align-items: center; color: #03045e; padding: 7px; border-radius: 20px; width: 100px;">
-            <v-icon large color="#03045E" size="1.2rem" class="icon">mdi-account-outline</v-icon>
+        <router-link
+          to="/userLogin"
+          style="text-decoration: none; color: inherit; font-weight: 500"
+        >
+          <p
+            class="nav-img"
+            style="
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              color: #03045e;
+              padding: 7px;
+              border-radius: 20px;
+              width: 100px;
+            "
+          >
+            <v-icon large color="#03045E" size="1.2rem" class="icon"
+              >mdi-account-outline</v-icon
+            >
             Sign In
           </p>
         </router-link>
         <p class="nav-txt">
-          <v-icon large color="#03045E" size="1.2rem" class="icon">mdi-cart-outline</v-icon>
+          <v-icon large color="#03045E" size="1.2rem" class="icon"
+            >mdi-cart-outline</v-icon
+          >
           Cart
         </p>
       </div>
@@ -30,33 +55,58 @@
 
     <div class="product-div">
       <div class="product-leftside">
-      
         <div class="filters">
           <h4>Filters</h4>
         </div>
-          
+
         <div class="filter-cntnt">
-          <p style="margin-top: 20px; margin-left: 30px; margin-bottom: 20px; font-weight: 600;"> 
-              PRICE
-             <v-icon large color="black" size="2rem" class="filter-icon" @click="open()">mdi-menu-down </v-icon>
+          <p
+            style="
+              margin-top: 20px;
+              margin-left: 30px;
+              margin-bottom: 20px;
+              font-weight: 600;
+            "
+          >
+            PRICE
+            <v-icon
+              large
+              color="black"
+              size="2rem"
+              class="filter-icon"
+              @click="open()"
+              >mdi-menu-down
+            </v-icon>
           </p>
           <div class="checkbox">
-            <input type="radio" name="High - Low" id="High - Low" >
-          <label for="High - Low">Price High - Low</label>
-          </div>
-          
-          <div class="checkbox">
-            <input type="radio" name="High - Low" id="Low - High">
-          <label for="Low - High">Price Low - High</label>
+            <input type="radio" name="High - Low" id="High - Low" />
+            <label for="High - Low">Price High - Low</label>
           </div>
 
-          <p style="margin-top: 20px; margin-left: 30px; margin-bottom: 20px; font-weight: 600;">
+          <div class="checkbox">
+            <input type="radio" name="High - Low" id="Low - High" />
+            <label for="Low - High">Price Low - High</label>
+          </div>
+
+          <p
+            style="
+              margin-top: 20px;
+              margin-left: 30px;
+              margin-bottom: 20px;
+              font-weight: 600;
+            "
+          >
             CATEGORIES
-            <v-icon large color="black" size="2rem" class="filter-icon" @click="openCat()">mdi-menu-down </v-icon>
+            <v-icon
+              large
+              color="black"
+              size="2rem"
+              class="filter-icon"
+              @click="openCat()"
+              >mdi-menu-down
+            </v-icon>
           </p>
-
         </div>
-
       </div>
       <div class="product-rightside">
         <div class="item-found">
@@ -64,18 +114,22 @@
         </div>
         <div class="product-cards" v-if="products.length">
           <div class="card" v-for="product in products" :key="product.id">
-            <div class="card-img">
-
-              
-              
-            </div>
+            <div class="card-img"></div>
             <div class="card-txt1">
               <h4>{{ product.productName }}</h4>
               <h4 class="stock">Stock : {{ product.stockCount }}</h4>
             </div>
-          
+
             <div class="price">
-              <h4 class="final-price">₹ {{ Math.ceil(product.actualPrice - (product.actualPrice * product.offerPercentage / 100)) }}</h4>
+              <h4 class="final-price">
+                ₹
+                {{
+                  Math.ceil(
+                    product.actualPrice -
+                      (product.actualPrice * product.offerPercentage) / 100
+                  )
+                }}
+              </h4>
               <h4 class="org-price">₹ {{ product.actualPrice }}</h4>
               <h4 class="disc">({{ product.offerPercentage }}% OFF)</h4>
             </div>
@@ -96,22 +150,20 @@
 </template>
 
 <script>
-
-import { mapActions } from 'vuex';
+import { mapActions } from "vuex";
 
 export default {
   data() {
     return {
       products: [],
-      
     };
   },
   methods: {
-    ...mapActions(['fetchProducts']), 
+    ...mapActions(["fetchProducts"]),
 
     async loadProducts() {
       try {
-        const result = await this.fetchProducts(); 
+        const result = await this.fetchProducts();
         if (result.success) {
           this.products = result.data;
         } else {
@@ -121,11 +173,12 @@ export default {
         console.error("Error loading products:", error);
       }
     },
-    open(){
+    open() {
       document.querySelectorAll(".checkbox").forEach((checkbox) => {
-      checkbox.style.display = checkbox.style.display === "none" ? "flex" : "none";
-    });
-    }
+        checkbox.style.display =
+          checkbox.style.display === "none" ? "flex" : "none";
+      });
+    },
   },
   mounted() {
     this.loadProducts();
@@ -228,9 +281,8 @@ export default {
   display: flex;
   padding-top: 0px;
   flex-direction: column;
-  
 }
-.checkbox{
+.checkbox {
   margin-top: 10px;
   margin-left: 20px;
   width: 80%;
@@ -254,7 +306,7 @@ export default {
   -webkit-box-shadow: 0 15px 40px -20px rgba(40, 44, 63, 0.15);
   margin: 5px;
 }
-.filters{
+.filters {
   width: 97%;
   height: 50px;
   background-color: #ffffff;
@@ -264,19 +316,18 @@ export default {
   box-shadow: 0 15px 40px -20px rgba(40, 44, 63, 0.15);
   margin: 5px;
 }
-.filter-cntnt{
+.filter-cntnt {
   width: 97%;
   height: 654px;
   background-color: #ffffff;
   margin-left: 5px;
- 
 }
-.filter-cntnt p{
+.filter-cntnt p {
   display: flex;
   align-items: center;
 }
 
-.filter-icon{
+.filter-icon {
   margin-left: 10px;
 }
 
@@ -286,7 +337,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   margin: 5px;
-  
+
   /* justify-content: space-evenly; */
 }
 .card {
@@ -331,7 +382,7 @@ export default {
 .card-txt1 h4 {
   margin-top: 0;
   padding-left: 7px;
-  width:fit-content;
+  width: fit-content;
 }
 
 /* Price section styling */
@@ -353,8 +404,8 @@ export default {
 .final-price {
   font-size: 18px;
 }
-.stock{
-  font-size: 13px; 
+.stock {
+  font-size: 13px;
   color: green;
   font-weight: 500;
 }
