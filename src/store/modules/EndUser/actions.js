@@ -23,5 +23,22 @@ export default{
       console.error(" API Error:", error);
       return { success: false, data: [] };
     }
-  }
+  },
+  async storeNearMe({rootGetters},{latitude,longitude}){
+    try{
+      const res = await axios.get(`${rootGetters.getUrl}/api/MedE/User/findNearbyStores`,{
+        params:{
+          latitude:latitude,
+          longitude:longitude,
+        },
+      });
+      if(res.status >= 200 && res.status < 300){
+        return{ success : true, data: res.data };
+      } 
+    }catch(error){
+      return{success :false, error: error.res?.data?.message || "failed"};
+    }
+    
+  },
+  
 }

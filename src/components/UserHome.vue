@@ -58,7 +58,65 @@
       </div>
     </div>
     <div class="location-wide" v-if="locationVisible">
-      <div class="location"></div>
+      <div class="location">
+        <p @click="showlocation()" style="cursor: pointer">
+          <v-icon size="32px">mdi-close</v-icon>
+        </p>
+        <button
+          style="
+            width: 430px;
+            height: 50px;
+            margin-top: 30px;
+            background-color: #03045e;
+            color: white;
+            font-weight: 500;
+            border-radius: 10px;
+          "
+          @click="useCurrentLocation()"
+        >
+          Use Current Location
+        </button>
+        <button
+          style="
+            width: 430px;
+            height: 50px;
+            margin-top: 20px;
+            border: 1px solid #03045e;
+            color: #03045e;
+            font-weight: 500;
+            border-radius: 10px;
+          "
+          @click="loadMap()"
+        >
+          Custom Location
+        </button>
+        <div
+          class="map"
+          ref="mapContainer"
+          style="
+            margin-top: 20px;
+            width: 430px;
+            height: 450px;
+            /* border: 1px solid #03045e; */
+            border-radius: 10px;
+          "
+          v-if="showMap"
+        ></div>
+        <button
+          style="
+            width: 430px;
+            height: 50px;
+            margin-top: 20px;
+            background-color: #00dc0f;
+            color: white;
+            font-weight: 500;
+            border-radius: 10px;
+          "
+          @click="nearbyStore()"
+        >
+          Save
+        </button>
+      </div>
     </div>
     <div class="searchbar">
       <input
@@ -81,7 +139,15 @@
       <div class="card c1" v-for="store in stores" :key="store.id">
         <h2>{{ store.storeName }}</h2>
         <div class="c2">
-          <h4>{{store.address}}</h4>
+          <h4
+            style="
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              overflow: hidden;
+            "
+          >
+            {{ store.address }}
+          </h4>
           <v-rating
             readonly
             half-increments
@@ -269,6 +335,9 @@
 </template>
 
 <script>
+import { nextTick } from "vue";
+import L from "leaflet";
+import "leaflet-control-geocoder"; // just import to register it globally
 export default {
   data() {
     return {
@@ -277,9 +346,116 @@ export default {
       stores: [],
       search: true,
       locationVisible: false,
+      showMap: false,
+
+      map: null,
+      marker: null,
+      latitude: null,
+      longitude: null,
+
+      nearby:[],
+
     };
   },
   methods: {
+    // MAP
+    loadMap() {
+      this.showMap = true;
+      nextTick(() => {
+        const container = this.$refs.mapContainer;
+
+        if (container && !this.map) {
+          this.map = L.map(container).setView([9.4981, 76.3388], 19); // Kerala
+          // Add satellite imagery
+          L.tileLayer(
+            `https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=yW9Chaj3bp5BpSfoMfNq`,
+            {
+              attribution:
+                '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a>',
+              tileSize: 512,
+              zoomOffset: -1,
+            }
+          ).addTo(this.map);
+
+          // 👉 Add search control here
+          L.Control.geocoder({
+            defaultMarkGeocode: false,
+          })
+            .on("markgeocode", async (e) => {
+              const bbox = e.geocode.bbox;
+              const poly = L.polygon([
+                bbox.getSouthEast(),
+                bbox.getNorthEast(),
+                bbox.getNorthWest(),
+                bbox.getSouthWest(),
+              ]).addTo(this.map);
+
+              this.map.fitBounds(poly.getBounds());
+            })
+            .addTo(this.map);
+
+          // Marker on map click
+          this.map.on("click", async (e) => {
+            const { lat, lng } = e.latlng;
+            if (this.marker) {
+              this.marker.setLatLng([lat, lng]);
+            } else {
+              this.marker = L.marker([lat, lng]).addTo(this.map);
+            }
+
+            this.latitude = lat;
+            this.longitude = lng;
+            console.log(`Selected: ${lat}, ${lng}`);
+            const apiKey = "yW9Chaj3bp5BpSfoMfNq"; // your actual MapTiler key
+            const url = `https://api.maptiler.com/geocoding/${lng},${lat}.json?key=${apiKey}`;
+
+            try {
+              const res = await fetch(url);
+              const data = await res.json();
+              if (data.features && data.features.length > 0) {
+                const address = data.features[0].place_name;
+                console.log("Address:", address);
+                this.selectedAddress = address;
+
+                // Optional: Show popup with address
+                this.marker.bindPopup(address).openPopup();
+              } else {
+                this.selectedAddress = "No address found";
+              }
+            } catch (error) {
+              console.error("Error in reverse geocoding:", error);
+              this.selectedAddress = "Reverse geocoding failed";
+            }
+          });
+        } else if (this.map) {
+          this.map.invalidateSize();
+        }
+      });
+    },
+
+    useCurrentLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            console.log("Latitude:", latitude);
+            console.log("Longitude:", longitude);
+
+            // Store in your data if needed
+            this.latitude = latitude;
+            this.longitude = longitude;
+          },
+          (error) => {
+            console.error("Error getting location:", error);
+            alert("Could not get location.");
+          }
+        );
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    },
+
     async searchStore() {
       if (!this.searchQuery.trim()) {
         console.log(" Search query is empty. Skipping API call.");
@@ -301,10 +477,27 @@ export default {
         this.stores = [];
       }
     },
+
     showlocation() {
       this.locationVisible = !this.locationVisible;
     },
-   
+
+    async nearbyStore(){
+      
+      try{
+        const latitude= this.latitude;
+        const longitude= this.longitude;
+        const response = await this.$store.dispatch("EndUser/storeNearMe",{latitude,longitude});
+        console.log("nearby stores:", response);
+        if(response.success){
+          console.log("nearby store fetched", response.data);
+          this.nearby = response.data;
+          this.showlocation();
+        }
+      } catch(error){
+        console.log("fetching nearby store failed", error);
+      }
+    },
   },
 };
 </script>
@@ -339,6 +532,8 @@ export default {
   height: 100%;
   width: 500px;
   position: sticky;
+  padding-top: 30px;
+  padding-left: 30px;
 }
 .location-wide {
   background-color: #000000ba;
@@ -524,7 +719,8 @@ export default {
 }
 .c2 h4 {
   letter-spacing: 0.5px;
-  margin-right: 40px;
+  margin-right: 15px;
+  width: 140px;
 }
 .c2 {
   display: flex;

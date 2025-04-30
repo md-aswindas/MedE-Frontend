@@ -309,7 +309,12 @@
             v-for="product in products"
             :key="product.id"
           >
-            <img src="" alt="" style="width: 90px; height: 90px" />
+            <img :src="'data:image/jpeg;base64,'+ product.productImage" alt="" style="width: 90px; height: 90px; background-size: contain;" />
+            <!-- <v-img
+            :src="'data:image/jpeg;base64,'+ product.productImage"
+            class="productImage"
+            >
+            </v-img> -->
 
             <div class="name">
               <h2>{{ product.productName }}</h2>
@@ -1948,6 +1953,11 @@ input:focus {
   background: rgba(255, 255, 255, 0.215);
   backdrop-filter: blur(10px);
   flex-shrink: 0;
+}
+.productImage{
+  width: 90px;
+  height: 90px;
+
 }
 .prescription-card {
   height: 100px;
