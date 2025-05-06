@@ -16,11 +16,12 @@ const store = createStore({
   state(){
     return{
       base_url:'http://localhost:8081',
-      // base_url:'http://192.168.150.44:8081',
+      // base_url:'http://172.20.4.9:8081',
       
       // session storage
       auth:{
         store_id : sessionStorage.getItem("store_id")||"",
+        user_id : sessionStorage.getItem("user_id")||"",
       },
       // ----------------------
     };

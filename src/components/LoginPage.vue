@@ -73,6 +73,7 @@ export default {
         const response = await this.$store.dispatch("loginUser", payload);
         if (response) {
           alert("successfully login!!!!");
+          this.$router.push('/');
         } else {
           console.log("error");
         }

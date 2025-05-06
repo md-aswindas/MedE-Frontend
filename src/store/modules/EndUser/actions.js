@@ -40,5 +40,20 @@ export default{
     }
     
   },
+
+  async fetchStoreAds({ rootGetters }) {
+    try{
+      console.log("Fetching Feedback");
+
+      const response = await axios.get(`${rootGetters.getUrl}/api/MedE/Admin/fetchAds`);
+
+      if(response.status >= 200 && response.status < 300){
+        return { success : true, data: response.data };
+      }
+      
+    }catch(error){
+      return { success: false, error: error.  response?.data?.message || "failed to fetch Ads"};
+    }
+  },
   
 }

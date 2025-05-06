@@ -31,6 +31,7 @@
           style="text-decoration: none; color: inherit; font-weight: 500"
         >
           <p
+            v-if="!isLoggedIn"
             class="nav-img"
             style="
               display: flex;
@@ -46,6 +47,24 @@
               >mdi-account-outline</v-icon
             >
             Sign In
+          </p>
+          <p
+            v-else
+            class="nav-img"
+            style="
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              color: #03045e;
+              padding: 7px;
+              border-radius: 20px;
+              width: 100px;
+            "
+          >
+            <v-icon large color="#03045E" size="1.2rem" class="icon"
+              >mdi-account-outline</v-icon
+            >
+            {{ username }}
           </p>
         </router-link>
 
@@ -139,13 +158,7 @@
       <div class="card c1" v-for="store in stores" :key="store.id">
         <h2>{{ store.storeName }}</h2>
         <div class="c2">
-          <h4
-            style="
-              text-overflow: ellipsis;
-              white-space: nowrap;
-              overflow: hidden;
-            "
-          >
+          <h4>
             {{ store.address }}
           </h4>
           <v-rating
@@ -170,68 +183,33 @@
           <v-icon large color="#545454" size="50px">mdi-chevron-left</v-icon>
         </p>
       </div>
-      <div class="cards scroll">
-        <div class="card shop-near c1">
-          <h2>Store Name</h2>
+      <div
+        v-if="nearby.length === 0"
+        style="
+          width: 88%;
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-weight: 700;
+          font-size: large;
+        "
+      >
+        NO STORES NEARBY !
+      </div>
+      <div class="cards scroll" v-else>
+        <div
+          class="card shop-near c1"
+          v-for="nstore in nearby"
+          :key="nstore.id"
+        >
+          <h2>{{ nstore.storeName }}</h2>
           <div class="c2">
-            <h4>store location</h4>
+            <h4>
+              {{ nstore.address }}
+            </h4>
             <v-rating
-              readonly
-              half-increments
-              size="small"
-              active-color="#ffa534"
-              color="#ffa534"
-              density="compact"
-            ></v-rating>
-          </div>
-        </div>
-        <div class="card shop-near c1">
-          <h2>Store Name</h2>
-          <div class="c2">
-            <h4>store location</h4>
-            <v-rating
-              readonly
-              half-increments
-              size="small"
-              active-color="#ffa534"
-              color="#ffa534"
-              density="compact"
-            ></v-rating>
-          </div>
-        </div>
-        <div class="card shop-near c1">
-          <h2>Store Name</h2>
-          <div class="c2">
-            <h4>store location</h4>
-            <v-rating
-              readonly
-              half-increments
-              size="small"
-              active-color="#ffa534"
-              color="#ffa534"
-              density="compact"
-            ></v-rating>
-          </div>
-        </div>
-        <div class="card shop-near c1">
-          <h2>Store Name</h2>
-          <div class="c2">
-            <h4>store location</h4>
-            <v-rating
-              readonly
-              half-increments
-              size="small"
-              active-color="#ffa534"
-              color="#ffa534"
-              density="compact"
-            ></v-rating>
-          </div>
-        </div>
-        <div class="card shop-near c1">
-          <h2>Store Name</h2>
-          <div class="c2">
-            <h4>store location</h4>
-            <v-rating
+              v-model="nstore.averageRating"
               readonly
               half-increments
               size="small"
@@ -250,59 +228,37 @@
     </div>
     <div class="heading">
       <div class="line"></div>
-      <div class="heading-txt"><h4>Top Rated Store</h4></div>
+      <div class="heading-txt"><h4>Top Rated Stores</h4></div>
       <div class="line"></div>
     </div>
+
     <div class="card-container">
       <div class="left-arrow"></div>
-      <div class="cards">
-        <div class="card shop-near c1">
-          <h2>Store Name</h2>
+      <div
+        v-if="topRated.length === 0"
+        style="
+          width: 88%;
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-weight: 700;
+          font-size: large;
+        "
+      >
+        NO STORES !
+      </div>
+      <div class="cards" v-else>
+        <div
+          class="card shop-near c1"
+          v-for="topstore in topRated"
+          :key="topstore.id"
+        >
+          <h2>{{ topstore.storeName }}</h2>
           <div class="c2">
-            <h4>store location</h4>
+            <h4>{{ topstore.address }}</h4>
             <v-rating
-              readonly
-              half-increments
-              size="small"
-              active-color="#ffa534"
-              color="#ffa534"
-              density="compact"
-            ></v-rating>
-          </div>
-        </div>
-        <div class="card shop-near c1">
-          <h2>Store Name</h2>
-          <div class="c2">
-            <h4>store location</h4>
-            <v-rating
-              readonly
-              half-increments
-              size="small"
-              active-color="#ffa534"
-              color="#ffa534"
-              density="compact"
-            ></v-rating>
-          </div>
-        </div>
-        <div class="card shop-near c1">
-          <h2>Store Name</h2>
-          <div class="c2">
-            <h4>store location</h4>
-            <v-rating
-              readonly
-              half-increments
-              size="small"
-              active-color="#ffa534"
-              color="#ffa534"
-              density="compact"
-            ></v-rating>
-          </div>
-        </div>
-        <div class="card shop-near c1">
-          <h2>Store Name</h2>
-          <div class="c2">
-            <h4>store location</h4>
-            <v-rating
+              v-model="topstore.averageRating"
               readonly
               half-increments
               size="small"
@@ -317,18 +273,37 @@
     </div>
     <div class="heading">
       <div class="line"></div>
-      <div class="heading-txt"><h4>Offer By Store</h4></div>
+      <div class="heading-txt"><h4>Offer By Stores</h4></div>
       <div class="line"></div>
     </div>
     <div class="card-container">
-      <div class="left-arrow"></div>
-      <div class="cards">
-        <div class="card"></div>
-        <div class="card"></div>
-        <div class="card"></div>
-        <div class="card"></div>
+      <div class="left-arrow">
+        <p>
+          <v-icon large color="#545454" size="50px">mdi-chevron-left</v-icon>
+        </p>
       </div>
-      <div class="right-arrow"></div>
+      <div class="cards scroll">
+        <div class="ad-card card-style5 card" v-for="ad in Ads" :key="ad.id">
+          <div class="adname one">
+            <h3>{{ ad.offerName }}</h3>
+          </div>
+          <div class="adoffer one">
+            <h1>{{ ad.offerPercentage }}% off on all Products</h1>
+          </div>
+          <div class="dates one">
+            <h5>From :&nbsp; {{ ad.startDate }}</h5>
+            <h5>To :&nbsp;{{ ad.endDate }}</h5>
+          </div>
+          <div class="condition one">
+            <h5>*&nbsp; {{ ad.conditions }}</h5>
+          </div>
+        </div>
+      </div>
+      <div class="right-arrow">
+        <p>
+          <v-icon large color="#545454" size="50px">mdi-chevron-right</v-icon>
+        </p>
+      </div>
     </div>
     <div class="footer"></div>
   </div>
@@ -353,9 +328,18 @@ export default {
       latitude: null,
       longitude: null,
 
-      nearby:[],
-
+      nearby: [],
+      topRated: [],
+      Ads: [],
     };
+  },
+  mounted() {
+    this.loadStoreAds();
+  },
+  computed:{
+    isLoggedIn() {
+    return this.$store.state.auth.user_id !== null;
+  },
   },
   methods: {
     // MAP
@@ -482,20 +466,48 @@ export default {
       this.locationVisible = !this.locationVisible;
     },
 
-    async nearbyStore(){
-      
-      try{
-        const latitude= this.latitude;
-        const longitude= this.longitude;
-        const response = await this.$store.dispatch("EndUser/storeNearMe",{latitude,longitude});
+    async nearbyStore() {
+      try {
+        const latitude = this.latitude;
+        const longitude = this.longitude;
+        const response = await this.$store.dispatch("EndUser/storeNearMe", {
+          latitude,
+          longitude,
+        });
         console.log("nearby stores:", response);
-        if(response.success){
+        if (response.success) {
           console.log("nearby store fetched", response.data);
           this.nearby = response.data;
+
           this.showlocation();
+          this.topRated = this.nearby
+            .filter(
+              (nearby) =>
+                nearby.averageRating !== null &&
+                nearby.averageRating !== undefined
+            )
+            .sort((a, b) => b.averageRating - a.averageRating)
+            .slice(0, 4);
+
+          console.log("topRated store fetched", this.topRated);
         }
-      } catch(error){
+      } catch (error) {
         console.log("fetching nearby store failed", error);
+      }
+    },
+
+    async loadStoreAds() {
+      try {
+        const result = await this.$store.dispatch("EndUser/fetchStoreAds");
+        console.log("Ads fetch API Response:", result);
+        if (result.success) {
+          console.log("Fetched Ads:", result.data); // Debugging
+          this.Ads = result.data;
+        } else {
+          // alert(`Error: ${result.error}`);
+        }
+      } catch (error) {
+        console.error("Error loading Ads :", error);
       }
     },
   },
@@ -601,7 +613,7 @@ export default {
   padding-left: 30px;
   margin-top: 30px;
   color: #ffffff;
-  background-color: black;
+  background-color: #03045e;
   height: 50px;
   width: 1260px;
   display: flex;
@@ -626,7 +638,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 90px;
+  height: 130px;
   /* background-color: rgb(255, 255, 237); */
 }
 .line {
@@ -640,6 +652,7 @@ export default {
   /* background-color: rgb(255, 255, 237); */
   height: 230px;
   display: flex;
+  justify-content: center;
 }
 .left-arrow {
   margin-left: 50px;
@@ -655,6 +668,7 @@ export default {
   height: 100%;
   /* background-color: rgb(255, 255, 237); */
   display: flex;
+
   align-items: center;
   justify-content: flex-start;
   padding-left: 50px;
@@ -721,6 +735,9 @@ export default {
   letter-spacing: 0.5px;
   margin-right: 15px;
   width: 140px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 .c2 {
   display: flex;
@@ -731,5 +748,59 @@ export default {
   margin-top: 50px;
   height: 500px;
   background: black;
+}
+.one {
+  width: 100%;
+}
+.ad-card {
+  /* border: 1px #16db93 solid; */
+  height: 220px;
+  width: 350px;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  padding: 10px;
+  margin-bottom: 15px;
+  flex-shrink: 0;
+  position: relative;
+  background: linear-gradient(to bottom right, #ffffff, #4dabf7);
+  color: #1b2d44;
+}
+.adname {
+  display: flex;
+  justify-content: space-between;
+  padding: 0px 20px 0px 20px;
+  font-family: Pacifico;
+  font-weight: 400;
+}
+.dates {
+  display: flex;
+  justify-content: space-around;
+}
+.adoffer {
+  display: flex;
+  justify-content: center;
+  font-family: Boldonse;
+  font-weight: 300;
+  font-size: 12px;
+}
+.condition {
+  padding-left: 20px;
+}
+.deletead {
+  color: white;
+  /* background-color: #ff0000; */
+  cursor: pointer;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 3%;
+  right: 1%;
 }
 </style>
