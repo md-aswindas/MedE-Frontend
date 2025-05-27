@@ -1055,6 +1055,7 @@ export default {
       else if (item === "feedback") this.feedback();
       else if (item === "prescription") this.prescription();
     },
+    
     selected(categoryId) {
       console.log("Selected CategoryId:", categoryId);
     },

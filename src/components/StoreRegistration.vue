@@ -153,6 +153,7 @@ export default {
         console.error(error);
       }
     },
+    
     close() {
       const close = document.getElementById("fileUpload");
       close.style.display = "none";

@@ -2,7 +2,17 @@
   <div class="main-container">
     <div class="navbar">
       <div class="left-nav">
-        <h1 class="logo">MedE</h1>
+        <router-link
+          to="/"
+          style="
+            text-decoration: none;
+            color: inherit;
+            font-weight: 500;
+            cursor: pointer;
+          "
+        >
+          <h1 class="logo">MedE</h1></router-link
+        >
         <p class="nav-txt" style="width: 140px">
           <v-icon large color="#03045E" size="1.2rem" class="icon"
             >mdi-map-marker</v-icon
@@ -58,23 +68,20 @@
       <div class="cart-container">
         <h1 class="cart-head">Your Cart</h1>
         <div class="cart-card-div">
-        <div class="cart-card">
-          <img src="" alt="" class="card-img">
-          <div class="card-content">
-            <h3>Product Name</h3>
-            <p>Price : </p>
-            <p>Discount : </p>
-            <p>Count : </p>
+          <div class="cart-card" v-for="cartproduct in cartProducts.items" :key="cartproduct.itemId">
+            <img src="" alt="" class="card-img" />
+            <div class="card-content">
+              <h2>{{cartproduct.productName}}</h2>
+              <h4>Price : {{ cartproduct.discountPrice }}</h4>
+              <h4>Discount : {{ cartproduct.offerPercentage }}%</h4>
+              <h4>Count : {{ cartproduct.quantity }}</h4>
+            </div>
+            <div class="btns">
+              <button type="button" class="remove-btn">Remove</button>
+              <button type="button" class="buy-btn">Buy</button>
+            </div>
           </div>
-          <div class="btns">
-            <button type="button" class="remove-btn">Remove</button>
-            <button type="button" class="buy-btn">Buy</button>
-          </div>
-          
         </div>
-        
-      </div>
-
       </div>
       <div class="price-container">
         <h1 class="cart-head">Checkout</h1>
@@ -84,7 +91,33 @@
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      cartProducts: [],
+    };
+  },
+  methods: {
+    async loadCartProducts() {
+      try {
+        const result = await this.$store.dispatch("EndUser/fetchcartProducts", {
+          userId: sessionStorage.getItem("user_id"),
+        });
+        if (result.success) {
+          this.cartProducts = result.data;
+          console.log("cart products", result.data);
+        } else {
+          alert(`Error: ${result.error}`);
+        }
+      } catch (error) {
+        console.error("Error loading cart products:", error);
+      }
+    },
+  },
+  mounted() {
+    this.loadCartProducts();
+  },
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -168,18 +201,17 @@ export default {};
 .icon {
   margin-right: 5px;
 }
-.cart-main-container{
+.cart-main-container {
   width: 100%;
   height: 704px;
   background-color: rgb(244, 244, 244);
   padding: 5px;
   margin-top: 72px;
   display: flex;
-  justify-content:space-around;
+  justify-content: space-around;
   align-items: center;
-  
 }
-.cart-container{
+.cart-container {
   width: 64%;
   height: 680px;
   background-color: #ffffff;
@@ -188,19 +220,18 @@ export default {};
   display: flex;
   flex-direction: column;
   align-items: center;
-  
 }
-.cart-card-div{
+.cart-card-div {
   overflow-y: auto;
   width: 100%;
   height: 100%;
 }
-.cart-card-div::-webkit-scrollbar{
+.cart-card-div::-webkit-scrollbar {
   display: none;
 }
-.price-container{
+.price-container {
   height: 680px;
-  width:33%;
+  width: 33%;
   background-color: #ffffff;
   margin: 0px 5px 5px 5px;
   border-radius: 10px;
@@ -208,10 +239,9 @@ export default {};
   display: flex;
   justify-content: center;
   padding: 20px;
-  
 }
-.cart-card{
-  width:100%;
+.cart-card {
+  width: 100%;
   height: 25%;
   background-color: rgb(244, 244, 244);
   border-radius: 10px;
@@ -221,7 +251,7 @@ export default {};
   display: flex;
   align-items: center;
 }
-.cart-head{
+.cart-head {
   width: fit-content;
   height: fit-content;
   margin: 10px;
@@ -231,13 +261,13 @@ export default {};
   font-weight: 500;
   color: #03045e;
 }
-.card-img{
+.card-img {
   width: 130px;
   height: 130px;
   border-radius: 10px;
   background-color: #03045e;
 }
-.card-content{
+.card-content {
   height: 130px;
   width: 586px;
   margin-left: 15px;
@@ -246,7 +276,7 @@ export default {};
   flex-direction: column;
   justify-content: center;
 }
-.btns{
+.btns {
   height: 130px;
   width: 180px;
   display: flex;
@@ -255,7 +285,7 @@ export default {};
   align-items: center;
   margin-left: 20px;
 }
-.remove-btn{
+.remove-btn {
   background-color: white;
   border: 2px solid #03045e;
   color: #03045e;
@@ -269,9 +299,8 @@ export default {};
   width: 150px;
   height: 40px;
   margin-bottom: 20px;
-  
 }
-.buy-btn{
+.buy-btn {
   background-color: #03045e;
   border: 2px solid #03045e;
   color: #ffffff;
@@ -284,7 +313,5 @@ export default {};
   font-weight: 700;
   width: 150px;
   height: 40px;
-  
 }
-
 </style>

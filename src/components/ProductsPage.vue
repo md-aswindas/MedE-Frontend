@@ -44,12 +44,19 @@
             Sign In
           </p>
         </router-link>
-        <p class="nav-txt">
-          <v-icon large color="#03045E" size="1.2rem" class="icon"
-            >mdi-cart-outline</v-icon
-          >
-          Cart
-        </p>
+
+        <router-link
+          to="/cart"
+          style="text-decoration: none; color: inherit; font-weight: 500"
+        >
+          <p class="nav-txt">
+            <v-icon large color="#03045E" size="1.2rem" class="icon"
+              >mdi-cart-outline</v-icon
+            >
+            Cart
+          </p>
+        </router-link>
+
       </div>
     </div>
 
@@ -114,7 +121,9 @@
         </div>
         <div class="product-cards" v-if="products.length">
           <div class="card" v-for="product in products" :key="product.id">
-            <div class="card-img"></div>
+            <div class="card-img">
+              <img :src="'data:image/jpeg;base64,'+ product.productImage" alt="" style=" background-size: contain;" />
+            </div>
             <div class="card-txt1">
               <h4>{{ product.productName }}</h4>
               <h4 class="stock">Stock : {{ product.stockCount }}</h4>
@@ -135,7 +144,7 @@
             </div>
             <div class="buttons">
               <div class="twbtn">
-                <button type="button" class="cartbtn">Add to cart</button>
+                <button type="button" class="cartbtn" @click="addCart(product.productId, 1)">Add to cart</button>
               </div>
               <div class="buy-btn">
                 <button type="button" class="bbtn">Buy Now</button>
@@ -150,7 +159,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+
 
 export default {
   data() {
@@ -159,13 +168,17 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["fetchProducts"]),
+  
 
     async loadProducts() {
       try {
-        const result = await this.fetchProducts();
+        const result = await this.$store.dispatch("EndUser/fetchProducts",{
+          storeId: sessionStorage.getItem("store_id")
+        });
         if (result.success) {
           this.products = result.data;
+          console.log("products",result.data)
+          console.log("📦 storeId:", sessionStorage.getItem("store_id"));
         } else {
           alert(`Error: ${result.error}`);
         }
@@ -173,6 +186,25 @@ export default {
         console.error("Error loading products:", error);
       }
     },
+  async addCart(productId, quantity) {
+    const payload = {
+      userId: sessionStorage.getItem("user_id"),
+      productId,
+      quantity,
+    };
+
+  try {
+    const result = await this.$store.dispatch("EndUser/addToCart", payload);
+    if (result) {
+      alert("Cart product added");
+    } else {
+      console.log("Error adding product to cart");
+    }
+  } catch (error) {
+    console.log("Error adding product to cart", error);
+  }
+},
+
     open() {
       document.querySelectorAll(".checkbox").forEach((checkbox) => {
         checkbox.style.display =

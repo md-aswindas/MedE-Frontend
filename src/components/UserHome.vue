@@ -2,7 +2,17 @@
   <div class="main-container">
     <div class="navbar">
       <div class="left-nav">
-        <h1 class="logo">MedE</h1>
+        <router-link
+          to="/"
+          style="
+            text-decoration: none;
+            color: inherit;
+            font-weight: 500;
+            cursor: pointer;
+          "
+        >
+          <h1 class="logo">MedE</h1></router-link
+        >
         <p
           class="nav-txt"
           style="width: 140px; cursor: pointer"
@@ -68,12 +78,17 @@
           </p>
         </router-link>
 
-        <p class="nav-txt">
-          <v-icon large color="#03045E" size="1.2rem" class="icon"
-            >mdi-cart-outline</v-icon
-          >
-          Cart
-        </p>
+        <router-link
+          to="/cart"
+          style="text-decoration: none; color: inherit; font-weight: 500"
+        >
+          <p class="nav-txt">
+            <v-icon large color="#03045E" size="1.2rem" class="icon"
+              >mdi-cart-outline</v-icon
+            >
+            Cart
+          </p>
+        </router-link>
       </div>
     </div>
     <div class="location-wide" v-if="locationVisible">
@@ -155,7 +170,7 @@
       found!
     </div>
     <div class="search-products" v-if="stores.length > 0">
-      <div class="card c1" v-for="store in stores" :key="store.id">
+      <div class="card c1" v-for="store in stores" :key="store.id" @click="selectStore(store.storeId)">
         <h2>{{ store.storeName }}</h2>
         <div class="c2">
           <h4>
@@ -202,6 +217,7 @@
           class="card shop-near c1"
           v-for="nstore in nearby"
           :key="nstore.id"
+          @click="selectStore(nstore.storeId)"
         >
           <h2>{{ nstore.storeName }}</h2>
           <div class="c2">
@@ -253,6 +269,7 @@
           class="card shop-near c1"
           v-for="topstore in topRated"
           :key="topstore.id"
+          @click="selectStore(topstore.storeId)"
         >
           <h2>{{ topstore.storeName }}</h2>
           <div class="c2">
@@ -323,25 +340,37 @@ export default {
       locationVisible: false,
       showMap: false,
 
+      latitude:9.49809589449932,
+      longitude:76.33891403675081,
+
       map: null,
       marker: null,
-      latitude: null,
-      longitude: null,
+      
 
       nearby: [],
       topRated: [],
       Ads: [],
+
+      username: sessionStorage.getItem("user_name"),
     };
   },
   mounted() {
     this.loadStoreAds();
+    this.nearbyStore();
   },
-  computed:{
+  computed: {
     isLoggedIn() {
-    return this.$store.state.auth.user_id !== null;
-  },
+      const username = this.$store.state.auth.user_name;
+      return username && username.trim().length > 0;
+    },
   },
   methods: {
+    selectStore(storeId) {
+      sessionStorage.setItem("store_id", storeId);
+      // You can also navigate or trigger any other action here if needed
+      console.log("Store ID saved:", storeId);
+      this.$router.push("/UserHomeMain");
+    },
     // MAP
     loadMap() {
       this.showMap = true;
@@ -479,7 +508,7 @@ export default {
           console.log("nearby store fetched", response.data);
           this.nearby = response.data;
 
-          this.showlocation();
+          this.locationVisible = false;
           this.topRated = this.nearby
             .filter(
               (nearby) =>
@@ -672,6 +701,9 @@ export default {
   align-items: center;
   justify-content: flex-start;
   padding-left: 50px;
+}
+.card:hover {
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3); /* Enhance shadow on hover */
 }
 .scroll {
   overflow-x: auto;

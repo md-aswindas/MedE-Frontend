@@ -7,6 +7,7 @@ export default {
     if (response.status >= 200 || response.status < 300) {
       console.log(response);
       commit('setuser_id', response.data.user_id);
+      commit('setuser_name', response.data.userName);
       return true;
     }
   },
@@ -17,6 +18,7 @@ export default {
     if (response.status >= 200 && response.status < 300) {
       console.log(response);
       commit('setstore_id', response.data.store_id);
+      
       return true;
     }
   },
@@ -35,6 +37,7 @@ export default {
       return true;
     }
   },
+
   async registerStore({ rootGetters }, payload) {
     const response = await axios.post(`${rootGetters.getUrl}/api/MedE/Store/storeRegistration`, payload, { headers: { "Content-Type": "multipart/form-data" } });
     if (response.status >= 200 && response.status < 300) {
@@ -42,6 +45,7 @@ export default {
       return true;
     }
   },
+  
   async fetchProducts({ rootGetters }) {
     try {
       console.log("fetching products");

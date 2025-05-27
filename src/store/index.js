@@ -22,6 +22,8 @@ const store = createStore({
       auth:{
         store_id : sessionStorage.getItem("store_id")||"",
         user_id : sessionStorage.getItem("user_id")||"",
+        user_name: sessionStorage.getItem("user_name")||"",
+        user_store: sessionStorage.getItem("user_store")||"",
       },
       // ----------------------
     };
