@@ -20,5 +20,13 @@ export default {
   data: () => ({
     //
   }),
+
+  created() {
+  const userId = sessionStorage.getItem("user_id");
+  if (userId) {
+    this.$store.dispatch("EndUser/fetchcartProducts", { userId });
+  }
+},
+
 }
 </script>

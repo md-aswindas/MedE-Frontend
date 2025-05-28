@@ -19,7 +19,9 @@ export default {
   setuser_store(state,payload){
     state.auth.user_store = payload;
     sessionStorage.setItem("user_store",payload);
-  }
+  },
+
+  
 
   
 

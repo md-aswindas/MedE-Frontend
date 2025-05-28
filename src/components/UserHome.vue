@@ -86,7 +86,7 @@
             <v-icon large color="#03045E" size="1.2rem" class="icon"
               >mdi-cart-outline</v-icon
             >
-            Cart
+            <v-badge color="blue" :content="cartCount" floating> Cart </v-badge>
           </p>
         </router-link>
       </div>
@@ -363,6 +363,11 @@ export default {
       const username = this.$store.state.auth.user_name;
       return username && username.trim().length > 0;
     },
+    
+    cartCount() {
+      return this.$store.state.EndUser.cartCount;
+    },
+  
   },
   methods: {
     selectStore(storeId) {

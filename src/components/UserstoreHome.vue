@@ -2,7 +2,17 @@
   <div class="main-container">
     <div class="navbar">
       <div class="left-nav">
-        <h1 class="logo">MedE</h1>
+        <router-link
+          to="/"
+          style="
+            text-decoration: none;
+            color: inherit;
+            font-weight: 500;
+            cursor: pointer;
+          "
+        >
+          <h1 class="logo">MedE</h1></router-link
+        >
         <p class="nav-txt" style="width: 140px">
           <v-icon large color="#03045E" size="1.2rem" class="icon"
             >mdi-map-marker</v-icon
@@ -52,8 +62,7 @@
           <p class="nav-txt">
             <v-icon large color="#03045E" size="1.2rem" class="icon"
               >mdi-cart-outline</v-icon
-            >
-            Cart
+            ><v-badge color="blue" :content="cartCount" floating> Cart </v-badge>
           </p>
         </router-link>
       </div>
@@ -72,29 +81,38 @@
       >
     </div>
 
-    <div class="prescription" @click="dialog = true"><v-icon >mdi-note-plus</v-icon><p style="text-decoration: underline;
-  text-underline-offset: 4px;
-  text-decoration-thickness: 1.5px;
-  padding-left: 10px;">Shop with prescription</p></div>
+    <div class="prescription" @click="dialog = true">
+      <v-icon>mdi-note-plus</v-icon>
+      <p
+        style="
+          text-decoration: underline;
+          text-underline-offset: 4px;
+          text-decoration-thickness: 1.5px;
+          padding-left: 10px;
+        "
+      >
+        Shop with prescription
+      </p>
+    </div>
 
-  <v-dialog v-model="dialog" max-width="500">
-    <v-card>
-      <v-card-title class="headline">Upload Prescription</v-card-title>
-      <v-card-text>
-        <v-file-input
-        v-model="file"
-          label="Choose your prescription"
-          prepend-icon="mdi-paperclip"
-          outlined
-        ></v-file-input>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="primary" @click="prescription">Save</v-btn>
-        <v-btn color="primary" @click="dialog = false">Close</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+    <v-dialog v-model="dialog" max-width="500">
+      <v-card>
+        <v-card-title class="headline">Upload Prescription</v-card-title>
+        <v-card-text>
+          <v-file-input
+            v-model="file"
+            label="Choose your prescription"
+            prepend-icon="mdi-paperclip"
+            outlined
+          ></v-file-input>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" @click="prescription">Save</v-btn>
+          <v-btn color="primary" @click="dialog = false">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     <router-link to="/products">
       <button class="view">View All Products</button>
@@ -201,7 +219,6 @@
         </div>
       </div>
     </div>
-    
   </div>
 </template>
 
@@ -214,7 +231,7 @@ export default {
       productId: "",
       searchQuery: "",
       dialog: false,
-      file:null
+      file: null,
     };
   },
   methods: {
@@ -244,7 +261,7 @@ export default {
 
     async prescription() {
       const formData = new FormData();
-      
+
       const prescriptionModel = new Blob(
         [
           JSON.stringify({
@@ -257,16 +274,24 @@ export default {
       formData.append("prescriptionModel", prescriptionModel);
       formData.append("prescriptionImage", this.file);
       try {
-        const response = await this.$store.dispatch("EndUser/prescriptionAdd", formData);
+        const response = await this.$store.dispatch(
+          "EndUser/prescriptionAdd",
+          formData
+        );
         if (response) {
           alert("prescription added Successfully" + response.data);
-          this.dialog=false;
+          this.dialog = false;
         } else {
           console.log("error");
         }
       } catch (error) {
         console.error(error);
       }
+    },
+  },
+  computed: {
+    cartCount() {
+      return this.$store.state.EndUser.cartCount;
     },
   },
 };
@@ -295,7 +320,7 @@ export default {
   background-color: #03045e;
   font-weight: 500;
   color: #ffffff;
-  border:2px solid #ffffff ;
+  border: 2px solid #ffffff;
   width: 160px;
   height: 48px;
   border-radius: 30px;
@@ -544,7 +569,7 @@ export default {
   margin-bottom: 10px;
   border-radius: 100%;
 }
-.prescription{
+.prescription {
   height: 30px;
   display: flex;
   justify-content: center;
@@ -553,7 +578,7 @@ export default {
   font-weight: 500;
   font-size: 15px;
   letter-spacing: 1px;
-  
+
   color: blue;
 }
 .nav-txt {

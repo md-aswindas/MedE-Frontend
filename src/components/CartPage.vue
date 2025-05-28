@@ -68,16 +68,20 @@
       <div class="cart-container">
         <h1 class="cart-head">Your Cart</h1>
         <div class="cart-card-div">
-          <div class="cart-card" v-for="cartproduct in cartProducts.items" :key="cartproduct.itemId">
+          <div
+            class="cart-card"
+            v-for="cartproduct in cartProducts.items"
+            :key="cartproduct.itemId"
+          >
             <img src="" alt="" class="card-img" />
             <div class="card-content">
-              <h2>{{cartproduct.productName}}</h2>
+              <h2>{{ cartproduct.productName }}</h2>
               <h4>Price : {{ cartproduct.discountPrice }}</h4>
               <h4>Discount : {{ cartproduct.offerPercentage }}%</h4>
               <h4>Count : {{ cartproduct.quantity }}</h4>
             </div>
             <div class="btns">
-              <button type="button" class="remove-btn">Remove</button>
+              <button type="button" class="remove-btn" @click="removeCartItem(cartproduct.itemId)">Remove</button>
               <button type="button" class="buy-btn">Buy</button>
             </div>
           </div>
@@ -111,6 +115,21 @@ export default {
         }
       } catch (error) {
         console.error("Error loading cart products:", error);
+      }
+    },
+    async removeCartItem(itemId) {
+      console.log("Clicked Item ID:", itemId);
+  
+      const userId = sessionStorage.getItem("user_id");
+      const result = await this.$store.dispatch("EndUser/removeFromCart", {
+        userId,
+        itemId,
+      });
+      if (result.success) {
+        alert("Item removed");
+        this.loadCartProducts(); // refresh cart
+      } else {
+        alert(result.error);
       }
     },
   },
