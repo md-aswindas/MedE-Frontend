@@ -62,7 +62,9 @@
           <p class="nav-txt">
             <v-icon large color="#03045E" size="1.2rem" class="icon"
               >mdi-cart-outline</v-icon
-            ><v-badge color="blue" :content="cartCount" floating> Cart </v-badge>
+            ><v-badge color="#07fc03" :content="cartCount" floating>
+              Cart
+            </v-badge>
           </p>
         </router-link>
       </div>
@@ -235,26 +237,53 @@ export default {
     };
   },
   methods: {
+    // async searchProducts() {
+    //   if (!this.searchQuery.trim()) {
+    //     console.log("🔴 Search query is empty. Skipping API call.");
+    //     return; // Stop if input is empty
+    //   }
+
+    //   console.log("✅ Calling search API with:", this.searchQuery);
+
+    //   const response = await this.$store.dispatch("EndUser/searchProducts", {
+    //     storeId: sessionStorage.getItem("store_id"),
+    //     productName: this.searchQuery,
+    //   });
+
+    //   console.log("📦 storeId:", sessionStorage.getItem("store_id"));
+
+    //   console.log("🔹 API Response:", response);
+
+    //   if (response.success) {
+    //     this.products = response.data;
+    //   } else {
+    //     this.products = [];
+    //   }
+    // },
+
     async searchProducts() {
-      if (!this.searchQuery.trim()) {
-        console.log("🔴 Search query is empty. Skipping API call.");
-        return; // Stop if input is empty
+      const query = this.searchQuery.trim();
+
+      if (!query) {
+        console.log("🟡 Search query is empty. Clearing product list.");
+        this.products = [];
+        return; // Skip API call
       }
 
-      console.log("✅ Calling search API with:", this.searchQuery);
-
-      const response = await this.$store.dispatch("EndUser/searchProducts", {
-        storeId: sessionStorage.getItem("store_id"),
-        productName: this.searchQuery,
-      });
-
+      console.log("✅ Calling search API with:", query);
       console.log("📦 storeId:", sessionStorage.getItem("store_id"));
 
-      console.log("🔹 API Response:", response);
+      try {
+        const response = await this.$store.dispatch("EndUser/searchProducts", {
+          storeId: sessionStorage.getItem("store_id"),
+          productName: query,
+        });
 
-      if (response.success) {
-        this.products = response.data;
-      } else {
+        console.log("🔹 API Response:", response);
+
+        this.products = response.success ? response.data : [];
+      } catch (error) {
+        console.error("❌ Error during search API call:", error);
         this.products = [];
       }
     },

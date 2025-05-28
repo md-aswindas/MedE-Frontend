@@ -19,6 +19,7 @@ const router = createRouter({
     {path:'/adminHome',component:()=> import('./components/AdminHome.vue')},
     {path:'/rejected',component:()=> import('./components/RejectPage.vue')},
     {path:'/pending',component:()=> import('./components/PendingPage.vue')},
+    {path: '/productView/:id', component:()=> import('./components/ProductView.vue')},
     // {path:'/addProduct',component:()=> import('./components/AddProduct.vue')}
   ],
 });

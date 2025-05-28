@@ -120,7 +120,7 @@
           <p>{{ products.length }} Products found !</p>
         </div>
         <div class="product-cards" v-if="products.length">
-          <div class="card" v-for="product in products" :key="product.id">
+          <div class="card" v-for="product in products" :key="product.id" @click="viewProduct(product.productId)">
             <div class="card-img">
               <img :src="'data:image/jpeg;base64,'+ product.productImage" alt="" style=" background-size: contain;" />
             </div>
@@ -133,10 +133,10 @@
               <h4 class="final-price">
                 ₹
                 {{
-                  Math.ceil(
+                  
                     product.actualPrice -
                       (product.actualPrice * product.offerPercentage) / 100
-                  )
+                  
                 }}
               </h4>
               <h4 class="org-price">₹ {{ product.actualPrice }}</h4>
@@ -205,6 +205,9 @@ export default {
   }
 },
 
+      viewProduct(productId) {
+        this.$router.push(`/productView/${productId}`);
+      },
     open() {
       document.querySelectorAll(".checkbox").forEach((checkbox) => {
         checkbox.style.display =
