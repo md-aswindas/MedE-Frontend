@@ -79,13 +79,15 @@ export default {
       return { success: false, data: [] };
     }
   },
-  async fetchProducts({ rootGetters }, { storeId }) {
+  async fetchProducts({ rootGetters }, { storeId,sort ,categoryId}) {
     try {
       console.log("fetching products");
 
       const response = await axios.get(`${rootGetters.getUrl}/api/MedE/Admin/adminViewStoreProduct`,
         {
-          params: { storeId: storeId },
+          params: { storeId: storeId, 
+            sort, categoryId
+          },
         });
 
       if (response.status >= 200 && response.status < 300) {

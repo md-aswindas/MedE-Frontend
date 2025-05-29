@@ -1,7 +1,11 @@
 <template>
   <div class="product-view-container">
+    <router-link to="/cart">
+    <button class="buy-now top"> <v-icon>mdi-cart</v-icon> View Cart</button>
+    </router-link>
     <!-- Navigation Breadcrumb -->
     <div class="breadcrumb">
+      
       <router-link to="/UserHomeMain">Home</router-link> >
       <router-link to="/products">Products</router-link>
       <router-link :to="'/category/' + product.category">{{
@@ -9,6 +13,7 @@
       }}</router-link>
       >
       <span>{{ product.productName }}</span>
+      
     </div>
 
     <!-- Main Product Section -->
@@ -24,7 +29,7 @@
           </div>
         </div>
         <div class="product-actions">
-          <button class="add-to-cart" @click="addToCart">
+          <button class="add-to-cart" @click="addCart(product.productId, 1)">
             <v-icon>mdi-cart</v-icon> ADD TO CART
           </button>
           <button class="buy-now" @click="buyNow">
@@ -75,15 +80,25 @@
       </div>
     </div>
   </div>
+  <v-snackbar v-model="snackbar" :timeout="3000" :color="snackbarColor" top>
+    {{ snackbarMessage }}
+  </v-snackbar>
 </template>
 
 <script>
+
 import axios from "axios";
 
+
 export default {
+  
   data() {
+    
     return {
       selectedImage: null,
+       snackbar: false,
+      snackbarMessage: "",
+      snackbarColor: "success",
       product: {
         name: "",
         categoryName: "",
@@ -96,12 +111,40 @@ export default {
         discountPrice: 0,
         actualPrice: 0,
         offerPercentage: 0,
+       
       },
     };
   },
   methods: {
-    addToCart() {
-      // Implement add to cart logic
+    async addCart(productId, quantity) {
+      const payload = {
+        userId: sessionStorage.getItem("user_id"),
+        productId,
+        quantity,
+      };
+
+      try {
+        const result = await this.$store.dispatch("EndUser/addToCart", payload);
+        if (result) {
+          this.snackbarMessage = " Product added to cart!";
+          this.snackbar = true;
+          this.snackbarColor = "success";
+          // Refresh cart data (cart badge count)
+          const userId = sessionStorage.getItem("user_id");
+          if (userId) {
+            await this.$store.dispatch("EndUser/fetchcartProducts", { userId });
+          }
+        } else {
+          this.snackbarMessage = "❌ Failed to add product to cart.";
+          this.snackbar = true;
+          this.snackbarColor = "error";
+        }
+      } catch (error) {
+        console.log("Error adding product to cart", error);
+        this.snackbarMessage = "⚠️ Error occurred. Try again.";
+        this.snackbar = true;
+        this.snackbarColor = "error";
+      }
     },
     buyNow() {
       // Implement buy now logic
@@ -137,6 +180,7 @@ export default {
       console.error("❌ Missing productId or storeId");
     }
   },
+  
 };
 </script>
 
@@ -157,6 +201,7 @@ export default {
   color: #878787;
   width: 1400px;
 }
+
 
 .breadcrumb a {
   color: #03045e;
@@ -234,6 +279,12 @@ export default {
   align-items: center;
   justify-content: center;
   gap: 10px;
+}
+.top{
+   z-index: 900;
+   position: fixed;
+   right: 40px;
+   height: 40px;
 }
 
 .add-to-cart {

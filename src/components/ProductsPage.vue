@@ -53,10 +53,11 @@
             <v-icon large color="#03045E" size="1.2rem" class="icon"
               >mdi-cart-outline</v-icon
             >
-            Cart
+            <v-badge color="#07fc03" :content="cartCount" floating>
+              Cart
+            </v-badge>
           </p>
         </router-link>
-
       </div>
     </div>
 
@@ -85,13 +86,38 @@
               >mdi-menu-down
             </v-icon>
           </p>
+          <div class="checkbox checkbox-1">
+            <input
+              type="radio"
+              name="Reset"
+              id="High - Low"
+              v-model="selectedSort"
+              @change="loadProducts"
+            />
+            <label for="High - Low">Reset</label>
+          </div>
+
           <div class="checkbox">
-            <input type="radio" name="High - Low" id="High - Low" />
+            <input
+              type="radio"
+              name="High - Low"
+              id="High - Low"
+              value="desc"
+              v-model="selectedSort"
+              @change="loadProducts"
+            />
             <label for="High - Low">Price High - Low</label>
           </div>
 
           <div class="checkbox">
-            <input type="radio" name="High - Low" id="Low - High" />
+            <input
+              type="radio"
+              name="High - Low"
+              id="Low - High"
+              value="asc"
+              v-model="selectedSort"
+              @change="loadProducts"
+            />
             <label for="Low - High">Price Low - High</label>
           </div>
 
@@ -120,9 +146,18 @@
           <p>{{ products.length }} Products found !</p>
         </div>
         <div class="product-cards" v-if="products.length">
-          <div class="card" v-for="product in products" :key="product.id" @click="viewProduct(product.productId)">
+          <div
+            class="card"
+            v-for="product in products"
+            :key="product.id"
+            @click="viewProduct(product.productId)"
+          >
             <div class="card-img">
-              <img :src="'data:image/jpeg;base64,'+ product.productImage" alt="" style=" background-size: contain;" />
+              <img
+                :src="'data:image/jpeg;base64,' + product.productImage"
+                alt=""
+                style="background-size: contain"
+              />
             </div>
             <div class="card-txt1">
               <h4>{{ product.productName }}</h4>
@@ -133,10 +168,8 @@
               <h4 class="final-price">
                 ₹
                 {{
-                  
-                    product.actualPrice -
-                      (product.actualPrice * product.offerPercentage) / 100
-                  
+                  product.actualPrice -
+                  (product.actualPrice * product.offerPercentage) / 100
                 }}
               </h4>
               <h4 class="org-price">₹ {{ product.actualPrice }}</h4>
@@ -144,7 +177,13 @@
             </div>
             <div class="buttons">
               <div class="twbtn">
-                <button type="button" class="cartbtn" @click="addCart(product.productId, 1)">Add to cart</button>
+                <button
+                  type="button"
+                  class="cartbtn"
+                  @click.stop="addCart(product.productId, 1)"
+                >
+                  Add to cart
+                </button>
               </div>
               <div class="buy-btn">
                 <button type="button" class="bbtn">Buy Now</button>
@@ -156,58 +195,91 @@
       </div>
     </div>
   </div>
+  <v-snackbar v-model="snackbar" :timeout="3000" :color="snackbarColor" top>
+    {{ snackbarMessage }}
+  </v-snackbar>
 </template>
 
 <script>
-
-
 export default {
   data() {
     return {
       products: [],
+      snackbar: false,
+      snackbarMessage: "",
+      snackbarColor: "success",
+      selectedSort: "",
     };
   },
+  watch: {
+    selectedSort() {
+      this.loadProducts();
+    },
+    "$route.query.categoryId": {
+      immediate: true,
+      handler() {
+        this.loadProducts(); // reload on route change
+      },
+    },
+  },
   methods: {
-  
-
     async loadProducts() {
       try {
-        const result = await this.$store.dispatch("EndUser/fetchProducts",{
-          storeId: sessionStorage.getItem("store_id")
+        const categoryId = this.$route.query.categoryId;
+        const result = await this.$store.dispatch("EndUser/fetchProducts", {
+          storeId: sessionStorage.getItem("store_id"),
+          sort: this.selectedSort,
+          categoryId,
         });
         if (result.success) {
+          console.log("Fetching products with sort:", this.selectedSort);
+          console.log("Fetched products for categoryId:", categoryId);
           this.products = result.data;
-          console.log("products",result.data)
+          console.log("products", result.data);
           console.log("📦 storeId:", sessionStorage.getItem("store_id"));
         } else {
-          alert(`Error: ${result.error}`);
+          this.snackbarMessage = `Error: ${result.error}`;
+          this.snackbar = true;
+          this.snackbarColor = "error";
         }
       } catch (error) {
         console.error("Error loading products:", error);
       }
     },
-  async addCart(productId, quantity) {
-    const payload = {
-      userId: sessionStorage.getItem("user_id"),
-      productId,
-      quantity,
-    };
+    async addCart(productId, quantity) {
+      const payload = {
+        userId: sessionStorage.getItem("user_id"),
+        productId,
+        quantity,
+      };
 
-  try {
-    const result = await this.$store.dispatch("EndUser/addToCart", payload);
-    if (result) {
-      alert("Cart product added");
-    } else {
-      console.log("Error adding product to cart");
-    }
-  } catch (error) {
-    console.log("Error adding product to cart", error);
-  }
-},
+      try {
+        const result = await this.$store.dispatch("EndUser/addToCart", payload);
+        if (result) {
+          this.snackbarMessage = " Product added to cart!";
+          this.snackbar = true;
+          this.snackbarColor = "success";
+          // Refresh cart data (cart badge count)
+          const userId = sessionStorage.getItem("user_id");
+          if (userId) {
+            await this.$store.dispatch("EndUser/fetchcartProducts", { userId });
+          }
+        } else {
+          this.snackbarMessage = "❌ Failed to add product to cart.";
+          this.snackbar = true;
+          this.snackbarColor = "error";
+        }
+      } catch (error) {
+        console.log("Error adding product to cart", error);
+        this.snackbarMessage = "⚠️ Error occurred. Try again.";
+        this.snackbar = true;
+        this.snackbarColor = "error";
+      }
+    },
 
-      viewProduct(productId) {
-        this.$router.push(`/productView/${productId}`);
-      },
+    viewProduct(productId) {
+      this.$router.push(`/productView/${productId}`);
+    },
     open() {
       document.querySelectorAll(".checkbox").forEach((checkbox) => {
         checkbox.style.display =
@@ -217,6 +289,11 @@ export default {
   },
   mounted() {
     this.loadProducts();
+  },
+  computed: {
+    cartCount() {
+      return this.$store.state.EndUser.cartCount;
+    },
   },
 };
 </script>
@@ -323,6 +400,13 @@ export default {
   width: 80%;
   display: none;
   justify-content: space-around;
+}
+.checkbox-1 {
+  justify-content: flex-start;
+  padding-left: 12px;
+}
+.checkbox-1 label {
+  padding-left: 23px;
 }
 .product-rightside {
   width: 85%;

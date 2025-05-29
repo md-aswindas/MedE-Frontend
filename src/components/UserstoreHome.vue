@@ -186,17 +186,25 @@
     </div>
     <div class="card-container">
       <div class="cards">
-        <div class="card">
-          <div class="name"></div>
+        <div class="card" @click="goToProducts(6)">
+          <div class="name">
+            <h3>Nutritional Supplements</h3>
+          </div>
         </div>
-        <div class="card">
-          <div class="name"></div>
+        <div class="card" @click="goToProducts(7)">
+          <div class="name">
+            <h3>Protein & Fitness</h3>
+          </div>
         </div>
-        <div class="card">
-          <div class="name"></div>
+        <div class="card" @click="goToProducts(8)">
+          <div class="name">
+            <h3>Herbal & Ayurvedic</h3>
+          </div>
         </div>
-        <div class="card">
-          <div class="name"></div>
+        <div class="card" @click="goToProducts(9)">
+          <div class="name">
+            <h3>Specialized Dietary</h3>
+          </div>
         </div>
       </div>
     </div>
@@ -207,21 +215,32 @@
     </div>
     <div class="card-container">
       <div class="cards">
-        <div class="card">
-          <div class="name"></div>
+        <div class="card" @click="goToProducts(2)">
+          <div class="name">
+            <h3>Skin Care</h3>
+          </div>
         </div>
-        <div class="card">
-          <div class="name"></div>
+        <div class="card" @click="goToProducts(3)">
+          <div class="name">
+            <h3>Hair Care</h3>
+          </div>
         </div>
-        <div class="card">
-          <div class="name"></div>
+        <div class="card" @click="goToProducts(4)">
+          <div class="name">
+            <h3>Oral Care</h3>
+          </div>
         </div>
-        <div class="card">
-          <div class="name"></div>
+        <div class="card" @click="goToProducts(5)">
+          <div class="name">
+            <h3>Baby Care</h3>
+          </div>
         </div>
       </div>
     </div>
   </div>
+  <v-snackbar v-model="snackbar" :timeout="3000" :color="snackbarColor" top>
+    {{ snackbarMessage }}
+  </v-snackbar>
 </template>
 
 <script>
@@ -234,33 +253,20 @@ export default {
       searchQuery: "",
       dialog: false,
       file: null,
+      snackbar: false,
+      snackbarMessage: "",
+      snackbarColor: "success",
     };
   },
   methods: {
-    // async searchProducts() {
-    //   if (!this.searchQuery.trim()) {
-    //     console.log("🔴 Search query is empty. Skipping API call.");
-    //     return; // Stop if input is empty
-    //   }
-
-    //   console.log("✅ Calling search API with:", this.searchQuery);
-
-    //   const response = await this.$store.dispatch("EndUser/searchProducts", {
-    //     storeId: sessionStorage.getItem("store_id"),
-    //     productName: this.searchQuery,
-    //   });
-
-    //   console.log("📦 storeId:", sessionStorage.getItem("store_id"));
-
-    //   console.log("🔹 API Response:", response);
-
-    //   if (response.success) {
-    //     this.products = response.data;
-    //   } else {
-    //     this.products = [];
-    //   }
-    // },
-
+    async goToProducts(categoryId) {
+      this.$router.push({
+        path:'/products', // replace with your route path
+        query: {
+          categoryId: categoryId,
+        },
+      });
+    },
     async searchProducts() {
       const query = this.searchQuery.trim();
 
@@ -308,7 +314,9 @@ export default {
           formData
         );
         if (response) {
-          alert("prescription added Successfully" + response.data);
+          this.snackbarMessage = "prescription added Successfully";
+          this.snackbar = true;
+          this.snackbarColor = "success";
           this.dialog = false;
         } else {
           console.log("error");
@@ -672,5 +680,9 @@ export default {
   width: 100%;
   height: 60%;
   margin-top: 26.5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
 }
 </style>

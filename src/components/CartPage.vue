@@ -3,7 +3,7 @@
     <div class="navbar">
       <div class="left-nav">
         <router-link
-          to="/"
+          to="/UserHomeMain"
           style="
             text-decoration: none;
             color: inherit;
@@ -92,6 +92,9 @@
       </div>
     </div>
   </div>
+  <v-snackbar v-model="snackbar" :timeout="3000" :color="snackbarColor" top>
+    {{ snackbarMessage }}
+  </v-snackbar>
 </template>
 
 <script>
@@ -99,6 +102,9 @@ export default {
   data() {
     return {
       cartProducts: [],
+      snackbar: false,
+      snackbarMessage: "",
+      snackbarColor: "success",
     };
   },
   methods: {
@@ -111,7 +117,9 @@ export default {
           this.cartProducts = result.data;
           console.log("cart products", result.data);
         } else {
-          alert(`Error: ${result.error}`);
+          this.snackbarMessage = `Error: ${result.error}`;
+          this.snackbar = true;
+          this.snackbarColor = "error";
         }
       } catch (error) {
         console.error("Error loading cart products:", error);
@@ -127,9 +135,15 @@ export default {
       });
       if (result.success) {
         alert("Item removed");
+        this.snackbarMessage = "Cart Item Removed 🗑️";
+          this.snackbar = true;
+          this.snackbarColor = "success";
         this.loadCartProducts(); // refresh cart
       } else {
-        alert(result.error);
+        
+         this.snackbarMessage = result.error;
+          this.snackbar = true;
+          this.snackbarColor = "error";
       }
     },
   },
