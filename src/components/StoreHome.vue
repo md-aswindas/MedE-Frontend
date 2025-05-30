@@ -800,6 +800,9 @@
       </div>
     </div>
   </div>
+   <v-snackbar v-model="snackbar" :timeout="3000" :color="snackbarColor" top>
+    {{ snackbarMessage }}
+  </v-snackbar>
 </template>
 
 <script>
@@ -818,6 +821,9 @@ export default {
       longitude: null,
       
 
+      snackbar: false,
+      snackbarMessage: "",
+      snackbarColor: "success",
       // PROFILE DATA
       profile: {
         storeName: "",
@@ -1022,11 +1028,17 @@ export default {
           },
           (error) => {
             console.error("Error getting location:", error);
-            alert("Could not get location.");
+           
+            this.snackbarMessage = "🗺️ Could not get location.";
+          this.snackbar = true;
+          this.snackbarColor = "error";
           }
         );
       } else {
-        alert("Geolocation is not supported by this browser.");
+        
+        this.snackbarMessage = "🗺️ Geolocation is not supported by this browser.";
+          this.snackbar = true;
+          this.snackbarColor = "error";
       }
     },
 
@@ -1122,7 +1134,10 @@ export default {
           payload
         );
         if (response) {
-          alert("Product Updated Successfully");
+          alert("");
+          this.snackbarMessage = "✅ Product Updated Successfully";
+          this.snackbar = true;
+          this.snackbarColor = "success";
           this.loadStoreProducts();
           this.updateProductDialog = false;
         } else {
@@ -1147,7 +1162,10 @@ export default {
           payload
         );
         if (response) {
-          alert("Prescription Rejected");
+          
+          this.snackbarMessage = "❌ Prescription Rejected";
+          this.snackbar = true;
+          this.snackbarColor = "error";
           this.loadPrescription();
           this.hideP();
         } else {
@@ -1168,7 +1186,9 @@ export default {
           payload
         );
         if (response) {
-          alert("Prescription accepted");
+          this.snackbarMessage = " 🎉 Prescription Accepted";
+          this.snackbar = true;
+          this.snackbarColor = "error";
           this.loadPrescription();
         } else {
           console.log("error accepting prescription");
@@ -1213,7 +1233,9 @@ export default {
           payload
         );
         if (response) {
-          alert("Profile Updated Successfully");
+          this.snackbarMessage = " 🎉 Profile Updated";
+          this.snackbar = true;
+          this.snackbarColor = "success";
           this.loadStoreProfile();
           this.profileDialog = false;
         } else {
@@ -1239,7 +1261,10 @@ export default {
           payload
         );
         if (response) {
-          alert("Ad added Successfully");
+          this.snackbarMessage = " 🎉 Ad added Successfully";
+          this.snackbar = true;
+          this.snackbarColor = "success";
+          
           this.loadStoreAds();
         } else {
           console.log("Error adding ad");
@@ -1273,11 +1298,17 @@ export default {
           formData
         );
         if (response) {
-          alert("Product Added ✅" + response);
+          alert();
+          this.snackbarMessage = " 🎉 Product Added " + response;
+          this.snackbar = true;
+          this.snackbarColor = "success";
           this.addProductDialog = false;
           this.loadStoreProducts();
         } else {
           console.log("error");
+          this.snackbarMessage = " 😟 Product Added Failed " + response;
+          this.snackbar = true;
+          this.snackbarColor = "error";
         }
       } catch (error) {
         console.error(error);
@@ -1296,6 +1327,9 @@ export default {
           this.products = result.data;
         } else {
           // alert(`Error: ${result.error}`);
+          // this.snackbarMessage = " error " ;
+          // this.snackbar = true;
+          // this.snackbarColor = "error";
         }
       } catch (error) {
         console.error("Error loading products :", error);
@@ -1385,7 +1419,10 @@ export default {
       try {
         console.log("Deleting product with ID:", productId); // Debugging
         if (!productId) {
-          alert("Error: Product ID is undefined!");
+          alert("");
+          this.snackbarMessage = " ❌ Error: Product ID is undefined! " ;
+          this.snackbar = true;
+          this.snackbarColor = "warning";
           return;
         }
 
@@ -1398,6 +1435,9 @@ export default {
         );
 
         if (result.success) {
+          this.snackbarMessage = " ✅ Product Deleted! " ;
+          this.snackbar = true;
+          this.snackbarColor = "success";
           this.loadStoreProducts();
         } else {
           alert(`Error: ${result.error}`);
@@ -1421,6 +1461,9 @@ export default {
         const result = await this.$store.dispatch("MedEStore/deleteAds", adsId);
 
         if (result.success) {
+          this.snackbarMessage = " ✅ Ad Deleted! " ;
+          this.snackbar = true;
+          this.snackbarColor = "success";
           this.loadStoreAds();
         } else {
           alert(`Error: ${result.error}`);
@@ -1527,7 +1570,10 @@ export default {
         this.imageFile = file;
         this.imageUrl = URL.createObjectURL(file);
       } else {
-        alert("Please upload an image file.");
+        
+        this.snackbarMessage = " 🖼️ Please upload an image file. " ;
+          this.snackbar = true;
+          this.snackbarColor = "warning";
       }
     },
     removeImage() {
@@ -1540,7 +1586,10 @@ export default {
         this.imageConfirmed = true; // Mark image as confirmed
         this.close(); // Close modal after confirmation
       } else {
-        alert("Please upload an image before submitting.");
+       
+        this.snackbarMessage = " 🖼️ Please upload an image before submitting. " ;
+          this.snackbar = true;
+          this.snackbarColor = "warning";
       }
     },
   },

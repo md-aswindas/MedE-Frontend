@@ -37,6 +37,7 @@
           style="text-decoration: none; color: inherit; font-weight: 500"
         >
           <p
+            v-if="!isLoggedIn"
             class="nav-img"
             style="
               display: flex;
@@ -52,6 +53,24 @@
               >mdi-account-outline</v-icon
             >
             Sign In
+          </p>
+          <p
+            v-else
+            class="nav-img"
+            style="
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              color: #03045e;
+              padding: 7px;
+              border-radius: 20px;
+              width: 100px;
+            "
+          >
+            <v-icon large color="#03045E" size="1.2rem" class="icon"
+              >mdi-account-outline</v-icon
+            >
+            {{ username }}
           </p>
         </router-link>
 
@@ -247,6 +266,7 @@
 export default {
   data() {
     return {
+      username: sessionStorage.getItem("user_name"),
       // PRODUCTS DATA LIST
       products: [],
       productId: "",

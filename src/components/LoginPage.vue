@@ -53,6 +53,9 @@
       </div>
     </div>
   </div>
+   <v-snackbar v-model="snackbar" :timeout="3000" :color="snackbarColor" top>
+    {{ snackbarMessage }}
+  </v-snackbar>
 </template>
  
 <script>
@@ -61,6 +64,9 @@ export default {
     return {
       email: "",
       password: "",
+      snackbar: false,
+      snackbarMessage: "",
+      snackbarColor: "success",
     };
   },
   methods: {
@@ -72,10 +78,15 @@ export default {
       try {
         const response = await this.$store.dispatch("loginUser", payload);
         if (response) {
-          alert("successfully login!!!!");
+          alert();
+          this.snackbarMessage = "🎉 successfully login!!!! ";
+          this.snackbar = true;
+          this.snackbarColor = "success";
           this.$router.push('/');
         } else {
-          console.log("error");
+           this.snackbarMessage = "😟 Login Failed!!!! ";
+          this.snackbar = true;
+          this.snackbarColor = "error";
         }
       } catch (error) {
         console.error(error);

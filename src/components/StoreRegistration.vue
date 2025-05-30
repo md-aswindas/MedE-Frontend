@@ -110,6 +110,9 @@
       </div>
     </div>
   </div>
+  <v-snackbar v-model="snackbar" :timeout="3000" :color="snackbarColor" top>
+    {{ snackbarMessage }}
+  </v-snackbar>
 </template>
  
 <script>
@@ -124,6 +127,9 @@ export default {
       imageFile: null,
       imageUrl: null,
       // videoSrc: require("@/assets/backgroung.mp4")
+       snackbar: false,
+      snackbarMessage: "",
+      snackbarColor: "success",
     };
   },
   methods: {
@@ -145,9 +151,15 @@ export default {
       try {
         const response = await this.$store.dispatch("registerStore", formData);
         if (response) {
-          alert("StoreRegistered Successfully" + response.data);
+          
+          this.snackbarMessage = "🎉 Store Registered Successfully" + response.data;
+          this.snackbar = true;
+          this.snackbarColor = "success";
         } else {
           console.log("error");
+          this.snackbarMessage = "😟 Store Registion Failed" ;
+          this.snackbar = true;
+          this.snackbarColor = "error";
         }
       } catch (error) {
         console.error(error);
@@ -187,7 +199,10 @@ export default {
         this.imageFile = file;
         this.imageUrl = URL.createObjectURL(file);
       } else {
-        alert("Please upload an image file.");
+        
+        this.snackbarMessage = "🖼️ Please upload an image file." ;
+          this.snackbar = true;
+          this.snackbarColor = "error";
       }
     },
     removeImage() {
@@ -200,7 +215,10 @@ export default {
         this.imageConfirmed = true; // Mark image as confirmed
         this.close(); // Close modal after confirmation
       } else {
-        alert("Please upload an image before submitting.");
+        this.snackbarMessage = "🖼️ Please upload an image before submitting." ;
+          this.snackbar = true;
+          this.snackbarColor = "error";
+        
       }
     },
   },

@@ -324,6 +324,9 @@
     </div>
     <div class="footer"></div>
   </div>
+   <v-snackbar v-model="snackbar" :timeout="3000" :color="snackbarColor" top>
+    {{ snackbarMessage }}
+  </v-snackbar>
 </template>
 
 <script>
@@ -333,6 +336,9 @@ import "leaflet-control-geocoder"; // just import to register it globally
 export default {
   data() {
     return {
+      snackbar: false,
+      snackbarMessage: "",
+      snackbarColor: "success",
       // SEARCH Store DATA
       searchQuery: "",
       stores: [],
@@ -466,11 +472,17 @@ export default {
           },
           (error) => {
             console.error("Error getting location:", error);
-            alert("Could not get location.");
+            
+             this.snackbarMessage = "🗺️ Could not get location.";
+          this.snackbar = true;
+          this.snackbarColor = "error";
           }
         );
       } else {
-        alert("Geolocation is not supported by this browser.");
+        
+        this.snackbarMessage = "🗺️ Geolocation is not supported by this browser.";
+          this.snackbar = true;
+          this.snackbarColor = "error";
       }
     },
 
