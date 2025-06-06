@@ -57,6 +57,21 @@ export default {
     }
   },
 
+   async loadStoresTop({ rootGetters }) {
+    try {
+      console.log("fetching top stores ");
+
+      const response = await axios.get(`${rootGetters.getUrl}/api/MedE/Admin/findTopStores`);
+
+      if (response.status >= 200 && response.status < 300) {
+        return { success: true, data: response.data };
+      }
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || "failed to fetch stores" };
+
+    }
+  },
+
   async loadAds({ rootGetters }) {
     try {
       console.log("fetching Ads");

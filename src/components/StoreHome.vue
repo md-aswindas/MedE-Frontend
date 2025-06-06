@@ -1,5 +1,66 @@
 <template>
   <div class="container">
+    <div class="location-wide" v-if="locationVisible">
+      <div class="location">
+        <p @click="showlocation()" style="cursor: pointer">
+          <v-icon size="32px">mdi-close</v-icon>
+        </p>
+        <button
+          style="
+            width: 430px;
+            height: 50px;
+            margin-top: 30px;
+            background-color: #03045e;
+            color: white;
+            font-weight: 500;
+            border-radius: 10px;
+          "
+          @click="useCurrentLocation()"
+        >
+          Use Current Location
+        </button>
+        <button
+          style="
+            width: 430px;
+            height: 50px;
+            margin-top: 20px;
+            border: 1px solid #03045e;
+            color: #03045e;
+            font-weight: 500;
+            border-radius: 10px;
+          "
+          @click="loadMap()"
+        >
+          Custom Location
+        </button>
+        <div
+          class="map"
+          ref="mapContainer"
+          style="
+            margin-top: 20px;
+            width: 430px;
+            height: 450px;
+            /* border: 1px solid #03045e; */
+            border-radius: 10px;
+          "
+          v-if="showMap"
+        ></div>
+        <button
+          style="
+            width: 430px;
+            height: 50px;
+            margin-top: 20px;
+            background-color: #00dc0f;
+            color: white;
+            font-weight: 500;
+            border-radius: 10px;
+          "
+          
+        >
+          Save
+        </button>
+      </div>
+    </div>
     <div class="blur">
       <!-- NAVIGATION BAR -->
       <div class="sidebar">
@@ -60,6 +121,17 @@
           <div class="div1">
             <h2>Hey {{ profile.storeName }} !</h2>
             <div class="nav">
+              <button
+                style="
+                  height: 45px;
+                  width: 45px;
+                  border-radius: 100%;
+                  background-color: white;
+                "
+                @click="showlocation()"
+              >
+                <v-icon>mdi-map-marker</v-icon>
+              </button>
               <button
                 class="btn"
                 style="background: rgba(0, 255, 17, 0.862); color: black"
@@ -181,7 +253,7 @@
 
                 <v-divider class="mt-0"></v-divider>
 
-                <v-card-actions class=" d-flex justify-center">
+                <v-card-actions class="d-flex justify-center">
                   <v-btn
                     class="text-none"
                     color="#ff0000"
@@ -309,7 +381,11 @@
             v-for="product in products"
             :key="product.id"
           >
-            <img :src="'data:image/jpeg;base64,'+ product.productImage" alt="" style="width: 90px; height: 90px; background-size: contain;" />
+            <img
+              :src="'data:image/jpeg;base64,' + product.productImage"
+              alt=""
+              style="width: 90px; height: 90px; background-size: contain"
+            />
             <!-- <v-img
             :src="'data:image/jpeg;base64,'+ product.productImage"
             class="productImage"
@@ -320,7 +396,7 @@
               <h2>{{ product.productName }}</h2>
               <h4>stock : {{ product.stockCount ?? product.stock }}</h4>
             </div>
-            <p>{{ product.productDesc }}</p>
+            <!-- <p>{{ product.productDesc }}</p> -->
             <p>{{ product.expiryDate }}</p>
             <p>
               ₹
@@ -702,7 +778,7 @@
 
       <!-- MAP PAGE -->
       <div class="ads map" v-if="realOrderVisible">
-        <v-btn @click="loadMap">Show Map</v-btn>
+        <!-- <v-btn @click="loadMap">Show Map</v-btn>
         <v-btn color="red" @click="useCurrentLocation"
           >Use Current Location</v-btn
         >
@@ -718,7 +794,7 @@
         ></div>
         <v-btn style="background-color: #00dc0f" @click="addStoreLocation()"
           >Save location</v-btn
-        >
+        > -->
       </div>
 
       <!-- ADS PAGE -->
@@ -800,7 +876,8 @@
       </div>
     </div>
   </div>
-   <v-snackbar v-model="snackbar" :timeout="3000" :color="snackbarColor" top>
+
+  <v-snackbar v-model="snackbar" :timeout="3000" :color="snackbarColor" top>
     {{ snackbarMessage }}
   </v-snackbar>
 </template>
@@ -819,7 +896,7 @@ export default {
       marker: null,
       latitude: null,
       longitude: null,
-      
+      showMap: false,
 
       snackbar: false,
       snackbarMessage: "",
@@ -832,7 +909,7 @@ export default {
         phoneNumber: "",
         storePassword: "",
         registrationDate: "",
-        address:"",
+        address: "",
       },
       selectedItem: "home",
       // SEARCH PRODUCT DATA
@@ -881,6 +958,7 @@ export default {
       realOrderVisible: false,
       // ----------------------------------------
 
+      locationVisible: false,
       // Dialogbox
 
       addProductDialog: false,
@@ -905,7 +983,6 @@ export default {
     this.loadStoreProfile();
     this.loadStoreAds();
     // console.log("Mounted Hook: Fetching product images...");
-   
   },
   watch: {
     profile(newValue) {
@@ -936,8 +1013,11 @@ export default {
   methods: {
     ...mapActions(["fetchStoreProducts"]),
 
-   
+    showlocation() {
+      this.locationVisible = !this.locationVisible;
+    },
     loadMap() {
+      this.showMap = true;
       nextTick(() => {
         const container = this.$refs.mapContainer;
 
@@ -984,32 +1064,29 @@ export default {
             this.longitude = lng;
             console.log(`Selected: ${lat}, ${lng}`);
             const apiKey = "yW9Chaj3bp5BpSfoMfNq"; // your actual MapTiler key
-        const url = `https://api.maptiler.com/geocoding/${lng},${lat}.json?key=${apiKey}`;
+            const url = `https://api.maptiler.com/geocoding/${lng},${lat}.json?key=${apiKey}`;
 
-        try {
-          const res = await fetch(url);
-          const data =  await res.json();
-          if (data.features && data.features.length > 0) {
-            const address = data.features[0].place_name;
-            console.log("Address:", address);
-            this.selectedAddress = address;
+            try {
+              const res = await fetch(url);
+              const data = await res.json();
+              if (data.features && data.features.length > 0) {
+                const address = data.features[0].place_name;
+                console.log("Address:", address);
+                this.selectedAddress = address;
 
-            // Optional: Show popup with address
-            this.marker.bindPopup(address).openPopup();
-          } else {
-            this.selectedAddress = "No address found";
-          }
-        } catch (error) {
-          console.error("Error in reverse geocoding:", error);
-          this.selectedAddress = "Reverse geocoding failed";
-        }
-      
-            
+                // Optional: Show popup with address
+                this.marker.bindPopup(address).openPopup();
+              } else {
+                this.selectedAddress = "No address found";
+              }
+            } catch (error) {
+              console.error("Error in reverse geocoding:", error);
+              this.selectedAddress = "Reverse geocoding failed";
+            }
           });
         } else if (this.map) {
           this.map.invalidateSize();
         }
-        
       });
     },
 
@@ -1028,17 +1105,17 @@ export default {
           },
           (error) => {
             console.error("Error getting location:", error);
-           
+
             this.snackbarMessage = "🗺️ Could not get location.";
-          this.snackbar = true;
-          this.snackbarColor = "error";
+            this.snackbar = true;
+            this.snackbarColor = "error";
           }
         );
       } else {
-        
-        this.snackbarMessage = "🗺️ Geolocation is not supported by this browser.";
-          this.snackbar = true;
-          this.snackbarColor = "error";
+        this.snackbarMessage =
+          "🗺️ Geolocation is not supported by this browser.";
+        this.snackbar = true;
+        this.snackbarColor = "error";
       }
     },
 
@@ -1067,7 +1144,7 @@ export default {
       else if (item === "feedback") this.feedback();
       else if (item === "prescription") this.prescription();
     },
-    
+
     selected(categoryId) {
       console.log("Selected CategoryId:", categoryId);
     },
@@ -1162,7 +1239,6 @@ export default {
           payload
         );
         if (response) {
-          
           this.snackbarMessage = "❌ Prescription Rejected";
           this.snackbar = true;
           this.snackbarColor = "error";
@@ -1203,7 +1279,7 @@ export default {
           storeId: this.getstore_id,
           latitude: this.latitude,
           longitude: this.longitude,
-          address:this.selectedAddress,
+          address: this.selectedAddress,
         };
         try {
           const response = await this.$store.dispatch(
@@ -1264,7 +1340,7 @@ export default {
           this.snackbarMessage = " 🎉 Ad added Successfully";
           this.snackbar = true;
           this.snackbarColor = "success";
-          
+
           this.loadStoreAds();
         } else {
           console.log("Error adding ad");
@@ -1420,7 +1496,7 @@ export default {
         console.log("Deleting product with ID:", productId); // Debugging
         if (!productId) {
           alert("");
-          this.snackbarMessage = " ❌ Error: Product ID is undefined! " ;
+          this.snackbarMessage = " ❌ Error: Product ID is undefined! ";
           this.snackbar = true;
           this.snackbarColor = "warning";
           return;
@@ -1435,7 +1511,7 @@ export default {
         );
 
         if (result.success) {
-          this.snackbarMessage = " ✅ Product Deleted! " ;
+          this.snackbarMessage = " ✅ Product Deleted! ";
           this.snackbar = true;
           this.snackbarColor = "success";
           this.loadStoreProducts();
@@ -1461,7 +1537,7 @@ export default {
         const result = await this.$store.dispatch("MedEStore/deleteAds", adsId);
 
         if (result.success) {
-          this.snackbarMessage = " ✅ Ad Deleted! " ;
+          this.snackbarMessage = " ✅ Ad Deleted! ";
           this.snackbar = true;
           this.snackbarColor = "success";
           this.loadStoreAds();
@@ -1570,10 +1646,9 @@ export default {
         this.imageFile = file;
         this.imageUrl = URL.createObjectURL(file);
       } else {
-        
-        this.snackbarMessage = " 🖼️ Please upload an image file. " ;
-          this.snackbar = true;
-          this.snackbarColor = "warning";
+        this.snackbarMessage = " 🖼️ Please upload an image file. ";
+        this.snackbar = true;
+        this.snackbarColor = "warning";
       }
     },
     removeImage() {
@@ -1586,10 +1661,9 @@ export default {
         this.imageConfirmed = true; // Mark image as confirmed
         this.close(); // Close modal after confirmation
       } else {
-       
-        this.snackbarMessage = " 🖼️ Please upload an image before submitting. " ;
-          this.snackbar = true;
-          this.snackbarColor = "warning";
+        this.snackbarMessage = " 🖼️ Please upload an image before submitting. ";
+        this.snackbar = true;
+        this.snackbarColor = "warning";
       }
     },
   },
@@ -1599,6 +1673,23 @@ export default {
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Boldonse&family=Pacifico&family=Teko:wght@300..700&display=swap");
+
+.location {
+  background-color: #ffffff;
+  height: 100%;
+  width: 500px;
+  position: sticky;
+  padding-top: 30px;
+  padding-left: 30px;
+}
+.location-wide {
+  background-color: #000000ba;
+  height: 800px;
+  width: 100%;
+  position: fixed;
+  z-index: 99999;
+  margin-top: 0;
+}
 
 .container {
   height: 100vh;
@@ -2004,10 +2095,9 @@ input:focus {
   backdrop-filter: blur(10px);
   flex-shrink: 0;
 }
-.productImage{
+.productImage {
   width: 90px;
   height: 90px;
-
 }
 .prescription-card {
   height: 100px;

@@ -39,7 +39,7 @@
                 padding: 1px 7px 1px 7px;
                 color: black;
               "
-              >01</span
+              >{{ pendingStoreCount }}</span
             >
             &nbsp; Pending Requests
           </h3>
@@ -51,36 +51,38 @@
               >mdi-arrow-right-circle-outline</v-icon
             >
           </div>
-          <div class="request" ref="status">
-            <div class="status-card">
-              <p>Store Name</p>
-              <p>License Number</p>
-              <p>Created_date</p>
-              <button type="button" class="btn dwn">
-                <v-icon>mdi-eye</v-icon>
-              </button>
-              <button type="button" class="btn acpt">Accept</button>
-              <button type="button" class="btn rjct">Reject</button>
-            </div>
-            <div class="status-card">
-              <p>Store Name 1</p>
-              <p>License Number</p>
-              <p>Created_date</p>
-              <button type="button" class="btn dwn">
-                <v-icon>mdi-eye</v-icon>
-              </button>
-              <button type="button" class="btn acpt">Accept</button>
-              <button type="button" class="btn rjct">Reject</button>
-            </div>
-            <div class="status-card">
-              <p>Store Name 2</p>
-              <p>License Number</p>
-              <p>Created_date</p>
-              <button type="button" class="btn dwn">
-                <v-icon>mdi-eye</v-icon>
-              </button>
-              <button type="button" class="btn acpt">Accept</button>
-              <button type="button" class="btn rjct">Reject</button>
+          <div v-if="pendingStoreCount === 0" class="no-requests-message">
+            No pending Requests
+          </div>
+          <div v-else>
+            <div
+              class="request"
+              ref="status"
+              v-for="pending in pendingStores"
+              :key="pending.id"
+            >
+              <div class="status-card">
+                <p>{{ pending.storeName }}</p>
+                <p>{{ pending.licenseNumber }}</p>
+                <p>{{ pending.created_at }}</p>
+                <button type="button" class="btn dwn">
+                  <v-icon>mdi-eye</v-icon>
+                </button>
+                <button
+                  type="button"
+                  class="btn acpt"
+                  @click="updateStoreStatus(pending.store_id, 2)"
+                >
+                  Accept
+                </button>
+                <button
+                  type="button"
+                  class="btn rjct"
+                  @click="updateStoreStatus(pending.store_id, 3)"
+                >
+                  Reject
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -104,7 +106,7 @@
                 <v-icon class="num-icon" size="2.2rem" style="margin-top: 5px"
                   >mdi-storefront
                 </v-icon>
-                1000
+                {{StoreCount}}
               </h1>
             </div>
           </div>
@@ -126,7 +128,7 @@
           <div class="top-p">
             <h4>Top Rated Stores</h4>
             <div class="box">
-              <div class="box-item">
+              <div class="box-item" >
                 <h4
                   style="
                     background-color: black;
@@ -135,14 +137,16 @@
                     border-radius: 50%;
                   "
                 ></h4>
-                <h4>Store Name</h4>
+                <h4>{{ toprated[0] ? toprated[0].storeName : 'Loading...' }}</h4>
+
                 <h4>
-                  <v-icon size="1rem" class="star">mdi-star-circle</v-icon> 4.5
+                  <v-icon size="1rem" class="star">mdi-star-circle</v-icon> {{ toprated[0] ? toprated[0].averageRating : 'Loading...' }}
                 </h4>
-                <h4>created</h4>
-                <h4>Location</h4>
+                <h4>{{ toprated[0] ? toprated[0].created : 'Loading...' }}</h4>
+                
               </div>
-              <div class="box-item">
+
+              <div class="box-item" >
                 <h4
                   style="
                     background-color: black;
@@ -151,13 +155,15 @@
                     border-radius: 50%;
                   "
                 ></h4>
-                <h4>Store Name</h4>
+                <h4>{{ toprated[1] ? toprated[1].storeName : 'Loading...' }}</h4>
+
                 <h4>
-                  <v-icon size="1rem" class="star">mdi-star-circle</v-icon> 4.5
+                  <v-icon size="1rem" class="star">mdi-star-circle</v-icon> {{ toprated[1] ? toprated[1].averageRating : 'Loading...' }}
                 </h4>
-                <h4>created</h4>
-                <h4>Location</h4>
+                <h4>{{ toprated[1] ? toprated[1].created : 'Loading...' }}</h4>
+                
               </div>
+              
             </div>
           </div>
         </div>
@@ -288,54 +294,86 @@
 
         <div class="div6">
           <h3>FeedBacks</h3>
-          
 
-            <div class="feedback-content">
-
-              <div class="feedback-card" v-for="feedback in feedbacks" :key="feedback.id">
-                <div class="user-info">
-                  <p class="user-id">userId  :  {{feedback.user_id}}</p>
-                </div>
-                
-                <div class="feedback-details">
-                  <p class="feedback-comment" style="font-weight: 600;">storeId : {{feedback.store_id}}</p>
-                  <v-rating
-                    v-model="feedback.rating"
-                    readonly
-                    half-increments
-                    size="small"
-                    color="#ffa534"
-                    density="compact"
-                  ></v-rating>
-                  <p class="feedback-comment">comment</p>
-                </div>
+          <div class="feedback-content">
+            <div
+              class="feedback-card"
+              v-for="feedback in feedbacks"
+              :key="feedback.id"
+            >
+              <div class="user-info">
+                <p class="user-id">userId : {{ feedback.user_id }}</p>
               </div>
 
-              
-              
-
+              <div class="feedback-details">
+                <p class="feedback-comment" style="font-weight: 600">
+                  storeId : {{ feedback.store_id }}
+                </p>
+                <v-rating
+                  v-model="feedback.rating"
+                  readonly
+                  half-increments
+                  size="small"
+                  color="#ffa534"
+                  density="compact"
+                ></v-rating>
+                <p class="feedback-comment">comment</p>
+              </div>
             </div>
-            
-          
+          </div>
         </div>
 
         <div class="div7">
           <h3>Top Rated Stores</h3>
           <div class="store-card">
             <div class="store-info">
-              <div class="store-name">MedStore Plus</div>
-              <div class="store-date">Created: 2024-01-20</div>
+              <div class="store-name">{{ toprated[0].storeName }}</div>
+              <div class="store-date">Created: {{ toprated[0].created }}</div>
             </div>
             <div class="store-rating">
               <v-rating
-                v-model="rating"
+                v-model="toprated[0].averageRating"
                 readonly
                 half-increments
                 size="small"
                 color="yellow"
                 density="compact"
               ></v-rating>
-              <div class="rating-value">4.5</div>
+              <div class="rating-value">{{ toprated[0].averageRating }}</div>
+            </div>
+          </div>
+          <div class="store-card">
+            <div class="store-info">
+              <div class="store-name">{{ toprated[1].storeName }}</div>
+              <div class="store-date">Created: {{ toprated[1].created }}</div>
+            </div>
+            <div class="store-rating">
+              <v-rating
+                v-model="toprated[1].averageRating"
+                readonly
+                half-increments
+                size="small"
+                color="yellow"
+                density="compact"
+              ></v-rating>
+              <div class="rating-value">{{ toprated[1].averageRating }}</div>
+            </div>
+          </div>
+          <div class="store-card">
+            <div class="store-info">
+              <div class="store-name">{{ toprated[2].storeName }}</div>
+              <div class="store-date">Created: {{ toprated[2].created }}</div>
+            </div>
+            <div class="store-rating">
+              <v-rating
+                v-model="toprated[2].averageRating"
+                readonly
+                half-increments
+                size="small"
+                color="yellow"
+                density="compact"
+              ></v-rating>
+              <div class="rating-value">{{ toprated[2].averageRating }}</div>
             </div>
           </div>
         </div>
@@ -456,6 +494,8 @@ export default {
       users: [], // Will be populated with user data
       pendingStores: [],
       stores: [],
+      toprated: [],
+      toprated1: [],
       StoreCount: 0,
       selectedUser: null,
       userChart: null,
@@ -517,6 +557,37 @@ export default {
           console.log(" stores", result.data);
           this.StoreCount = result.data.length;
           // Check scroll indicators after loading
+        } else {
+          this.snackbarMessage = `Error: ${result.error}`;
+          this.snackbar = true;
+          this.snackbarColor = "error";
+        }
+      } catch (error) {
+        console.error("Error loading  stores:", error);
+        this.snackbarMessage = "Failed to load stores";
+        this.snackbar = true;
+        this.snackbarColor = "error";
+      }
+    },
+    async loadStoresTop() {
+      try {
+        const result = await this.$store.dispatch("Admin/loadStoresTop");
+        if (result.success) {
+          this.toprated1 = result.data;
+          console.log(" stores", result.data);
+          this.StoreCount = result.data.length;
+          // Check scroll indicators after loading
+
+          this.toprated = this.toprated1
+            .filter(
+              (toprated1) =>
+                toprated1.averageRating !== null &&
+                toprated1.averageRating !== undefined
+            )
+            .sort((a, b) => b.averageRating - a.averageRating)
+            .slice(0, 4);
+
+          console.log("topRated store fetched", this.toprated);
         } else {
           this.snackbarMessage = `Error: ${result.error}`;
           this.snackbar = true;
@@ -655,6 +726,7 @@ export default {
   mounted() {
     this.loadPendingStores();
     this.loadStores();
+    this.loadStoresTop();
     this.loadAds();
     this.loadFeedBack();
   },
@@ -733,7 +805,6 @@ export default {
   margin: 0;
   font-size: 1rem;
 }
-
 
 .user-info p {
   margin: 5px 0 0;
@@ -832,7 +903,7 @@ export default {
   flex-grow: none;
 }
 
-.feedback-content::-webkit-scrollbar{
+.feedback-content::-webkit-scrollbar {
   display: none;
 }
 
@@ -843,7 +914,6 @@ export default {
   display: flex;
   flex-wrap: nowrap;
   margin-top: 20px;
-
 }
 
 .feedback-card {
