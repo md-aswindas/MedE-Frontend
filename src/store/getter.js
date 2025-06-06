@@ -4,4 +4,6 @@ export default{
   getuser_id: (state) => state.auth.user_id,
   getuser_name: (state) => state.auth.user_name,
   getuser_store: (state) => state.auth.user_store,
+  getuser_location: (state) => state.auth.user_location,
+
 }

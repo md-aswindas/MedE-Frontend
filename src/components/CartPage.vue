@@ -67,21 +67,33 @@
     <div class="cart-main-container">
       <div class="cart-container">
         <h1 class="cart-head">Your Cart</h1>
+
         <div class="cart-card-div">
           <div
             class="cart-card"
             v-for="cartproduct in cartProducts.items"
             :key="cartproduct.itemId"
           >
-            <img src="" alt="" class="card-img" />
+            <img
+              :src="cartproduct.imageBase64"
+              alt="Product Image"
+              class="card-img"
+            />
+
             <div class="card-content">
-              <h2>{{ cartproduct.productName }}</h2>
+              <h2>{{ cartproduct.name }}</h2>
               <h4>Price : {{ cartproduct.discountPrice }}</h4>
-              <h4>Discount : {{ cartproduct.offerPercentage }}%</h4>
+              <h4>Discount : {{ cartproduct.discountPercentage }}%</h4>
               <h4>Count : {{ cartproduct.quantity }}</h4>
             </div>
             <div class="btns">
-              <button type="button" class="remove-btn" @click="removeCartItem(cartproduct.itemId)">Remove</button>
+              <button
+                type="button"
+                class="remove-btn"
+                @click="removeCartItem(cartproduct.itemId)"
+              >
+                Remove
+              </button>
               <button type="button" class="buy-btn">Buy</button>
             </div>
           </div>
@@ -89,6 +101,56 @@
       </div>
       <div class="price-container">
         <h1 class="cart-head">Checkout</h1>
+
+        <table class="cart-table">
+          <thead>
+            <tr>
+              <th>Product Name (ID)</th>
+              <th>Description</th>
+              <th>Category</th>
+              <th>Store</th>
+              <th>Actual Price</th>
+              <th>Discount Price</th>
+              <th>Offer %</th>
+              <th>Quantity</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="cartproduct in cartProducts.items"
+              :key="cartproduct.itemId"
+            >
+              <td>{{ cartproduct.name }} ({{ cartproduct.productId }})</td>
+              <td>{{ cartproduct.description }}</td>
+              <td>{{ cartproduct.category }}</td>
+              <td>{{ cartProducts.storeName }}</td>
+              <td>₹{{ cartproduct.actualPrice }}</td>
+              <td>₹{{ cartproduct.discountPrice }}</td>
+              <td>{{ cartproduct.offerPercentage }}%</td>
+              <td>{{ cartproduct.quantity }}</td>
+              <td>
+                ₹{{
+                  (cartproduct.discountPrice * cartproduct.quantity)
+                }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="summary">
+          <p>
+            <strong>Total Price:</strong> ₹{{
+              cartProducts.totalPrice
+            }}
+          </p>
+          <p>
+            <strong>Amount Saved:</strong> ₹{{
+              cartProducts.totalDiscount
+            }}
+          </p>
+          <p><strong>Store Name:</strong> {{ cartProducts.storeName }}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -127,23 +189,21 @@ export default {
     },
     async removeCartItem(itemId) {
       console.log("Clicked Item ID:", itemId);
-  
+
       const userId = sessionStorage.getItem("user_id");
       const result = await this.$store.dispatch("EndUser/removeFromCart", {
         userId,
         itemId,
       });
       if (result.success) {
-        alert("Item removed");
         this.snackbarMessage = "Cart Item Removed 🗑️";
-          this.snackbar = true;
-          this.snackbarColor = "success";
+        this.snackbar = true;
+        this.snackbarColor = "success";
         this.loadCartProducts(); // refresh cart
       } else {
-        
-         this.snackbarMessage = result.error;
-          this.snackbar = true;
-          this.snackbarColor = "error";
+        this.snackbarMessage = result.error;
+        this.snackbar = true;
+        this.snackbarColor = "error";
       }
     },
   },
@@ -155,6 +215,59 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
+.price-container {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #fff;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+.cart-head {
+  text-align: center;
+  margin-bottom: 25px;
+  font-weight: 700;
+  font-size: 2rem;
+  color: #222;
+}
+
+.cart-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+}
+
+.cart-table th,
+.cart-table td {
+  padding: 12px 10px;
+  border: 1px solid #ccc;
+  text-align: center;
+  font-size: 0.95rem;
+  vertical-align: middle;
+}
+
+.cart-table th {
+  background-color: #f7f7f7;
+  font-weight: 600;
+  color: #444;
+}
+
+.summary {
+  text-align: right;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.summary p {
+  margin: 8px 0;
+}
+
+
 .main-container {
   width: 100%;
   /* height: fit-content; */
@@ -276,7 +389,7 @@ export default {
 .cart-card {
   width: 100%;
   height: 25%;
-  background-color: rgb(244, 244, 244);
+  background-color: rgb(255, 255, 255);
   border-radius: 10px;
   margin-bottom: 20px;
   border: 1px solid rgb(220, 220, 220);

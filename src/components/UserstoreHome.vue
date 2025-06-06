@@ -276,6 +276,7 @@ export default {
       snackbar: false,
       snackbarMessage: "",
       snackbarColor: "success",
+      
     };
   },
   methods: {
@@ -349,6 +350,10 @@ export default {
   computed: {
     cartCount() {
       return this.$store.state.EndUser.cartCount;
+    },
+    isLoggedIn() {
+      const username = this.$store.state.auth.user_name;
+      return username && username.trim().length > 0;
     },
   },
 };

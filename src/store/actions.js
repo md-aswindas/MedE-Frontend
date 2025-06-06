@@ -29,6 +29,14 @@ export default {
     // Optionally, return true to confirm logout
     return true;
   },
+   async logoutUser({ commit }) {
+    // Clear both Vuex state and session storage
+    commit('setuser_id', null);
+    commit('setuser_name', null);
+
+    // Optionally, return true to confirm logout
+    return true;
+  },
   async registerUser({ rootGetters }, payload) {
     console.log("sending payload:", payload);
     const response = await axios.post(`${rootGetters.getUrl}/api/MedE/User/userRegistration`, payload);

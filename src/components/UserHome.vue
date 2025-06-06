@@ -36,7 +36,7 @@
             Become A Seller
           </p>
         </router-link>
-        <router-link
+        <!-- <router-link
           to="/userLogin"
           style="text-decoration: none; color: inherit; font-weight: 500"
         >
@@ -60,6 +60,55 @@
           </p>
           <p
             v-else
+            class="nav-img"
+            style="
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              color: #03045e;
+              padding: 7px;
+              border-radius: 20px;
+              width: 100px;
+            "
+          >
+            <v-icon large color="#03045E" size="1.2rem" class="icon"
+              >mdi-account-outline</v-icon
+            >
+            {{ username }}
+          </p>
+        </router-link> -->
+
+        <router-link
+          v-if="!isLoggedIn"
+          to="/userLogin"
+          style="text-decoration: none; color: inherit; font-weight: 500"
+        >
+          <p
+            class="nav-img"
+            style="
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              color: #03045e;
+              padding: 7px;
+              border-radius: 20px;
+              width: 100px;
+            "
+          >
+            <v-icon large color="#03045E" size="1.2rem" class="icon"
+              >mdi-account-outline</v-icon
+            >
+            Sign In
+          </p>
+        </router-link>
+
+        <!-- If user IS logged in -->
+        <router-link
+          v-else
+          to="/userProfile"
+          style="text-decoration: none; color: inherit; font-weight: 500"
+        >
+          <p
             class="nav-img"
             style="
               display: flex;
@@ -170,7 +219,12 @@
       found!
     </div>
     <div class="search-products" v-if="stores.length > 0">
-      <div class="card c1" v-for="store in stores" :key="store.id" @click="selectStore(store.storeId)">
+      <div
+        class="card c1"
+        v-for="store in stores"
+        :key="store.id"
+        @click="selectStore(store.storeId)"
+      >
         <h2>{{ store.storeName }}</h2>
         <div class="c2">
           <h4>
@@ -322,9 +376,31 @@
         </p>
       </div>
     </div>
-    <div class="footer"></div>
+    <div class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>About MedE</h3>
+          <p>Your trusted medical e-commerce platform</p>
+          <p>Connecting patients with local pharmacies</p>
+        </div>
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <router-link to="/">Home</router-link>
+          <router-link to="/cart">Cart</router-link>
+          <router-link to="/storeLogin">Become a Seller</router-link>
+        </div>
+        <div class="footer-section">
+          <h3>Contact Us</h3>
+          <p><v-icon size="small">mdi-email</v-icon> support@mede.com</p>
+          <p><v-icon size="small">mdi-phone</v-icon> +1 (555) 123-4567</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 MedE. All rights reserved.</p>
+      </div>
+    </div>
   </div>
-   <v-snackbar v-model="snackbar" :timeout="3000" :color="snackbarColor" top>
+  <v-snackbar v-model="snackbar" :timeout="3000" :color="snackbarColor" top>
     {{ snackbarMessage }}
   </v-snackbar>
 </template>
@@ -346,12 +422,11 @@ export default {
       locationVisible: false,
       showMap: false,
 
-      latitude:9.49809589449932,
-      longitude:76.33891403675081,
+      latitude: 9.49809589449932,
+      longitude: 76.33891403675081,
 
       map: null,
       marker: null,
-      
 
       nearby: [],
       topRated: [],
@@ -369,11 +444,10 @@ export default {
       const username = this.$store.state.auth.user_name;
       return username && username.trim().length > 0;
     },
-    
+
     cartCount() {
       return this.$store.state.EndUser.cartCount;
     },
-  
   },
   methods: {
     selectStore(storeId) {
@@ -443,6 +517,20 @@ export default {
 
                 // Optional: Show popup with address
                 this.marker.bindPopup(address).openPopup();
+
+                const locationPayload = {
+                  name: address,
+                  latitude: lat,
+                  longitude: lng,
+                };
+                sessionStorage.setItem(
+                  "user_location",
+                  JSON.stringify(locationPayload)
+                );
+
+                // ✅ Commit to Vuex if needed
+                this.$store.commit("setlocation", locationPayload);
+                
               } else {
                 this.selectedAddress = "No address found";
               }
@@ -460,29 +548,69 @@ export default {
     useCurrentLocation() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
-          (position) => {
+          async (position) => {
             const latitude = position.coords.latitude;
             const longitude = position.coords.longitude;
+
             console.log("Latitude:", latitude);
             console.log("Longitude:", longitude);
 
-            // Store in your data if needed
             this.latitude = latitude;
             this.longitude = longitude;
+
+            try {
+              // 🌍 Reverse geocoding using MapTiler API
+              const response = await fetch(
+                `https://api.maptiler.com/geocoding/${longitude},${latitude}.json?key=yW9Chaj3bp5BpSfoMfNq`
+              );
+              const data = await response.json();
+
+              if (data.features.length > 0) {
+                const placeName =
+                  data.features[0].place_name || "Unknown Location";
+
+                const locationPayload = {
+                  name: placeName,
+                  latitude: latitude,
+                  longitude: longitude,
+                };
+
+                // ✅ Save to sessionStorage
+                sessionStorage.setItem(
+                  "user_location",
+                  JSON.stringify(locationPayload)
+                );
+
+                // ✅ Update Vuex
+                this.$store.commit("setlocation", locationPayload);
+
+                // Optional: Show success message
+                this.snackbarMessage = "📍 Location set to: " + placeName;
+                this.snackbar = true;
+                this.snackbarColor = "success";
+              } else {
+                throw new Error("No location found");
+              }
+            } catch (error) {
+              console.error("Reverse geocoding failed:", error);
+              this.snackbarMessage =
+                "🌐 Failed to reverse geocode coordinates.";
+              this.snackbar = true;
+              this.snackbarColor = "error";
+            }
           },
           (error) => {
             console.error("Error getting location:", error);
-            
-             this.snackbarMessage = "🗺️ Could not get location.";
-          this.snackbar = true;
-          this.snackbarColor = "error";
+            this.snackbarMessage = "🗺️ Could not get location.";
+            this.snackbar = true;
+            this.snackbarColor = "error";
           }
         );
       } else {
-        
-        this.snackbarMessage = "🗺️ Geolocation is not supported by this browser.";
-          this.snackbar = true;
-          this.snackbarColor = "error";
+        this.snackbarMessage =
+          "🗺️ Geolocation is not supported by this browser.";
+        this.snackbar = true;
+        this.snackbarColor = "error";
       }
     },
 
@@ -793,11 +921,11 @@ export default {
   font-weight: 500;
   margin-top: 10px;
 }
-.footer {
+/* .footer {
   margin-top: 50px;
   height: 500px;
   background: black;
-}
+} */
 .one {
   width: 100%;
 }
@@ -851,5 +979,62 @@ export default {
   position: absolute;
   top: 3%;
   right: 1%;
+}
+
+/* footer */
+
+.footer {
+  background: linear-gradient(to bottom, #000000, #2f2f2f);
+  color: white;
+  padding: 40px 0 20px;
+  margin-top: 50px;
+  height: 300px;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-around;
+  padding: 0 20px;
+}
+
+.footer-section {
+  flex: 1;
+  max-width: 300px;
+  margin: 0 20px;
+}
+
+.footer-section h3 {
+  font-family: "Boldonse";
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+}
+
+.footer-section p,
+.footer-section a {
+  color: #ffffff;
+  text-decoration: none;
+  display: block;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  transition: opacity 0.3s;
+}
+
+.footer-section a:hover {
+  opacity: 0.8;
+}
+
+.footer-section .v-icon {
+  margin-right: 8px;
+  color: #ffffff;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.8rem;
 }
 </style>

@@ -4,25 +4,26 @@ export default {
     state.auth.store_id = payload;
     sessionStorage.setItem("store_id", payload);
     // ------------------------------
-    
+
   },
-  setuser_id(state, payload){
+  setuser_id(state, payload) {
     state.auth.user_id = payload;
     sessionStorage.setItem("user_id", payload);
   },
 
-  setuser_name(state, payload){
+  setuser_name(state, payload) {
     state.auth.user_name = payload;
     sessionStorage.setItem("user_name", payload);
   },
 
-  setuser_store(state,payload){
+  setuser_store(state, payload) {
     state.auth.user_store = payload;
-    sessionStorage.setItem("user_store",payload);
+    sessionStorage.setItem("user_store", payload);
   },
 
-  
-
-  
+  setlocation(state, payload) {
+    state.auth.user_location = payload;
+    sessionStorage.setItem("user_location", JSON.stringify(payload));
+  },
 
 }

@@ -79,13 +79,14 @@ export default {
       return { success: false, data: [] };
     }
   },
-  async fetchProducts({ rootGetters }, { storeId,sort ,categoryId}) {
+  async fetchProducts({ rootGetters }, { storeId, sort, categoryId }) {
     try {
       console.log("fetching products");
 
       const response = await axios.get(`${rootGetters.getUrl}/api/MedE/Admin/adminViewStoreProduct`,
         {
-          params: { storeId: storeId, 
+          params: {
+            storeId: storeId,
             sort, categoryId
           },
         });
@@ -138,7 +139,7 @@ export default {
     try {
       console.log("fetching cart products");
 
-      const response = await axios.get(`${rootGetters.getUrl}/api/MedE/User/getCart`,
+      const response = await axios.get(`${rootGetters.getUrl}/api/MedE/User/cart`,
         {
           params: { userId: userId },
         });
@@ -163,6 +164,111 @@ export default {
       return { success: false, error: error.response?.data || "Failed to remove item" };
     }
   },
+
+  async checkoutCart({ rootGetters }, payload) {
+    const { userId, checkoutDetails } = payload;
+
+    try {
+      const response = await axios.post(
+        `${rootGetters.getUrl}/api/MedE/User/checkoutCart`,
+        checkoutDetails,
+        {
+          params: {
+            userId: userId,
+          },
+        }
+      );
+
+      if (response.status >= 200 && response.status < 300) {
+        console.log("Checkout successful:", response.data);
+        return response.data;
+      } else {
+        console.warn("Checkout failed:", response);
+        return null;
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+      return null;
+    }
+  },
+
+  async loadOrders({ rootGetters }, userId) {
+    try {
+      console.log("fetching Orders");
+
+      const response = await axios.get(`${rootGetters.getUrl}/api/MedE/User/orders`,
+        {
+          params: userId,
+        });
+
+      if (response.status >= 200 && response.status < 300) {
+        return { success: true, data: response.data };
+      }
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || "failed to fetch" };
+
+    }
+  },
+
+  async fetchPrescriptions({ rootGetters }, userId) {
+    try {
+      console.log("fetching prescriptions");
+      const response = await axios.get(
+        `${rootGetters.getUrl}/api/MedE/User/fetchPrescriptions`,
+        { params: userId }
+      );
+      if (response.status >= 200 && response.status < 300) {
+        return { success: true, data: response.data };
+      } else {
+        return { success: false, error: response.statusText };
+      }
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || "failed to fetch" };
+
+    }
+  },
+
+  async deletePrescriptionByUser({ rootGetters }, { userId, prescriptionId }) {
+    try {
+      const response = await axios.delete(
+        `${rootGetters.getUrl}/api/MedE/User/deletePrescription`,
+        {
+          params: { userId, prescriptionId },
+        }
+      );
+
+      if (response.status >= 200 && response.status < 300) {
+        return { success: true, message: response.data };
+      } else {
+        return { success: false, error: response.statusText };
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.message || "Delete failed",
+      };
+    }
+  },
+
+   async fetchProfile({ rootGetters }, userId) {
+    try {
+      console.log("fetching profile");
+      const response = await axios.get(
+        `${rootGetters.getUrl}/api/MedE/User/profile`,
+        { params: userId }
+      );
+      if (response.status >= 200 && response.status < 300) {
+        return { success: true, data: response.data };
+      } else {
+        return { success: false, error: response.statusText };
+      }
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || "failed to fetch" };
+
+    }
+  },
+
+
 
 
 }
