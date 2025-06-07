@@ -92,7 +92,10 @@
               color: #03045e;
               padding: 7px;
               border-radius: 20px;
-              width: 100px;
+              max-width: 100px;
+              height: 40px;
+              white-space: nowrap;
+              overflow: hidden;
             "
           >
             <v-icon large color="#03045E" size="1.2rem" class="icon"
@@ -118,6 +121,10 @@
               padding: 7px;
               border-radius: 20px;
               width: 100px;
+              max-width: 100px;
+              height: 40px;
+              white-space: nowrap;
+              overflow: hidden;
             "
           >
             <v-icon large color="#03045E" size="1.2rem" class="icon"
@@ -530,7 +537,6 @@ export default {
 
                 // ✅ Commit to Vuex if needed
                 this.$store.commit("setlocation", locationPayload);
-                
               } else {
                 this.selectedAddress = "No address found";
               }

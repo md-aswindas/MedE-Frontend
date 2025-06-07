@@ -963,13 +963,13 @@
                 <v-card-text>
                   <div class="order-header">
                     <div>
-                      <h3 class="order-id">#{{ order.orderId }}</h3>
+                      <h3 class="order-id">{{ order.customerName }}</h3>
                       <p class="order-date">{{ formatDateAndTime( order.dispatchDtae ) }}</p>
                       <p class="store-name">
                         <v-icon size="16" color="#03045E" class="mr-1"
                           >mdi-store</v-icon
                         >
-                        {{ order.customerName }}
+                        +91 {{ order.phoneNumber }}
                       </p>
                     </div>
                     <!-- <v-chip

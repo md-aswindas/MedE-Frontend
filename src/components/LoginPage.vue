@@ -78,7 +78,7 @@ export default {
       try {
         const response = await this.$store.dispatch("loginUser", payload);
         if (response) {
-          alert();
+          
           this.snackbarMessage = "🎉 successfully login!!!! ";
           this.snackbar = true;
           this.snackbarColor = "success";

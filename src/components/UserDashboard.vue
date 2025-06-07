@@ -453,7 +453,7 @@ export default {
         if (!confirmation) return;
         const result = await this.$store.dispatch("logoutUser");
         if (result) {
-          this.$router.push("/UserHomeMain"); // Or wherever your login route is
+          this.$router.push("/"); // Or wherever your login route is
         }
       } catch (error) {
         console.log("logout failed:", error);
