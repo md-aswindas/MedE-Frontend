@@ -1,85 +1,97 @@
 <template>
   <div class="container">
-    <!-- <div class="texts">
-      
-      <div class="quote-container">
-        
-        <p class="quote"><span>"</span>The <br />&nbsp; Path to <span style="color:#03045E ;">Wellness</span> <br />&nbsp; Starts Here.<span>"</span></p>
-        <h4 class="sub-txt">Wellness made easy, your health products delivered to your doorstep with just one click. With shops near you and a world of care at your fingertips, the path to better health has never been more convenient.</h4>
-      </div>
-    </div> -->
     <div class="login-container">
       <div class="txt">
         <h2 class="login-h">Create Account</h2>
         <router-link
           to="/storeLogin"
           style="text-decoration: none; color: inherit"
-          ><h4 class="create-acnt">
-            Already have an account ?<span style="font-weight: 600">
-              log in</span
-            >
-          </h4></router-link
         >
+          <h4 class="create-acnt">
+            Already have an account?
+            <span style="font-weight: 600">log in</span>
+          </h4>
+        </router-link>
       </div>
 
       <div class="fields">
         <input
           type="text"
-          name="storeName"
-          v-model="store_name"
-          class="txt-field"
-          placeholder="store name"
-        />
-        <input
-          type="text"
           name="licenseNumber"
           v-model="licenseNumber"
           class="txt-field"
-          placeholder="license number"
+          placeholder="License number"
         />
         <input
-          type="number"
+          type="tel"
           name="phone"
-          v-model="phone_number"
+          v-model="phoneNumber"
           class="txt-field"
-          placeholder="phone number"
+          placeholder="Phone number"
         />
-        <input
+        <!-- <input
           type="password"
           name="password"
           v-model="password"
           class="txt-field"
-          placeholder="password"
-        />
-        <button type="button" class="gbtn" @click="openUpload()">
+          placeholder="Password"
+        /> -->
+        <!-- Password Field -->
+        <div class="password-field">
+          <input
+            :type="showPassword ? 'text' : 'password'"
+            name="password"
+            v-model="password"
+            class="txt-field"
+            placeholder="Password"
+            
+          />
+          <v-icon
+            @click="togglePasswordVisibility"
+            class="eye-icon"
+            color="grey"
+            style="cursor: pointer"
+          >
+            {{ showPassword ? "mdi-eye-off" : "mdi-eye" }}
+          </v-icon>
+        </div>
+
+        <!-- Confirm Password Field -->
+        <div class="password-field">
+          <input
+            :type="showConfirmPassword ? 'text' : 'password'"
+            name="confirmPassword"
+            v-model="confirmPassword"
+            class="txt-field"
+            placeholder="Confirm Password"
+          />
+          <v-icon
+            @click="toggleConfirmPasswordVisibility"
+            class="eye-icon"
+            color="grey"
+            style="cursor: pointer"
+          >
+            {{ showConfirmPassword ? "mdi-eye-off" : "mdi-eye" }}
+          </v-icon>
+        </div>
+         <p v-if="confirmPassword && password !== confirmPassword" style="color: red; padding-left: 50px;">
+      Passwords do not match!
+    </p>
+
+        <button type="button" class="gbtn" @click="openUpload">
           Upload license image
         </button>
-        <!-- <div class="link">
-          <h4 class="link-txt">Forgot Password ?</h4>
-          
-        </div> -->
-        <!-- <router-link to="/userhome"> -->
-        <button type="button" class="btn" @click="StoreRegister">
-          Continue
-        </button>
-        <!-- </router-link> -->
-        <!-- <div class="heading">
-          <div class="line"></div>
-          <div class="heading-txt"><h4>Or</h4></div>
-          <div class="line"></div>
-        </div>
-        <button type="button" class="gbtn">
-          <span><v-icon></v-icon></span>Log in with Google
-        </button> -->
+        <button type="button" class="btn" @click="submitForm">Continue</button>
       </div>
     </div>
   </div>
+
   <div class="file-upload" id="fileUpload">
     <div class="main-box">
       <div class="upload">
         <h2>Upload a File</h2>
         <h3 style="font-weight: 300">Attach your file below</h3>
-        <div class="close" @click="close()"></div>
+        <div class="close" @click="close"></div>
       </div>
       <div
         class="box"
@@ -90,7 +102,7 @@
       >
         <h4 v-if="!imageUrl">Drag file(s) here</h4>
         <h4 v-if="!imageUrl">
-          or <span style="color: #00b4d8">click here </span>to upload file
+          or <span style="color: #00b4d8">click here</span> to upload file
         </h4>
         <input
           type="file"
@@ -110,11 +122,12 @@
       </div>
     </div>
   </div>
+
   <v-snackbar v-model="snackbar" :timeout="3000" :color="snackbarColor" top>
     {{ snackbarMessage }}
   </v-snackbar>
 </template>
- 
+
 <script>
 export default {
   data() {
@@ -123,102 +136,128 @@ export default {
       licenseNumber: "",
       phoneNumber: "",
       password: "",
+      confirmPassword: '',
+    showPassword: false,
+    showConfirmPassword: false,
       dragging: false,
       imageFile: null,
       imageUrl: null,
-      // videoSrc: require("@/assets/backgroung.mp4")
-       snackbar: false,
+      selectedFile: null,
+      snackbar: false,
       snackbarMessage: "",
       snackbarColor: "success",
     };
   },
   methods: {
-    async StoreRegister() {
+    togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
+  },
+  toggleConfirmPasswordVisibility() {
+    this.showConfirmPassword = !this.showConfirmPassword;
+  },
+    submitForm() {
+      const phoneRegex = /^[6-9]\d{9}$/;
+      if (!this.phoneNumber) {
+        this.showSnackbar("📱 Phone number is required", "error");
+        return;
+      }
+      if (!phoneRegex.test(this.phoneNumber)) {
+        this.showSnackbar(
+          "⚠️ Enter a valid 10-digit Indian phone number",
+          "error"
+        );
+        return;
+      }
+      if (!this.selectedFile) {
+        this.showSnackbar(
+          "🖼️ Please upload an image before continuing.",
+          "error"
+        );
+        return;
+      }
+      this.registerStore();
+    },
+    async registerStore() {
       const formData = new FormData();
       formData.append("licenseImage", this.selectedFile);
-      const storeRegistrationModel = new Blob(
+      const storeData = new Blob(
         [
           JSON.stringify({
-            store_name: this.store_name,
+            store_name: this.storeName,
             licenseNumber: this.licenseNumber,
-            phone_number: this.phone_number,
+            phone_number: this.phoneNumber,
             password: this.password,
           }),
         ],
         { type: "application/json" }
       );
-      formData.append("storeRegistrationModel", storeRegistrationModel);
+      formData.append("storeRegistrationModel", storeData);
       try {
         const response = await this.$store.dispatch("registerStore", formData);
         if (response) {
-          
-          this.snackbarMessage = "🎉 Store Registered Successfully" + response.data;
-          this.snackbar = true;
-          this.snackbarColor = "success";
+          this.showSnackbar("🎉 Store Registered Successfully", "success");
+          this.$router.push("/storeLogin");
         } else {
-          console.log("error");
-          this.snackbarMessage = "😟 Store Registion Failed" ;
-          this.snackbar = true;
-          this.snackbarColor = "error";
+          this.showSnackbar("😟 Store Registration Failed", "error");
         }
       } catch (error) {
-        console.error(error);
+        if (error.response && error.response.status === 409) {
+          this.showSnackbar("⚠️ License number already registered", "warning");
+        } else {
+          console.error(error);
+          this.showSnackbar(
+            "❌ An error occurred during registration",
+            "error"
+          );
+        }
       }
     },
-    
+    showSnackbar(message, color) {
+      this.snackbarMessage = message;
+      this.snackbarColor = color;
+      this.snackbar = true;
+    },
     close() {
-      const close = document.getElementById("fileUpload");
-      close.style.display = "none";
+      document.getElementById("fileUpload").style.display = "none";
     },
     openUpload() {
-      const open = document.getElementById("fileUpload");
-      console.log(open);
-      open.style.display = "flex";
+      document.getElementById("fileUpload").style.display = "flex";
     },
     triggerFileInput() {
       this.$refs.fileInput.click();
     },
     handleFile(event) {
       const file = event.target.files[0];
-      if (file) {
-        this.selectedFile = file;
-        this.imageUrl = URL.createObjectURL(file); // Show preview
-      }
-    },
-
-    handleDrop(event) {
-      event.preventDefault();
-      const file = event.dataTransfer.files[0];
-      if (file) {
-        this.selectedFile = file;
-        this.imageUrl = URL.createObjectURL(file); // Show preview
-      }
-    },
-    processFile(file) {
       if (file && file.type.startsWith("image/")) {
-        this.imageFile = file;
+        this.selectedFile = file;
         this.imageUrl = URL.createObjectURL(file);
       } else {
-        
-        this.snackbarMessage = "🖼️ Please upload an image file." ;
-          this.snackbar = true;
-          this.snackbarColor = "error";
+        this.showSnackbar("🖼️ Please upload an image file.", "error");
+      }
+    },
+    handleDrop(event) {
+      const file = event.dataTransfer.files[0];
+      if (file && file.type.startsWith("image/")) {
+        this.selectedFile = file;
+        this.imageUrl = URL.createObjectURL(file);
+      } else {
+        this.showSnackbar("🖼️ Please upload an image file.", "error");
       }
     },
     removeImage() {
       this.imageFile = null;
       this.imageUrl = null;
-      this.$refs.fileInput.value = ""; // Reset file input
+      this.selectedFile = null;
+      this.$refs.fileInput.value = "";
     },
     confirmImage() {
       if (this.selectedFile) {
-        this.imageConfirmed = true; // Mark image as confirmed
-        this.close(); // Close modal after confirmation
+        this.close();
       } else {
-        this.snackbarMessage = "🖼️ Please upload an image before submitting." ;
-          this.snackbar = true;
-          this.snackbarColor = "error";
-        
+        this.showSnackbar(
+          "🖼️ Please upload an image before submitting.",
+          "error"
+        );
       }
     },
   },

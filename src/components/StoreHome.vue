@@ -55,7 +55,7 @@
             font-weight: 500;
             border-radius: 10px;
           "
-          
+          @click="addStoreLocation()"
         >
           Save
         </button>
@@ -294,7 +294,9 @@
                 margin-top: 10px;
               "
             >
-              <v-icon>mdi-cart-variant </v-icon>&nbsp;10000
+              <v-icon>mdi-cart-variant </v-icon>&nbsp;{{
+                orderDispatch + orderNotDispatched
+              }}
             </h1>
           </div>
           <div class="div3">
@@ -322,7 +324,7 @@
                 margin-top: 10px;
               "
             >
-              <v-icon>mdi-cart-variant </v-icon>&nbsp; 50
+              <v-icon>mdi-cart-variant </v-icon>&nbsp; {{ todayOrderCount }}
             </h1>
           </div>
           <div class="div5">
@@ -337,8 +339,77 @@
               "
             ></v-date-picker>
           </div>
-          <div class="div6"><h3>Best Selling Product</h3></div>
-          <div class="div7"><h3>Chart</h3></div>
+          <div class="div6and7-combined scroll">
+            <div class="head"><h3>Dispatched Product</h3></div>
+
+            <div
+              v-if="dispatch.length > 0"
+              class="orders-list"
+              style="margin-top: 50px"
+            >
+              <v-card
+                v-for="order in dispatch"
+                :key="order.id"
+                class="order-card2"
+              >
+                <v-card-text>
+                  <div class="order-header">
+                    <div>
+                      <h3 class="order-id">#{{ order.orderId }}</h3>
+                      <p class="order-date">{{ order.orderDate }}</p>
+                      <p class="store-name">
+                        <v-icon size="16" color="#03045E" class="mr-1"
+                          >mdi-store</v-icon
+                        >
+                        {{ order.customerName }}
+                      </p>
+                    </div>
+                    <!-- <v-chip
+                    :color="getStatusColor(order.status)"
+                    class="status-chip"
+                  >
+                    {{ order.status }}
+                  </v-chip> -->
+                    <button class="tick">✓</button>
+                  </div>
+
+                  <v-divider class="my-3"></v-divider>
+
+                  <div class="order-items">
+                    <div
+                      v-for="item in order.items"
+                      :key="item.id"
+                      class="order-item"
+                    >
+                      <div class="item-info">
+                        <img :src="item.imageBase64" class="item-image" />
+                        <div class="item-details">
+                          <span class="item-name">{{ item.productName }}</span>
+                          <span class="item-quantity"
+                            >Quantity: {{ item.quantity }}</span
+                          >
+                        </div>
+                      </div>
+                      <span class="item-price">₹{{ item.price }}</span>
+                    </div>
+                  </div>
+
+                  <v-divider class="my-3"></v-divider>
+                  <div class="order-total">
+                    <span>Total Amount:</span>
+                    <span class="total-price">₹{{ order.totalPrice }}</span>
+                  </div>
+                </v-card-text>
+              </v-card>
+            </div>
+            <div v-else class="empty-state">
+              <v-icon size="64" color="grey-lighten-1"
+                >mdi-package-variant</v-icon
+              >
+              <h3>No Orders Dispatched Yet</h3>
+              <p>Your order dispatch history will appear here</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -604,6 +675,9 @@
                 label="Expiry Date"
                 v-model="expiryDate"
                 variant="outlined"
+                type="date"
+                :min="new Date().toISOString().split('T')[0]"
+                :rules="expiryDateRules"
               ></v-text-field>
             </div>
             <div class="price-dialog">
@@ -776,8 +850,8 @@
         </div>
       </v-dialog>
 
-      <!-- MAP PAGE -->
-      <div class="ads map" v-if="realOrderVisible">
+      <!-- ORDER PAGE -->
+      <div class="ads" v-if="realOrderVisible">
         <!-- <v-btn @click="loadMap">Show Map</v-btn>
         <v-btn color="red" @click="useCurrentLocation"
           >Use Current Location</v-btn
@@ -795,6 +869,161 @@
         <v-btn style="background-color: #00dc0f" @click="addStoreLocation()"
           >Save location</v-btn
         > -->
+        <div class="ads-div1">
+          <div class="add-ads">
+            <h3>All Orders</h3>
+          </div>
+          <div class="add-ads-cntnt1 scroll">
+            <div v-if="orderslist.length > 0" class="orders-list">
+              <v-card
+                v-for="order in orderslist"
+                :key="order.id"
+                class="order-card"
+              >
+                <v-card-text>
+                  <div class="order-header">
+                    <div>
+                      <h3 class="order-id">
+                        <v-icon size="16" color="#03045E" class="mr-1"
+                          >mdi-account</v-icon
+                        >{{ order.customerName }}
+                      </h3>
+                      <p class="order-date">{{ formatDateAndTime(order.orderDate) }}</p>
+                      <p class="store-name">+91 {{ order.phoneNumber }}</p>
+                    </div>
+                    <!-- <v-chip
+                    :color="getStatusColor(order.status)"
+                    class="status-chip"
+                  >
+                    {{ order.status }}
+                  </v-chip> -->
+                    <div class="details">
+                      <button
+                        class="disp"
+                        @click="dispatchOrder(order.orderId, 2)"
+                      >
+                        Dispatch
+                      </button>
+
+                      <h4>{{ order.location }}</h4>
+                    </div>
+                  </div>
+
+                  <v-divider class="my-3"></v-divider>
+
+                  <div class="order-items">
+                    <div
+                      v-for="item in order.items"
+                      :key="item.id"
+                      class="order-item"
+                    >
+                      <div class="item-info">
+                        <img :src="item.imageBase64" class="item-image" />
+                        <div class="item-details">
+                          <span class="item-name">{{ item.productName }}</span>
+                          <span class="item-quantity"
+                            >Quantity: {{ item.quantity }}</span
+                          >
+                        </div>
+                      </div>
+                      <span class="item-price">₹{{ item.price }}</span>
+                    </div>
+                  </div>
+
+                  <v-divider class="my-3"></v-divider>
+                  <div class="order-total">
+                    <span>Total Amount:</span>
+                    <span class="total-price">₹{{ order.totalPrice }}</span>
+                  </div>
+                </v-card-text>
+              </v-card>
+            </div>
+            <div v-else class="empty-state">
+              <v-icon size="64" color="grey-lighten-1"
+                >mdi-package-variant</v-icon
+              >
+              <h3>No Orders Yet</h3>
+              <p>Your order history will appear here</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- DISPLAY Orders -->
+        <div class="ads-div2">
+          <div class="add-ads">
+            <h3>Dispatch Orders</h3>
+          </div>
+          <div class="add-ads-cntnt1 scroll">
+            <div v-if="dispatch.length > 0" class="orders-list">
+              <v-card
+                v-for="order in dispatch"
+                :key="order.id"
+                class="order-card1"
+              >
+                <v-card-text>
+                  <div class="order-header">
+                    <div>
+                      <h3 class="order-id">#{{ order.orderId }}</h3>
+                      <p class="order-date">{{ formatDateAndTime( order.dispatchDtae ) }}</p>
+                      <p class="store-name">
+                        <v-icon size="16" color="#03045E" class="mr-1"
+                          >mdi-store</v-icon
+                        >
+                        {{ order.customerName }}
+                      </p>
+                    </div>
+                    <!-- <v-chip
+                    :color="getStatusColor(order.status)"
+                    class="status-chip"
+                  >
+                    {{ order.status }}
+                  </v-chip> -->
+                  <div class="details">
+                      <button class="tick">✓</button>
+
+                      <h4>{{ order.location }}</h4>
+                    </div>
+                    
+                  </div>
+
+                  <v-divider class="my-3"></v-divider>
+
+                  <div class="order-items">
+                    <div
+                      v-for="item in order.items"
+                      :key="item.id"
+                      class="order-item"
+                    >
+                      <div class="item-info">
+                        <img :src="item.imageBase64" class="item-image" />
+                        <div class="item-details">
+                          <span class="item-name"> {{ item.productName }}</span>
+                          <span class="item-quantity"
+                            >Quantity: {{ item.quantity }}</span
+                          >
+                        </div>
+                      </div>
+                      <span class="item-price">₹{{ item.price }}</span>
+                    </div>
+                  </div>
+
+                  <v-divider class="my-3"></v-divider>
+                  <div class="order-total">
+                    <span>Total Amount:</span>
+                    <span class="total-price">₹{{ order.totalPrice }}</span>
+                  </div>
+                </v-card-text>
+              </v-card>
+            </div>
+            <div v-else class="empty-state">
+              <v-icon size="64" color="grey-lighten-1"
+                >mdi-package-variant</v-icon
+              >
+              <h3>No Orders Dispatched Yet</h3>
+              <p>Your order dispatch history will appear here</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- ADS PAGE -->
@@ -821,18 +1050,25 @@
             ></v-text-field>
             <v-text-field
               class="field-p-dialog"
-              hint="2025-03-12"
+              hint="yyyy-mm-dd"
               label="Offer Start Date"
               variant="outlined"
+              type="date"
               v-model="offerStartDate"
-            ></v-text-field>
+              :rules="offerStartDateRules"
+              :min="new Date().toISOString().split('T')[0]"
+            />
+
             <v-text-field
               class="field-p-dialog"
-              hint="2025-04-12"
+              hint="yyyy-mm-dd"
               label="Offer End Date"
               variant="outlined"
+              type="date"
               v-model="offerEndDate"
-            ></v-text-field>
+              :rules="offerEndDateRules"
+              :min="new Date().toISOString().split('T')[0]"
+            />
             <v-text-field
               class="field-p-dialog"
               hint="*Free Delivery above ₹500"
@@ -880,6 +1116,15 @@
   <v-snackbar v-model="snackbar" :timeout="3000" :color="snackbarColor" top>
     {{ snackbarMessage }}
   </v-snackbar>
+  <v-snackbar
+    v-model="showSnackbar"
+    :timeout="5000"
+    color="warning"
+    elevation="24"
+    location="center"
+  >
+    {{ snackbarMessage }}
+  </v-snackbar>
 </template>
 
 <script>
@@ -897,7 +1142,7 @@ export default {
       latitude: null,
       longitude: null,
       showMap: false,
-
+      showSnackbar: false,
       snackbar: false,
       snackbarMessage: "",
       snackbarColor: "success",
@@ -935,6 +1180,14 @@ export default {
       productDesc: "",
       stock: "",
       expiryDate: "",
+      expiryDateRules: [
+        (v) => !!v || "Expiry date is required",
+        (v) => {
+          if (!v) return true;
+          const today = new Date().toISOString().split("T")[0];
+          return v >= today || "Expiry date cannot be in the past";
+        },
+      ],
       actualPrice: "",
       offerPercentage: "",
       dragging: false,
@@ -949,6 +1202,27 @@ export default {
       conditions: "",
       offerStartDate: "",
       offerEndDate: "",
+      offerStartDateRules: [
+        (v) => !!v || "Start date is required",
+        (v) => {
+          const today = new Date().toISOString().split("T")[0];
+          return v >= today || "Start date can't be in the past";
+        },
+      ],
+
+      offerEndDateRules: [
+        (v) => !!v || "End date is required",
+        (v) => {
+          const today = new Date().toISOString().split("T")[0];
+          return v >= today || "End date can't be in the past";
+        },
+        (v) => {
+          if (!v || !this.offerStartDate) return true;
+          return (
+            v >= this.offerStartDate || "End date must be after start date"
+          );
+        },
+      ],
 
       orderIsVisible: true,
       productIsVisible: false,
@@ -970,6 +1244,11 @@ export default {
 
       hide: true,
       inputT: false,
+      orderslist: [],
+      dispatch: [],
+
+      orderDispatch: 0,
+      orderNotDispatched: 0,
     };
   },
   created() {
@@ -982,6 +1261,8 @@ export default {
     this.loadPrescription();
     this.loadStoreProfile();
     this.loadStoreAds();
+    this.loadOrders();
+    this.loadOrders2();
     // console.log("Mounted Hook: Fetching product images...");
   },
   watch: {
@@ -1009,12 +1290,122 @@ export default {
     statusReject() {
       return this.profile.statusName === "Rejected";
     },
+
+    todayOrderCount() {
+      const today = new Date().toISOString().split("T")[0];
+
+      const count1 =
+        this.orderslist?.filter((order) => {
+          const orderDate = order.orderDate?.split("T")[0];
+          return orderDate === today;
+        }).length || 0;
+
+      const count2 =
+        this.dispatch?.filter((order) => {
+          const orderDate = order.orderDate?.split("T")[0];
+          return orderDate === today;
+        }).length || 0;
+
+      return count1 + count2;
+    },
   },
   methods: {
     ...mapActions(["fetchStoreProducts"]),
 
     showlocation() {
       this.locationVisible = !this.locationVisible;
+    },
+    formatDateAndTime(datetimeString) {
+      if (!datetimeString) return "";
+
+      // Split at 'T' and keep the date and time parts
+      const [datePart, timePart] = datetimeString.split("T");
+      if (!datePart || !timePart) return "";
+
+      const [year, month, day] = datePart.split("-");
+      const [hour, minute] = timePart.split(":");
+
+      return `${day}/${month}/${year} ${hour}:${minute}`;
+    },
+    getFormattedExpiryDate() {
+      if (!this.expiryDate) return null;
+      const date = new Date(this.expiryDate);
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, "0");
+      const dd = String(date.getDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    },
+    async loadOrders() {
+      try {
+        const result = await this.$store.dispatch("MedEStore/loadOrders", {
+          status: 1,
+          storeId: this.getstore_id,
+        });
+        if (result.success) {
+          this.orderslist = result.data;
+          console.log("Orders", result.data);
+          this.orderNotDispatched = result.data.length;
+          this.loadOrders2();
+        } else {
+          this.snackbarMessage = `Error: ${result.error}`;
+          this.snackbar = true;
+          this.snackbarColor = "error";
+        }
+      } catch (error) {
+        console.error("Error loading orders:", error);
+        this.snackbarMessage = "Failed to load order items";
+        this.snackbar = true;
+        this.snackbarColor = "error";
+      }
+    },
+    async loadOrders2() {
+      try {
+        const result = await this.$store.dispatch("MedEStore/loadOrders", {
+          status: 2,
+          storeId: this.getstore_id,
+        });
+        if (result.success) {
+          this.dispatch = result.data;
+          console.log("Orders dispatch", result.data);
+          this.orderDispatch = result.data.length;
+        } else {
+          this.snackbarMessage = `Error: ${result.error}`;
+          this.snackbar = true;
+          this.snackbarColor = "error";
+        }
+      } catch (error) {
+        console.error("Error loading orders:", error);
+        this.snackbarMessage = "Failed to load order items";
+        this.snackbar = true;
+        this.snackbarColor = "error";
+      }
+    },
+    async dispatchOrder(orderId, status) {
+      try {
+        const result = await this.$store.dispatch("MedEStore/addDispatch", {
+          orderId,
+          status,
+        });
+
+        if (result.success) {
+          this.snackbarMessage = "Order dispatched successfully";
+          this.snackbarColor = "success";
+          this.snackbar = true;
+
+          // Reload orders or update UI as needed
+          this.loadOrders(); // if you have a method to reload orders
+          this.loadOrders2();
+        } else {
+          this.snackbarMessage = `Error: ${result.error}`;
+          this.snackbarColor = "error";
+          this.snackbar = true;
+        }
+      } catch (error) {
+        console.error("Dispatch failed:", error);
+        this.snackbarMessage = "Dispatch request failed.";
+        this.snackbarColor = "error";
+        this.snackbar = true;
+      }
     },
     loadMap() {
       this.showMap = true;
@@ -1093,7 +1484,7 @@ export default {
     useCurrentLocation() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
-          (position) => {
+          async (position) => {
             const latitude = position.coords.latitude;
             const longitude = position.coords.longitude;
             console.log("Latitude:", latitude);
@@ -1102,6 +1493,33 @@ export default {
             // Store in your data if needed
             this.latitude = latitude;
             this.longitude = longitude;
+
+            try {
+              // 🌍 Reverse geocoding using MapTiler API
+              const response = await fetch(
+                `https://api.maptiler.com/geocoding/${longitude},${latitude}.json?key=yW9Chaj3bp5BpSfoMfNq`
+              );
+              const data = await response.json();
+
+              if (data.features.length > 0) {
+                const address = data.features[0].place_name;
+                console.log("Address:", address);
+                this.selectedAddress = address;
+
+                // Optional: Show success message
+                this.snackbarMessage = "📍 Location set to: " + address;
+                this.snackbar = true;
+                this.snackbarColor = "success";
+              } else {
+                throw new Error("No location found");
+              }
+            } catch (error) {
+              console.error("Reverse geocoding failed:", error);
+              this.snackbarMessage =
+                "🌐 Failed to reverse geocode coordinates.";
+              this.snackbar = true;
+              this.snackbarColor = "error";
+            }
           },
           (error) => {
             console.error("Error getting location:", error);
@@ -1287,7 +1705,12 @@ export default {
             payload
           );
           if (response) {
-            alert("location Added");
+            this.snackbarMessage =
+              " 🎉 location added to: " + this.selectedAddress;
+            this.snackbar = true;
+            this.snackbarColor = "success";
+            this.showlocation();
+            this.loadStoreProfile();
           } else {
             console.log("error adding location");
           }
@@ -1352,6 +1775,7 @@ export default {
 
     async StoreAddProduct() {
       const formData = new FormData();
+      const formattedDate = this.getFormattedExpiryDate();
       formData.append("productImage", this.selectedFile);
       const product = {
         productName: this.productName,
@@ -1359,7 +1783,7 @@ export default {
         stock: this.stock,
         actualPrice: this.actualPrice,
         offerPercentage: this.offerPercentage,
-        expiryDate: this.expiryDate,
+        expiryDate: formattedDate,
         categoryId: this.selectedCategory,
         storeId: this.getstore_id,
       };
@@ -1374,7 +1798,6 @@ export default {
           formData
         );
         if (response) {
-          alert();
           this.snackbarMessage = " 🎉 Product Added " + response;
           this.snackbar = true;
           this.snackbarColor = "success";
@@ -1465,6 +1888,17 @@ export default {
         if (result.success) {
           console.log("fetched profile:", result.data);
           this.profile = result.data[0];
+
+          if (!this.profile.storeName || !this.profile.address) {
+            if (!this.profile.storeName) {
+              this.showSnackbar = true;
+              this.snackbarMessage = "add store name";
+            }
+            if (!this.profile.address) {
+              this.showSnackbar = true;
+              this.snackbarMessage = "add store location";
+            }
+          }
         } else {
           // alert(`Error: ${result.error}`);
         }
@@ -1537,13 +1971,15 @@ export default {
         const result = await this.$store.dispatch("MedEStore/deleteAds", adsId);
 
         if (result.success) {
+          this.loadStoreAds();
           this.snackbarMessage = " ✅ Ad Deleted! ";
+
           this.snackbar = true;
           this.snackbarColor = "success";
-          this.loadStoreAds();
         } else {
           alert(`Error: ${result.error}`);
         }
+        this.loadStoreAds();
       } catch (error) {
         console.error("Error deleting Ads:", error);
       }
@@ -1898,6 +2334,16 @@ input:focus {
   padding: 15px 20px 20px 20px;
   border: 1px solid rgb(255, 255, 255);
 }
+.div6and7-combined {
+  grid-column-start: 1;
+  grid-column-end: 6; /* 1 + 5 columns */
+  grid-row-start: 4;
+  grid-row-end: 10; /* from 4 to 9 inclusive (6 rows) */
+  border-radius: 20px;
+  padding: 15px 20px 20px 20px;
+  border: 1px solid rgb(255, 255, 255);
+  /* add height or other styles as needed */
+}
 
 .products {
   width: 90%;
@@ -1945,9 +2391,190 @@ input:focus {
   padding-left: 20px;
 }
 
+.store-name {
+  display: flex;
+  align-items: center;
+  color: #03045e;
+  font-weight: 500;
+  font-size: 0.875rem;
+  margin: 4px 0 0;
+}
+.details {
+  height: 76px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.disp {
+  height: 33px;
+  width: fit-content;
+  background-color: red;
+  padding-left: 10px;
+  padding-right: 10px;
+  color: white;
+  font-weight: 600;
+  border-radius: 20px;
+}
+.tick {
+  background-color: greenyellow;
+  border-radius: 100%;
+  height: 30px;
+  width: 30px;
+}
+
+.item-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.item-image {
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  background: #f8f9fa;
+  height: 60px;
+  width: 60px;
+}
+
+.item-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.order-card {
+  border-radius: 16px;
+  border: 1px solid #e0e0e0;
+  width: 650px;
+}
+
+.order-card1 {
+  border-radius: 16px;
+  border: 1px solid #e0e0e0;
+  width: 450px;
+}
+.order-card2 {
+  border-radius: 16px;
+  border: 1px solid #e0e0e0;
+  width: 700px;
+}
+.head {
+  width: 753px;
+  height: 50px;
+  padding-left: 20px;
+  padding-top: 10px;
+  margin: 0;
+  position: fixed;
+  left: 288px;
+  top: 297.5px;
+  z-index: 100;
+  border-top-right-radius: 20px;
+  border-top-left-radius: 20px;
+  background-color: white;
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.order-id {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.order-date {
+  font-size: 0.875rem;
+  color: #666;
+  margin: 4px 0 0;
+}
+
+.status-chip {
+  border-radius: 20px;
+  text-transform: none;
+  font-weight: 600;
+}
+
+.order-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.item-name {
+  flex: 1;
+  font-weight: 500;
+  margin: 0 16px;
+}
+
+.item-quantity {
+  color: #666;
+  margin: 0 16px;
+}
+
+.item-price {
+  font-weight: 600;
+  color: #03045e;
+}
+
+.order-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+}
+
+.total-price {
+  font-size: 1.25rem;
+  color: #03045e;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px 0;
+  color: #666;
+}
+
+.empty-state h3 {
+  margin: 16px 0 8px;
+  font-size: 1.5rem;
+  color: #1a1a1a;
+}
+
+.empty-state p {
+  margin: 0;
+  color: #666;
+}
+
 .add-ads-cntnt {
   width: 100%;
   height: 615px;
+  border-radius: 20px;
+  border: 1px solid #ffffff;
+  padding: 30px;
+  box-sizing: border-box;
+}
+.add-ads-cntnt1 {
+  width: 100%;
+  height: 656px;
   border-radius: 20px;
   border: 1px solid #ffffff;
   padding: 30px;

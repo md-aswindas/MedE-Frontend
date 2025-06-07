@@ -42,11 +42,8 @@
             </template>
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item>
-          <button class="logout" @click="logout()">
-          Logout
-        </button>
+          <button class="logout" @click="logout()">Logout</button>
         </v-list>
-        
       </div>
 
       <!-- Main Content Area -->
@@ -449,8 +446,7 @@ export default {
       // Implement save logic here
       console.log("Saving user details:", this.user);
     },
-   
-   
+
     async logout() {
       try {
         const confirmation = confirm("Want to logout ?");
@@ -468,14 +464,25 @@ export default {
     this.loadOrders();
     this.loadPrescriptions();
     this.loadProfile();
+    const sectionFromQuery = this.$route.query.section;
+    if (sectionFromQuery) {
+      this.currentSection = sectionFromQuery;
+    }
   },
   watch: {
-    currentSection(newSection) {
-      if (newSection === "logout") {
-        // Implement logout logic here
-        console.log("Logging out...");
-      }
-    },
+     currentSection(newVal) {
+    // Handle logout
+    if (newVal === "logout") {
+      console.log("Logging out...");
+      // Place actual logout logic here if needed
+      this.logout(); // assuming you have a logout method
+      return;
+    }
+
+    // Sync query param with current section
+    this.$router.replace({ query: { section: newVal } });
+  }
+    
   },
 };
 </script>
@@ -630,7 +637,7 @@ export default {
   transition: all 0.3s ease;
 }
 
-.logout{
+.logout {
   background-color: red;
   color: white;
   font-weight: 600;

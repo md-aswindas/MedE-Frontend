@@ -27,7 +27,7 @@
   <div class="message-text-container">
     <p class="message-text">Account Pending</p>
     <p class="sub-text">Please wait account verifying...</p>
-    <p class="sub-text">Close and Login later</p>
+    <p class="sub-text">close and login later</p>
   </div>
   <svg
     xmlns="http://www.w3.org/2000/svg"

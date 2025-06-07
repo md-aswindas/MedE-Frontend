@@ -98,7 +98,7 @@ export default {
         const response = await this.$store.dispatch("loginStore", payload);
         if (response) {
           this.snackbar = true; // Show snackbar on success
-            alert();
+            
             this.snackbarMessage = " 🎉 login success" ;
           this.snackbar = true;
           this.snackbarColor = "success";

@@ -25,6 +25,7 @@ const router = createRouter({
     {path: '/cart', component:()=> import('./components/TestPage.vue')},
     {path: '/userProfile', component:()=> import('./components/UserDashboard.vue')},
     {path: '/checkout2', component:()=> import('./components/CheckOut2.vue')},
+    {path: '/checkout-complete', component:()=> import('./components/CheckoutComplete.vue')},
     // {path:'/addProduct',component:()=> import('./components/AddProduct.vue')}
   ],
 });

@@ -111,9 +111,9 @@
                 >
                   Cancel
                 </button>
-                <button type="submit" class="btn btn-save">
+                <!-- <button type="submit" class="btn btn-save">
                   {{ editingIndex !== -1 ? "Update" : "Save" }} Address
-                </button>
+                </button> -->
               </div>
             </form>
           </div>
@@ -334,6 +334,7 @@ export default {
         state: "",
         pincode: "",
         phone: "",
+        location: "",
       };
     },
 
@@ -348,6 +349,8 @@ export default {
           addressType: this.addressForm.type,
           paymentMethod: this.selectedPaymentMethod || "Cash on Delivery",
           instructions: this.addressForm.deliveryInstructions || "",
+          location: this.addressForm.location
+        
         };
 
         const result = await this.$store.dispatch("EndUser/checkoutCart", {
