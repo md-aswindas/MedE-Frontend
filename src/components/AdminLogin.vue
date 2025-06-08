@@ -64,6 +64,7 @@ export default {
         const response = await this.$store.dispatch("Admin/adminLogin", payload);
         if (response) {
           this.snackbar = true; // Show snackbar on success
+          sessionStorage.setItem("isAdminLoggedIn", "true"); // ✅ Save login flag
           setTimeout(() => {
             this.$router.push("/adminHome"); // Redirect after a delay
           }, 500);

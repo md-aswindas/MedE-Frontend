@@ -57,7 +57,7 @@ export default {
     }
   },
 
-   async loadStoresTop({ rootGetters }) {
+  async loadStoresTop({ rootGetters }) {
     try {
       console.log("fetching top stores ");
 
@@ -98,6 +98,21 @@ export default {
       }
     } catch (error) {
       return { success: false, error: error.response?.data?.message || "failed to  fetch feedback" };
+
+    }
+  },
+
+  async loadOrders({ rootGetters }) {
+    try {
+      console.log("fetching Orders");
+
+      const response = await axios.get(`${rootGetters.getUrl}/api/MedE/Admin/all-orders`);
+
+      if (response.status >= 200 && response.status < 300) {
+        return { success: true, data: response.data };
+      }
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || "failed to fetch" };
 
     }
   },

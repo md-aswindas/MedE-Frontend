@@ -4,171 +4,28 @@
       <!-- Nav Bar -->
       <h2>Med E</h2>
       <div class="nav-content">
-        <div class="list" @click="home" tabindex="0">
-          <p>Home</p>
-        </div>
-        <div class="list" @click="store" tabindex="0">
+        <div
+          class="list"
+          :class="{ active: activeTab === 'store' }"
+          @click="store"
+          tabindex="0"
+        >
           <p>Manage Store</p>
         </div>
-        <div class="list" @click="userss" tabindex="0">
+        <div
+          class="list"
+          :class="{ active: activeTab === 'users' }"
+          @click="userss"
+          tabindex="0"
+        >
           <p>Manage Users</p>
         </div>
-        <div class="list" @click="analytics" tabindex="0">
-          <p>Analytics</p>
+        <div class="list logout-btn" @click="logout" tabindex="0">
+          <p>Logout</p>
         </div>
       </div>
     </div>
 
-    <div class="home" v-if="isVisibleHome" ref="Home">
-      <!-- Home -->
-      <div class="home-left">
-        <div class="profile-top">
-          <div class="profile">
-            <p class="img"></p>
-          </div>
-          <div class="txt"></div>
-        </div>
-      </div>
-      <div class="home-right">
-        <div class="status-pending">
-          <h3>
-            <span
-              style="
-                background-color: greenyellow;
-                border-radius: 50px;
-                padding: 1px 7px 1px 7px;
-                color: black;
-              "
-              >{{ pendingStoreCount }}</span
-            >
-            &nbsp; Pending Requests
-          </h3>
-          <div class="s-btn">
-            <v-icon id="slide-icon-left" class="slide" @click="scroll(-962, 0)"
-              >mdi-arrow-left-circle-outline</v-icon
-            >
-            <v-icon id="slide-icon-right" class="slide" @click="scroll(962, 0)"
-              >mdi-arrow-right-circle-outline</v-icon
-            >
-          </div>
-          <div v-if="pendingStoreCount === 0" class="no-requests-message">
-            No pending Requests
-          </div>
-          <div v-else>
-            <div
-              class="request"
-              ref="status"
-              v-for="pending in pendingStores"
-              :key="pending.id"
-            >
-              <div class="status-card">
-                <p>{{ pending.storeName }}</p>
-                <p>{{ pending.licenseNumber }}</p>
-                <p>{{ pending.created_at }}</p>
-                <button type="button" class="btn dwn">
-                  <v-icon>mdi-eye</v-icon>
-                </button>
-                <button
-                  type="button"
-                  class="btn acpt"
-                  @click="updateStoreStatus(pending.store_id, 2)"
-                >
-                  Accept
-                </button>
-                <button
-                  type="button"
-                  class="btn rjct"
-                  @click="updateStoreStatus(pending.store_id, 3)"
-                >
-                  Reject
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="count">
-          <div class="count-card">
-            <h4>Total Users</h4>
-            <div class="num">
-              <h1>
-                <v-icon class="num-icon" size="2.5rem"
-                  >mdi-account-check</v-icon
-                >
-                1000
-              </h1>
-            </div>
-          </div>
-          <div class="count-card">
-            <h4>Total Stores</h4>
-            <div class="num">
-              <h1>
-                <v-icon class="num-icon" size="2.2rem" style="margin-top: 5px"
-                  >mdi-storefront
-                </v-icon>
-                {{StoreCount}}
-              </h1>
-            </div>
-          </div>
-          <div class="count-card">
-            <h4>Total Transction Amount</h4>
-            <div class="num">
-              <h1>₹ 100000</h1>
-            </div>
-          </div>
-        </div>
-        <div class="top-product">
-          <div class="top-p">
-            <h4>Top Selling Products</h4>
-            <div class="box">
-              <div class="box-item"></div>
-              <div class="box-item"></div>
-            </div>
-          </div>
-          <div class="top-p">
-            <h4>Top Rated Stores</h4>
-            <div class="box">
-              <div class="box-item" >
-                <h4
-                  style="
-                    background-color: black;
-                    height: 55px;
-                    width: 55px;
-                    border-radius: 50%;
-                  "
-                ></h4>
-                <h4>{{ toprated[0] ? toprated[0].storeName : 'Loading...' }}</h4>
-
-                <h4>
-                  <v-icon size="1rem" class="star">mdi-star-circle</v-icon> {{ toprated[0] ? toprated[0].averageRating : 'Loading...' }}
-                </h4>
-                <h4>{{ toprated[0] ? toprated[0].created : 'Loading...' }}</h4>
-                
-              </div>
-
-              <div class="box-item" >
-                <h4
-                  style="
-                    background-color: black;
-                    height: 55px;
-                    width: 55px;
-                    border-radius: 50%;
-                  "
-                ></h4>
-                <h4>{{ toprated[1] ? toprated[1].storeName : 'Loading...' }}</h4>
-
-                <h4>
-                  <v-icon size="1rem" class="star">mdi-star-circle</v-icon> {{ toprated[1] ? toprated[1].averageRating : 'Loading...' }}
-                </h4>
-                <h4>{{ toprated[1] ? toprated[1].created : 'Loading...' }}</h4>
-                
-              </div>
-              
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
     <!-- Manage Store -->
     <div class="store" v-if="isVisibleStore" ref="store">
       <div class="parent">
@@ -287,7 +144,7 @@
               <v-icon class="num-icon" size="2.2rem" style="margin-top: 5px"
                 >mdi-storefront
               </v-icon>
-              1000
+              {{ orderCount }}
             </h1>
           </div>
         </div>
@@ -301,14 +158,9 @@
               v-for="feedback in feedbacks"
               :key="feedback.id"
             >
-              <div class="user-info">
-                <p class="user-id">userId : {{ feedback.user_id }}</p>
-              </div>
-
-              <div class="feedback-details">
-                <p class="feedback-comment" style="font-weight: 600">
-                  storeId : {{ feedback.store_id }}
-                </p>
+              <div class="user-info info-width" style="width: fit-content;">
+                <p class="user-id"> {{ feedback.userName }}</p>
+                <p class="user-id"> {{ feedback.storeName }}</p>
                 <v-rating
                   v-model="feedback.rating"
                   readonly
@@ -317,63 +169,48 @@
                   color="#ffa534"
                   density="compact"
                 ></v-rating>
-                <p class="feedback-comment">comment</p>
+              </div>
+
+              <div class="feedback-details">
+                <!-- <p class="feedback-comment" style="font-weight: 600;" >
+                  storeId : {{ feedback.store_id }}
+                </p> -->
+                <!-- <v-rating
+                  v-model="feedback.rating"
+                  readonly
+                  half-increments
+                  size="small"
+                  color="#ffa534"
+                  density="compact"
+                ></v-rating> -->
+                <p class="feedback-comment1" >{{feedback.comment}}</p>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="div7">
+        <div class="div7" v-if="toprated.length >= 3">
           <h3>Top Rated Stores</h3>
-          <div class="store-card">
+
+          <div
+            class="store-card"
+            v-for="(store, index) in toprated.slice(0, 3)"
+            :key="index"
+          >
             <div class="store-info">
-              <div class="store-name">{{ toprated[0].storeName }}</div>
-              <div class="store-date">Created: {{ toprated[0].created }}</div>
+              <div class="store-name">{{ store.storeName }}</div>
+              <div class="store-date">Created: {{ store.created }}</div>
             </div>
             <div class="store-rating">
               <v-rating
-                v-model="toprated[0].averageRating"
+                v-model="store.averageRating"
                 readonly
                 half-increments
                 size="small"
                 color="yellow"
                 density="compact"
               ></v-rating>
-              <div class="rating-value">{{ toprated[0].averageRating }}</div>
-            </div>
-          </div>
-          <div class="store-card">
-            <div class="store-info">
-              <div class="store-name">{{ toprated[1].storeName }}</div>
-              <div class="store-date">Created: {{ toprated[1].created }}</div>
-            </div>
-            <div class="store-rating">
-              <v-rating
-                v-model="toprated[1].averageRating"
-                readonly
-                half-increments
-                size="small"
-                color="yellow"
-                density="compact"
-              ></v-rating>
-              <div class="rating-value">{{ toprated[1].averageRating }}</div>
-            </div>
-          </div>
-          <div class="store-card">
-            <div class="store-info">
-              <div class="store-name">{{ toprated[2].storeName }}</div>
-              <div class="store-date">Created: {{ toprated[2].created }}</div>
-            </div>
-            <div class="store-rating">
-              <v-rating
-                v-model="toprated[2].averageRating"
-                readonly
-                half-increments
-                size="small"
-                color="yellow"
-                density="compact"
-              ></v-rating>
-              <div class="rating-value">{{ toprated[2].averageRating }}</div>
+              <div class="rating-value">{{ store.averageRating }}</div>
             </div>
           </div>
         </div>
@@ -461,21 +298,6 @@
         </div>
       </div>
     </div>
-    <!-- Analytics  -->
-
-    <div class="Analytics store" v-if="isVisibleAnalytics" ref="analytics">
-      <div class="Analytics-parent">
-        <div class="div9">9</div>
-        <div class="div10">10</div>
-        <div class="div11">11</div>
-        <div class="div12">12</div>
-        <div class="div13">13</div>
-        <div class="div15">15</div>
-        <div class="div16">
-          <v-date-picker width="100%" height="100%"></v-date-picker>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 <script>
@@ -483,20 +305,21 @@ import Chart from "chart.js/auto";
 export default {
   data() {
     return {
-      isVisibleHome: true,
-      isVisibleStore: false,
-      isVisibleAnalytics: false,
+      activeTab: 'store',
+      isVisibleStore: true,
+      isVisibleUsers: false,
       rating: 4.5,
       feedbacks: [],
       ads: [],
-      isVisibleUsers: false,
       userSearch: "",
       users: [], // Will be populated with user data
       pendingStores: [],
       stores: [],
       toprated: [],
       toprated1: [],
+      orders: [],
       StoreCount: 0,
+      orderCount: 0,
       selectedUser: null,
       userChart: null,
       pendingStoreCount: 0,
@@ -640,33 +463,53 @@ export default {
         this.snackbarColor = "error";
       }
     },
+    async loadOrders() {
+      try {
+        const result = await this.$store.dispatch("Admin/loadOrders");
+        if (result.success) {
+          this.orders = result.data;
+          console.log(" orders", result.data);
+           this.orderCount = result.data.length;
+          // Check scroll indicators after loading
+        } else {
+          this.snackbarMessage = `Error: ${result.error}`;
+          this.snackbar = true;
+          this.snackbarColor = "error";
+        }
+      } catch (error) {
+        console.error("Error loading  feedback:", error);
+        this.snackbarMessage = "Failed to load feedback";
+        this.snackbar = true;
+        this.snackbarColor = "error";
+      }
+    },
 
-    scroll(x, y) {
-      this.$refs.status.scrollBy({ left: x, top: y, behavior: "smooth" });
-    },
-    home() {
-      this.isVisibleHome = true;
-      this.isVisibleStore = false;
-      this.isVisibleAnalytics = false;
-      this.isVisibleUsers = false;
-    },
     store() {
+      this.activeTab = 'store'; // Update active tab
       this.isVisibleStore = true;
-      this.isVisibleHome = false;
-      this.isVisibleAnalytics = false;
-      this.isVisibleUsers = false;
-    },
-    analytics() {
-      this.isVisibleStore = false;
-      this.isVisibleHome = false;
-      this.isVisibleAnalytics = true;
       this.isVisibleUsers = false;
     },
     userss() {
+      this.activeTab = 'users'; // Update active tab
       this.isVisibleUsers = true;
       this.isVisibleStore = false;
-      this.isVisibleHome = false;
-      this.isVisibleAnalytics = false;
+    },
+    logout() {
+      sessionStorage.removeItem("isAdminLoggedIn");
+      this.$router.push("/adminLogin");
+      // Add your logout logic here
+      // For example: clear authentication tokens, redirect to login page, etc.
+      console.log("Logging out...");
+
+      // Example logout implementation:
+      // this.$store.dispatch('auth/logout');
+      // this.$router.push('/login');
+
+      // Or simply redirect to login page
+      // window.location.href = '/login';
+
+      // Show confirmation dialog
+     
     },
     selectUser(user) {
       this.selectedUser = user;
@@ -729,6 +572,7 @@ export default {
     this.loadStoresTop();
     this.loadAds();
     this.loadFeedBack();
+    this.loadOrders(); 
   },
   computed: {
     filteredUsers() {
@@ -804,6 +648,14 @@ export default {
 .user-info h4 {
   margin: 0;
   font-size: 1rem;
+}
+.info-width{
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .user-info p {
@@ -892,8 +744,8 @@ export default {
   border-radius: 15px;
   /* padding: 15px; */
   margin-bottom: 15px;
-  height: 90px;
-  width: 648px;
+  height: 150px;
+  width: 660px;
   margin-right: 20px;
   display: flex;
   justify-content: space-around;
@@ -908,9 +760,9 @@ export default {
 }
 
 .feedback-content {
-  max-height: calc(100% - 20px);
+  max-height: calc(100%);
   overflow-x: auto;
-  padding: 10px;
+  /* padding: 10px; */
   display: flex;
   flex-wrap: nowrap;
   margin-top: 20px;
@@ -949,6 +801,7 @@ export default {
   font-size: 1.5rem;
   font-weight: 600;
   margin: 0;
+  width: fit-content;
 }
 
 .feedback-details {
@@ -956,7 +809,7 @@ export default {
   gap: 4px;
   justify-content: space-between;
   align-items: center;
-  width: 70%;
+  width: 85%;
 }
 
 .feedback-comment {
@@ -964,6 +817,19 @@ export default {
   font-size: 0.9rem;
   margin: 0;
   line-height: 1.4;
+}
+
+.feedback-comment1 {
+  color: rgb(175, 175, 175);
+  font-size: 0.9rem;
+  /* margin: 0; */
+  line-height: 1.4;
+  width: 480px;
+  height: 80%; 
+  margin-left: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .store-card {
@@ -1036,7 +902,7 @@ export default {
   font-weight: 400;
   font-size: 17px;
 }
-.list {
+/* .list {
   height: 65%;
   width: 200px;
   display: flex;
@@ -1050,10 +916,10 @@ export default {
     360deg,
     hsla(84, 100%, 50%, 1) 0%,
     hsla(84, 100%, 68%, 1) 100%
-  );
+  ); */
   /* background-color: hsl(84, 100%, 47%); */
-  color: black;
-}
+  /* color: black;
+} */
 
 .home {
   height: 100%;
@@ -1551,5 +1417,42 @@ export default {
 
 .info-value {
   color: white;
+}
+
+.list {
+  height: 65%;
+  width: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Replace the :focus styles with .active class */
+.list.active {
+  background: linear-gradient(
+    360deg,
+    hsla(84, 100%, 50%, 1) 0%,
+    hsla(84, 100%, 68%, 1) 100%
+  );
+  color: black;
+}
+
+/* Keep hover effect for better UX */
+.list:hover:not(.active) {
+  background: rgba(172, 255, 47, 0.1);
+}
+
+/* Logout button should not have active state */
+.logout-btn.active {
+  background: none !important;
+  color: rgb(175, 175, 175) !important;
+}
+
+.logout-btn:hover {
+  background: rgba(202, 46, 85, 0.1);
+  color: #ca2e55;
 }
 </style>
