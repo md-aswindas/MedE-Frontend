@@ -120,10 +120,10 @@
                   <v-icon size="16">mdi-delete-outline</v-icon>
                   Remove
                 </button>
-                <button class="btn btn-buy">
+                <!-- <button class="btn btn-buy">
                   <v-icon size="16">mdi-cart</v-icon>
                   Buy Now
-                </button>
+                </button> -->
               </div>
             </div>
           </div>

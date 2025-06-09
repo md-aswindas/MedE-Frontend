@@ -52,7 +52,7 @@
         <div v-if="currentSection === 'details'" class="content-section">
           <div class="section-header">
             <h2 class="section-title">Personal Details</h2>
-            <v-btn
+            <!-- <v-btn
               :color="isEditing ? 'success' : 'primary'"
               @click="toggleEdit"
               class="action-btn"
@@ -61,7 +61,7 @@
                 isEditing ? "mdi-content-save" : "mdi-pencil"
               }}</v-icon>
               {{ isEditing ? "Save Changes" : "Edit Details" }}
-            </v-btn>
+            </v-btn> -->
           </div>
 
           <v-form class="details-form">
@@ -103,7 +103,7 @@
                   class="input-field"
                 ></v-text-field>
               </v-col>
-              <v-col cols="12">
+              <!-- <v-col cols="12">
                 <v-textarea
                   v-model="user.address"
                   label="Address"
@@ -112,7 +112,7 @@
                   rows="3"
                   class="input-field"
                 ></v-textarea>
-              </v-col>
+              </v-col> -->
             </v-row>
           </v-form>
         </div>

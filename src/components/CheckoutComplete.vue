@@ -30,81 +30,9 @@
         Thank you for your order. We'll prepare your items and deliver them
         soon.
       </p>
-      <div class="order-number">Order #{{ orderDetails.orderId }}</div>
     </div>
 
     <!-- Order Information Section -->
-    <div class="order-info-container">
-      <!-- Order Details -->
-      <div class="order-details-card">
-        <div class="card-header">
-          <h3>Order Details</h3>
-        </div>
-
-        <div class="detail-item">
-          <div class="detail-icon">
-            <v-icon size="20" color="#03045E">mdi-map-marker</v-icon>
-          </div>
-          <div class="detail-content">
-            <span class="detail-label">Delivery Address</span>
-            <span class="detail-value">{{ orderDetails.deliveryAddress }}</span>
-          </div>
-        </div>
-
-        <div class="detail-item">
-          <div class="detail-icon">
-            <v-icon size="20" color="#03045E">mdi-credit-card</v-icon>
-          </div>
-          <div class="detail-content">
-            <span class="detail-label">Payment Method</span>
-            <span class="detail-value">{{ orderDetails.paymentMethod }}</span>
-          </div>
-        </div>
-
-        <div class="detail-item">
-          <div class="detail-icon">
-            <v-icon size="20" color="#03045E">mdi-clock</v-icon>
-          </div>
-          <div class="detail-content">
-            <span class="detail-label">Estimated Delivery</span>
-            <span class="detail-value delivery-time">{{
-              orderDetails.estimatedDelivery
-            }}</span>
-          </div>
-        </div>
-
-        <div class="total-section">
-          <div class="total-label">Total Amount</div>
-          <div class="total-amount">
-            ₹{{ orderDetails.totalAmount.toFixed(2) }}
-          </div>
-        </div>
-      </div>
-
-      <!-- Order Items -->
-      <div class="order-items-card">
-        <div class="card-header">
-          <h3>Items Ordered ({{ orderDetails.items.length }})</h3>
-        </div>
-
-        <div class="items-list">
-          <div
-            v-for="item in orderDetails.items"
-            :key="item.itemId"
-            class="item-row"
-          >
-            <div class="item-icon">
-              <i class="fas fa-pills"></i>
-            </div>
-            <div class="item-details">
-              <div class="item-name">{{ item.name }}</div>
-              <div class="item-quantity">Quantity: {{ item.quantity }}</div>
-            </div>
-            <div class="item-price">₹{{ item.price.toFixed(2) }}</div>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- Action Buttons -->
     <div class="action-buttons">
@@ -127,7 +55,7 @@
               <v-icon size="40" color="#03045E">mdi-store</v-icon>
             </div>
             <div class="store-details">
-              <h3 class="store-name">{{ orderDetails.storeName }}</h3>
+              <h3 class="store-name">store</h3>
               <p class="rating-subtitle">
                 How was your experience with this store?
               </p>
@@ -277,12 +205,36 @@ export default {
 
       this.isSubmitting = true;
 
-      try {
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+      // ✅ Get from session
+      const userId = sessionStorage.getItem("user_id");
+      const storeId =
+        this.storeIdFromPage || sessionStorage.getItem("store_id"); // depends on your app structure
 
-        this.ratingSubmitted = true;
-        this.showSnackbar("Thank you for your rating!", "success");
+      if (!userId || !storeId) {
+        this.showSnackbar("Missing user or store info", "error");
+        this.isSubmitting = false;
+        return;
+      }
+
+      const feedbackPayload = {
+        user_id: userId,
+        store_id: storeId,
+        rating: this.selectedRating,
+        comment: this.reviewText || "",
+      };
+
+      try {
+        const response = await this.$store.dispatch(
+          "EndUser/submitFeedback",
+          feedbackPayload
+        );
+
+        if (response.success) {
+          this.ratingSubmitted = true;
+          this.showSnackbar("Thank you for your rating!", "success");
+        } else {
+          this.showSnackbar(response.message, "error");
+        }
       } catch (error) {
         console.error("Error submitting rating:", error);
         this.showSnackbar(

@@ -18,10 +18,10 @@
           style="width: 140px; cursor: pointer"
           @click="showlocation()"
         >
-          <v-icon large color="#03045E" size="1.2rem" class="icon"
-            >mdi-map-marker</v-icon
-          >
-          Find a store
+          <v-icon large color="#03045E" size="1.2rem" class="icon">
+            mdi-map-marker
+          </v-icon>
+          {{ locationText }}
         </p>
       </div>
       <div class="right-nav">
@@ -445,6 +445,7 @@ export default {
   mounted() {
     this.loadStoreAds();
     this.nearbyStore();
+    this.initializeLocation();
   },
   computed: {
     isLoggedIn() {
@@ -454,6 +455,23 @@ export default {
 
     cartCount() {
       return this.$store.state.EndUser.cartCount;
+    },
+    locationText() {
+      try {
+        const location = sessionStorage.getItem("user_location");
+        if (location) {
+          const locationObj = JSON.parse(location);
+          if (locationObj.name) {
+            // Show only the first part before the first comma
+            const shortName = locationObj.name.split(",")[0];
+            return shortName;
+          }
+        }
+        return "Find a store";
+      } catch (error) {
+        console.error("Error parsing location data:", error);
+        return "Find a store";
+      }
     },
   },
   methods: {
@@ -645,21 +663,52 @@ export default {
     showlocation() {
       this.locationVisible = !this.locationVisible;
     },
+    async initializeLocation() {
+      try {
+        const savedLocation = sessionStorage.getItem("user_location");
+        
+        if (savedLocation) {
+          const locationObj = JSON.parse(savedLocation);
+          this.latitude = locationObj.latitude;
+          this.longitude = locationObj.longitude;
+          console.log("Using saved location:", locationObj);
+        } else {
+          console.log("No saved location found, using default coordinates");
+        }
+        
+        await this.nearbyStore();
+        
+      } catch (error) {
+        console.error("Error initializing location:", error);
+        await this.nearbyStore();
+      }
+    },
 
+    // ✅ UPDATED: Improve nearbyStore method
     async nearbyStore() {
       try {
         const latitude = this.latitude;
         const longitude = this.longitude;
+        
+        if (!latitude || !longitude) {
+          console.log("No valid coordinates available");
+          this.nearby = [];
+          this.topRated = [];
+          return;
+        }
+        
         const response = await this.$store.dispatch("EndUser/storeNearMe", {
           latitude,
           longitude,
         });
+        
         console.log("nearby stores:", response);
+        
         if (response.success) {
           console.log("nearby store fetched", response.data);
           this.nearby = response.data;
-
           this.locationVisible = false;
+          
           this.topRated = this.nearby
             .filter(
               (nearby) =>
@@ -670,11 +719,49 @@ export default {
             .slice(0, 4);
 
           console.log("topRated store fetched", this.topRated);
+        } else {
+          console.log("Failed to fetch nearby stores:", response.error);
+          this.nearby = [];
+          this.topRated = [];
         }
       } catch (error) {
         console.log("fetching nearby store failed", error);
+        this.nearby = [];
+        this.topRated = [];
       }
     },
+
+    
+
+    // async nearbyStore() {
+    //   try {
+    //     const latitude = this.latitude;
+    //     const longitude = this.longitude;
+    //     const response = await this.$store.dispatch("EndUser/storeNearMe", {
+    //       latitude,
+    //       longitude,
+    //     });
+    //     console.log("nearby stores:", response);
+    //     if (response.success) {
+    //       console.log("nearby store fetched", response.data);
+    //       this.nearby = response.data;
+
+    //       this.locationVisible = false;
+    //       this.topRated = this.nearby
+    //         .filter(
+    //           (nearby) =>
+    //             nearby.averageRating !== null &&
+    //             nearby.averageRating !== undefined
+    //         )
+    //         .sort((a, b) => b.averageRating - a.averageRating)
+    //         .slice(0, 4);
+
+    //       console.log("topRated store fetched", this.topRated);
+    //     }
+    //   } catch (error) {
+    //     console.log("fetching nearby store failed", error);
+    //   }
+    // },
 
     async loadStoreAds() {
       try {

@@ -32,9 +32,9 @@
           <button class="add-to-cart" @click="addCart(product.productId, 1)">
             <v-icon>mdi-cart</v-icon> ADD TO CART
           </button>
-          <button class="buy-now" @click="buyNow">
+          <!-- <button class="buy-now" @click="buyNow">
             <v-icon>mdi-flash</v-icon> BUY NOW
-          </button>
+          </button> -->
         </div>
       </div>
 

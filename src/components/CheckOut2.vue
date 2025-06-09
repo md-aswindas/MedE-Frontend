@@ -363,7 +363,7 @@ export default {
           this.snackbarMessage = "✅ Order placed successfully!";
           this.snackbarColor = "success";
           this.snackbar = true;
-          this.$router.push("/cart"); // or confirmation page
+          this.$router.push("/checkout-complete"); // or confirmation page
         } else {
           console.log("Checkout failed:", result);
           this.snackbarMessage = "❌ Checkout failed!";

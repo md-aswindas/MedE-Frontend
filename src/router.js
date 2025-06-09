@@ -14,7 +14,14 @@ const router = createRouter({
     { path: '/products', component: () => import('./components/ProductsPage.vue') },
     { path: '/cart-', component: () => import('./components/CartPage.vue') },
     { path: '/search', component: () => import('./components/SearchProduct.vue') },
-    { path: '/storeHome', component: () => import('./components/StoreHome.vue') },
+    { path: '/storeHome', component: () => import('./components/StoreHome.vue'),beforeEnter: (to, from, next) => {
+        const isLoggedIn = sessionStorage.getItem("isUserLoggedIn") === "true";
+        if (isLoggedIn) {
+          next(); // ✅ Allow access
+        } else {
+          next('/storeLogin'); // ❌ Redirect to login
+        }
+      } },
     { path: '/admin', component: () => import('./components/AdminLogin.vue') },
     { path: '/adminp', component: () => import('./components/NewAdminHome.vue') },
     {

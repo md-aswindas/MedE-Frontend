@@ -28,6 +28,7 @@
     <p class="message-text">Account Pending</p>
     <p class="sub-text">Please wait account verifying...</p>
     <p class="sub-text">close and login later</p>
+    <router-link to="/storeLogin"><button class="button">Try Again</button></router-link>
   </div>
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -60,7 +61,7 @@
 /* From Uiverse.io by akshat-patel28 */ 
 .card {
   width: 430px;
-  height: 80px;
+  height: 150px;
   border-radius: 8px;
   box-sizing: border-box;
   padding: 10px 15px;
@@ -77,7 +78,7 @@
   position: absolute;
   transform: rotate(90deg);
   left: -31px;
-  top: 32px;
+  top: 60px;
   width: 80px;
   fill: #e4d1003a;
 }
@@ -107,6 +108,15 @@
 .sub-text {
   margin: 0;
   cursor: default;
+}
+.button{
+  background-color: black;
+  color: #ffffff;
+  width: fit-content;
+  height: fit-content;
+  padding: 5px 10px;
+  border-radius: 10px;
+  margin-top:10px;
 }
 .message-text {
   color: #9b8d24;

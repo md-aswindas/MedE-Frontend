@@ -13,12 +13,17 @@
         >
           <h1 class="logo">MedE</h1></router-link
         >
-        <p class="nav-txt" style="width: 140px">
-          <v-icon large color="#03045E" size="1.2rem" class="icon"
-            >mdi-map-marker</v-icon
-          >
-          Find a store
+        <p
+          class="nav-txt"
+          style="width: 140px; cursor: pointer"
+          @click="showlocation()"
+        >
+          <v-icon large color="#03045E" size="1.2rem" class="icon">
+            mdi-map-marker
+          </v-icon>
+          {{ locationText }}
         </p>
+      
       </div>
       <div class="right-nav">
         <router-link
@@ -33,11 +38,11 @@
           </p>
         </router-link>
         <router-link
+          v-if="!isLoggedIn"
           to="/userLogin"
           style="text-decoration: none; color: inherit; font-weight: 500"
         >
           <p
-            v-if="!isLoggedIn"
             class="nav-img"
             style="
               display: flex;
@@ -46,7 +51,6 @@
               color: #03045e;
               padding: 7px;
               border-radius: 20px;
-              width: 100px;
               max-width: 100px;
               height: 40px;
               white-space: nowrap;
@@ -58,8 +62,15 @@
             >
             Sign In
           </p>
+        </router-link>
+
+        <!-- If user IS logged in -->
+        <router-link
+          v-else
+          to="/userProfile"
+          style="text-decoration: none; color: inherit; font-weight: 500"
+        >
           <p
-            v-else
             class="nav-img"
             style="
               display: flex;
@@ -362,6 +373,23 @@ export default {
     isLoggedIn() {
       const username = this.$store.state.auth.user_name;
       return username && username.trim().length > 0;
+    },
+     locationText() {
+      try {
+        const location = sessionStorage.getItem("user_location");
+        if (location) {
+          const locationObj = JSON.parse(location);
+          if (locationObj.name) {
+            // Show only the first part before the first comma
+            const shortName = locationObj.name.split(",")[0];
+            return shortName;
+          }
+        }
+        return "Find a store";
+      } catch (error) {
+        console.error("Error parsing location data:", error);
+        return "Find a store";
+      }
     },
   },
 };

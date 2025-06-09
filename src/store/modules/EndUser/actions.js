@@ -83,7 +83,7 @@ export default {
     try {
       console.log("fetching products");
 
-      const response = await axios.get(`${rootGetters.getUrl}/api/MedE/Admin/adminViewStoreProduct`,
+      const response = await axios.get(`${rootGetters.getUrl}/api/MedE/User/UserViewStoreProducts`,
         {
           params: {
             storeId: storeId,
@@ -267,6 +267,28 @@ export default {
 
     }
   },
+
+  async submitFeedback({ rootGetters }, feedbackData) {
+  try {
+    const response = await axios.post(`${rootGetters.getUrl}/api/MedE/User/addFeedBack`, feedbackData);
+
+    if (response.status === 200) {
+      return { success: true, message: response.data };
+    }
+  } catch (error) {
+    const status = error.response?.status;
+    const message = error.response?.data;
+
+    if (status === 406) {
+      return { success: false, message: "You have already submitted feedback for this store." };
+    }
+
+    return {
+      success: false,
+      message: message || "Failed to submit feedback",
+    };
+  }
+}
 
 
 

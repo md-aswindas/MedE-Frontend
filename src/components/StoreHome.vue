@@ -481,7 +481,7 @@
             <p style="text-decoration: line-through">
               ₹ {{ product.actualPrice }}
             </p>
-            <p>{{ product.offerPercentage }} %</p>
+            <p style="color: red;">- {{ product.offerPercentage }} %</p>
             <div class="product-btns">
               <button class="p-btn update" @click="openUpdateDialog(product)">
                 <v-icon>mdi-update</v-icon>&nbsp; Update
@@ -888,7 +888,9 @@
                           >mdi-account</v-icon
                         >{{ order.customerName }}
                       </h3>
-                      <p class="order-date">{{ formatDateAndTime(order.orderDate) }}</p>
+                      <p class="order-date">
+                        {{ formatDateAndTime(order.orderDate) }}
+                      </p>
                       <p class="store-name">+91 {{ order.phoneNumber }}</p>
                     </div>
                     <!-- <v-chip
@@ -964,7 +966,9 @@
                   <div class="order-header">
                     <div>
                       <h3 class="order-id">{{ order.customerName }}</h3>
-                      <p class="order-date">{{ formatDateAndTime( order.dispatchDtae ) }}</p>
+                      <p class="order-date">
+                        {{ formatDateAndTime(order.dispatchDtae) }}
+                      </p>
                       <p class="store-name">
                         <v-icon size="16" color="#03045E" class="mr-1"
                           >mdi-store</v-icon
@@ -978,12 +982,11 @@
                   >
                     {{ order.status }}
                   </v-chip> -->
-                  <div class="details">
+                    <div class="details">
                       <button class="tick">✓</button>
 
                       <h4>{{ order.location }}</h4>
                     </div>
-                    
                   </div>
 
                   <v-divider class="my-3"></v-divider>
@@ -1464,11 +1467,15 @@ export default {
                 const address = data.features[0].place_name;
                 console.log("Address:", address);
                 this.selectedAddress = address;
-
+                
+                this.snackbarMessage = "📍 Location set to: " + address;
+                this.snackbar = true;
+                this.snackbarColor = "success";
                 // Optional: Show popup with address
                 this.marker.bindPopup(address).openPopup();
               } else {
                 this.selectedAddress = "No address found";
+                
               }
             } catch (error) {
               console.error("Error in reverse geocoding:", error);
@@ -1505,7 +1512,7 @@ export default {
                 const address = data.features[0].place_name;
                 console.log("Address:", address);
                 this.selectedAddress = address;
-
+                
                 // Optional: Show success message
                 this.snackbarMessage = "📍 Location set to: " + address;
                 this.snackbar = true;
@@ -1545,8 +1552,10 @@ export default {
       try {
         const confirmation = confirm("Want to logout ?");
         if (!confirmation) return;
+
         const result = await this.$store.dispatch("logoutStore");
         if (result) {
+          sessionStorage.removeItem("isUserLoggedIn");
           this.$router.push("/storeLogin"); // Or wherever your login route is
         }
       } catch (error) {
@@ -1700,6 +1709,8 @@ export default {
           address: this.selectedAddress,
         };
         try {
+          console.log("saving address :",this.selectedAddress,this.lattitude,this.longitude);
+          
           const response = await this.$store.dispatch(
             "MedEStore/addStoreLocation",
             payload
@@ -1889,14 +1900,21 @@ export default {
           console.log("fetched profile:", result.data);
           this.profile = result.data[0];
 
-          if (!this.profile.storeName || !this.profile.address) {
-            if (!this.profile.storeName) {
+          if (
+            !this.profile.storeName?.trim() ||
+            !this.profile.address?.trim()
+          ) {
+            if (!this.profile.storeName?.trim()) {
               this.showSnackbar = true;
-              this.snackbarMessage = "add store name";
+              this.snackbarMessage =
+                "⚠️ Please add store name (ignore if already added)";
+              return;
             }
-            if (!this.profile.address) {
+            if (!this.profile.address?.trim()) {
               this.showSnackbar = true;
-              this.snackbarMessage = "add store location";
+              this.snackbarMessage =
+                "⚠️ Please add store location (ignore if already added)";
+              return;
             }
           }
         } else {
@@ -2734,11 +2752,17 @@ input:focus {
   height: fit-content;
 }
 .name {
-  width: 150px;
+  width: 180px;
   height: 80%;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
+}
+.name h2{
+  width:180px;
+  white-space: nowrap;        /* Prevent text from wrapping */
+  overflow: hidden;           /* Hide overflow */
+  text-overflow: ellipsis;
 }
 .product-btns {
   display: flex;
@@ -2797,6 +2821,7 @@ input:focus {
 .field-p-dialog {
   margin-left: 2px;
   margin-right: 2px;
+
 }
 .btn-dialog {
   border-radius: 5px;

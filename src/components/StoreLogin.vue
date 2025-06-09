@@ -97,6 +97,7 @@ export default {
       try {
         const response = await this.$store.dispatch("loginStore", payload);
         if (response) {
+          sessionStorage.setItem("isUserLoggedIn", "true");
           this.snackbar = true; // Show snackbar on success
             
             this.snackbarMessage = " 🎉 login success" ;

@@ -116,4 +116,62 @@ export default {
 
     }
   },
+
+  async loadUsers({ rootGetters }) {
+    try {
+      console.log("fetching Orders");
+
+      const response = await axios.get(`${rootGetters.getUrl}/api/MedE/Admin/fetchAllUsers`);
+
+      if (response.status >= 200 && response.status < 300) {
+        return { success: true, data: response.data };
+      }
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || "failed to fetch" };
+
+    }
+  },
+
+  async loadPrescriptions({ rootGetters }) {
+    try {
+      console.log("fetching prescriptions");
+      const response = await axios.get(
+        `${rootGetters.getUrl}/api/MedE/Admin/fetchAllPrescriptions`
+        
+      );
+      if (response.status >= 200 && response.status < 300) {
+        return { success: true, data: response.data };
+      } else {
+        return { success: false, error: response.statusText };
+      }
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || "failed to fetch" };
+
+    }
+  },
+
+  async loadCategories({ rootGetters }) {
+    try {
+      const response = await axios.get(`${rootGetters.getUrl}/api/MedE/Store/loadCategories`);
+      if (response.status >= 200 && response.status < 300) {
+        return { success: true, data: response.data };
+      } else {
+        return { success: false, error: 'unexpected response' };
+      }
+    } catch (error) {
+      console.error("error fetching Category:", error);
+      return { success: false, error: error.message || 'An error occured while fetching Category' };
+    }
+  },
+
+  async addCategory({ rootGetters }, { categoryName }) {
+  const response = await axios.post(`${rootGetters.getUrl}/api/MedE/Admin/adminAddCategory`, {
+    categoryName,
+  });
+
+  if (response.status >= 200 && response.status < 300) {
+    return { success: true, data: response.data };
+  }
+}
+
 }

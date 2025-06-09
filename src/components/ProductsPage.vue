@@ -2,12 +2,26 @@
   <div class="main-container">
     <div class="navbar">
       <div class="left-nav">
-        <h1 class="logo">MedE</h1>
-        <p class="nav-txt" style="width: 140px">
-          <v-icon large color="#03045E" size="1.2rem" class="icon"
-            >mdi-map-marker</v-icon
-          >
-          Find a store
+        <router-link
+          to="/"
+          style="
+            text-decoration: none;
+            color: inherit;
+            font-weight: 500;
+            cursor: pointer;
+          "
+        >
+          <h1 class="logo">MedE</h1></router-link
+        >
+        <p
+          class="nav-txt"
+          style="width: 140px; cursor: pointer"
+          @click="showlocation()"
+        >
+          <v-icon large color="#03045E" size="1.2rem" class="icon">
+            mdi-map-marker
+          </v-icon>
+          {{ locationText }}
         </p>
       </div>
       <div class="right-nav">
@@ -23,11 +37,11 @@
           </p>
         </router-link>
         <router-link
+          v-if="!isLoggedIn"
           to="/userLogin"
           style="text-decoration: none; color: inherit; font-weight: 500"
         >
           <p
-            v-if="!isLoggedIn"
             class="nav-img"
             style="
               display: flex;
@@ -36,7 +50,10 @@
               color: #03045e;
               padding: 7px;
               border-radius: 20px;
-              width: 100px;
+              max-width: 100px;
+              height: 40px;
+              white-space: nowrap;
+              overflow: hidden;
             "
           >
             <v-icon large color="#03045E" size="1.2rem" class="icon"
@@ -44,8 +61,15 @@
             >
             Sign In
           </p>
+        </router-link>
+
+        <!-- If user IS logged in -->
+        <router-link
+          v-else
+          to="/userProfile"
+          style="text-decoration: none; color: inherit; font-weight: 500"
+        >
           <p
-            v-else
             class="nav-img"
             style="
               display: flex;
@@ -55,6 +79,10 @@
               padding: 7px;
               border-radius: 20px;
               width: 100px;
+              max-width: 100px;
+              height: 40px;
+              white-space: nowrap;
+              overflow: hidden;
             "
           >
             <v-icon large color="#03045E" size="1.2rem" class="icon"
@@ -140,7 +168,7 @@
             <label for="Low - High">Price Low - High</label>
           </div>
 
-          <p
+          <!-- <p
             style="
               margin-top: 20px;
               margin-left: 30px;
@@ -157,7 +185,7 @@
               @click="openCat()"
               >mdi-menu-down
             </v-icon>
-          </p>
+          </p> -->
         </div>
       </div>
       <div class="product-rightside">
@@ -180,18 +208,20 @@
             </div>
             <div class="card-txt1">
               <h4>{{ product.productName }}</h4>
-              <h4 class="stock">Stock : {{ product.stockCount }}</h4>
+              <h4 class="stock">Stock : {{ product.stock }}</h4>
             </div>
 
             <div class="price">
               <h4 class="final-price">
                 ₹
                 {{
-                  product.actualPrice -
-                  (product.actualPrice * product.offerPercentage) / 100
+                  (
+                    product.actualPrice -
+                    (product.actualPrice * product.offerPercentage) / 100
+                  ).toFixed(2)
                 }}
               </h4>
-              <h4 class="org-price">₹ {{ product.actualPrice }}</h4>
+              <h4 class="org-price">₹ {{ product.actualPrice.toFixed(2) }}</h4>
               <h4 class="disc">({{ product.offerPercentage }}% OFF)</h4>
             </div>
             <div class="buttons">
@@ -204,9 +234,9 @@
                   Add to cart
                 </button>
               </div>
-              <div class="buy-btn">
+              <!-- <div class="buy-btn">
                 <button type="button" class="bbtn">Buy Now</button>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
@@ -267,12 +297,12 @@ export default {
       }
     },
     async addCart(productId, quantity) {
-      if (!(sessionStorage.getItem("user_id"))) {
-    this.snackbarMessage = "🔐 Please log in to add items to your cart.";
-    this.snackbar = true;
-    this.snackbarColor = "warning";
-    return; // Exit early
-  }
+      if (!sessionStorage.getItem("user_id")) {
+        this.snackbarMessage = "🔐 Please log in to add items to your cart.";
+        this.snackbar = true;
+        this.snackbarColor = "warning";
+        return; // Exit early
+      }
 
       const payload = {
         userId: sessionStorage.getItem("user_id"),
@@ -320,6 +350,27 @@ export default {
   computed: {
     cartCount() {
       return this.$store.state.EndUser.cartCount;
+    },
+    isLoggedIn() {
+      const username = this.$store.state.auth.user_name;
+      return username && username.trim().length > 0;
+    },
+    locationText() {
+      try {
+        const location = sessionStorage.getItem("user_location");
+        if (location) {
+          const locationObj = JSON.parse(location);
+          if (locationObj.name) {
+            // Show only the first part before the first comma
+            const shortName = locationObj.name.split(",")[0];
+            return shortName;
+          }
+        }
+        return "Find a store";
+      } catch (error) {
+        console.error("Error parsing location data:", error);
+        return "Find a store";
+      }
     },
   },
 };
@@ -523,12 +574,18 @@ export default {
 .card-txt1 {
   margin-left: 10px;
   text-align: left;
+  height: 36px;
+  width: 228px;
+  
 }
 
 .card-txt1 h4 {
   margin-top: 0;
-  padding-left: 7px;
-  width: fit-content;
+  /* padding-left: 7px; */
+  width: 228px;
+  white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Price section styling */
@@ -583,7 +640,7 @@ export default {
 
 /* Reveal buttons on hover */
 .card:hover .buttons {
-  bottom: 50px; /* Move the buttons into view */
+  bottom: 15px; /* Move the buttons into view */
   opacity: 1;
   visibility: visible;
 }
