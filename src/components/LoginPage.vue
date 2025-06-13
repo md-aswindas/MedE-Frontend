@@ -35,10 +35,10 @@
           class="txt-field"
           placeholder="password"
         />
-        <div class="link">
+        <!-- <div class="link">
           <h4 class="link-txt">Forgot Password ?</h4>
           <h4 class="link-txt">Forgot Email ?</h4>
-        </div>
+        </div> -->
         <router-link to="/userhome">
           <button type="button" class="btn" @click="submit">Log in</button>
         </router-link>

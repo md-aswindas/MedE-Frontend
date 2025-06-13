@@ -30,10 +30,10 @@
           class="txt-field"
           placeholder="password"
         />
-        <div class="link">
+        <!-- <div class="link">
           <h4 class="link-txt" @click="forgotPswd()" style="cursor: pointer;">Forgot Password ?</h4>
           
-        </div>
+        </div> -->
         <!-- <router-link to="/userhome"> -->
           <button type="button" class="btn" @click="Storesubmit">Log in</button>
         <!-- </router-link> -->
