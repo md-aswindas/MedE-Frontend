@@ -525,7 +525,7 @@
             <p v-if="hide">{{ prescription.userName }}</p>
             <p v-if="hide">{{ prescription.email }}</p>
             <p v-if="hide">{{ prescription.phoneNumber }}</p>
-            <p v-if="hide" style="width: 80px"><v-icon>mdi-eye</v-icon></p>
+            <p v-if="hide" style="width: 80px; cursor: pointer;" @click="viewPrescription(prescription)"><v-icon>mdi-eye</v-icon></p>
 
             <input
               v-if="inputT"
@@ -578,6 +578,43 @@
             </div>
           </div>
         </div>
+        <v-dialog v-model="showPrescriptionDialog" max-width="600" height="100vh">
+          <v-card class="custom-color">
+            <v-card-title class="dialog-title">
+              <span >Prescription Image</span>
+              <v-btn
+                icon="mdi-close"
+                variant="text"
+                color="black"
+                @click="showPrescriptionDialog = false"
+              ></v-btn>
+            </v-card-title>
+            <v-card-text class="pa-0">
+              <v-img
+                :src="
+                  selectedPrescription?.prescriptionImage
+                    ? 'data:image/jpeg;base64,' +
+                      selectedPrescription.prescriptionImage
+                    : ''
+                "
+                max-height="600"
+                class="prescription-dialog-image"
+                contain
+              ></v-img>
+            </v-card-text>
+            <v-card-text class="pt-4">
+              <p class="text-body-1">
+                <strong>User Name: </strong> {{ selectedPrescription?.userName }}
+              </p>
+              <p class="text-body-1">
+                <strong>Phone: </strong>
+                {{
+                  selectedPrescription?.phoneNumber
+                }}
+              </p>
+            </v-card-text>
+          </v-card>
+        </v-dialog>
       </div>
 
       <!-- FEEDBACK PAGE -->
@@ -1116,6 +1153,7 @@
     </div>
   </div>
 
+
   <v-snackbar v-model="snackbar" :timeout="3000" :color="snackbarColor" top>
     {{ snackbarMessage }}
   </v-snackbar>
@@ -1150,6 +1188,8 @@ export default {
       snackbarMessage: "",
       snackbarColor: "success",
       // PROFILE DATA
+      selectedPrescription: null,
+      showPrescriptionDialog: false,
       profile: {
         storeName: "",
         statusName: "",
@@ -1315,6 +1355,10 @@ export default {
   methods: {
     ...mapActions(["fetchStoreProducts"]),
 
+    async viewPrescription(prescription) {
+      this.selectedPrescription = prescription;
+      this.showPrescriptionDialog = true;
+    },
     showlocation() {
       this.locationVisible = !this.locationVisible;
     },
@@ -2790,6 +2834,14 @@ input:focus {
 .delete {
   background-color: red;
   color: white;
+}
+.dialog-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 24px;
+  color: #03045E;
+  border-bottom: 1px solid #e0e0e0;
 }
 
 /* add product dialog box */
